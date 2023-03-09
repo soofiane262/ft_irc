@@ -57,8 +57,8 @@ void irc::server::parse_args( const int &ac, char **av ) {
 void irc::server::sigHandler( int sig ) {
 	for ( int idx = static_cast< int >( _sockets.size() ) - 1; idx; --idx ) {
 		if ( _sockets[ idx ].revents & POLLOUT ) {
-			_users[ idx - 1 ]._msg_out = _shutdown_msg;
-			while ( !_users[ idx - 1 ]._msg_out.empty() ) sendMsg( idx - 1 );
+			_clients[ idx - 1 ]._msg_out = _shutdown_msg;
+			while ( !_clients[ idx - 1 ]._msg_out.empty() ) sendMsg( idx - 1 );
 			close( _sockets[ idx ].fd );
 		}
 	}
@@ -106,32 +106,35 @@ void irc::server::acceptClient( void ) {
 	pollfd pfd;
 	bzero( &pfd, sizeof( pfd ) );
 	pfd.fd = accept( _sockets.front().fd, NULL, NULL );
-	if ( pfd.fd == -1 ) ERRNO_EXCEPT;
+	if ( pfd.fd == -1 ) return;
 	pfd.events = POLLIN | POLLOUT;
 	_sockets.push_back( pfd );
-	_users.push_back( user() );
+	_clients.push_back( client() );
 	std::cout << "\033[2m"
-			  << "New user connected"
+			  << "New client connected"
 			  << "\033[22m\n";
-	_users.back()._msg_out = _welcome_msg;
+	_clients.back()._msg_out = _welcome_msg;
 } // accept_client
 
 /* diconnect_client ───────────────────────────────────────────────────────────────── */
 
 void irc::server::disconClient( const int client_pos ) {
 	close( _sockets[ client_pos + 1 ].fd );
+	std::cout << "\033[2m"
+			  << "client `" << _clients[ client_pos ]._user._nickname << "` disconnected"
+			  << "\033[22m\n";
 	_sockets.erase( _sockets.begin() + client_pos + 1 );
-	_users.erase( _users.begin() + client_pos );
+	_clients.erase( _clients.begin() + client_pos );
 } // diconnect_client
 
 /* send_message ───────────────────────────────────────────────────────────────────── */
 
 void irc::server::sendMsg( const int client_pos ) {
-	if ( _users[ client_pos ]._msg_out.empty() ) return;
-	int bytes_sent = send( _sockets[ client_pos + 1 ].fd, _users[ client_pos ]._msg_out.c_str(),
-						   _users[ client_pos ]._msg_out.length(), 0 );
-	if ( bytes_sent == -1 ) THROW_EXCEPT( "Unable to send() data to user" );
-	_users[ client_pos ]._msg_out.erase( 0, bytes_sent );
+	if ( _clients[ client_pos ]._msg_out.empty() ) return;
+	int bytes_sent = send( _sockets[ client_pos + 1 ].fd, _clients[ client_pos ]._msg_out.c_str(),
+						   _clients[ client_pos ]._msg_out.length(), 0 );
+	if ( bytes_sent == -1 ) THROW_EXCEPT( "Unable to send() data to client" );
+	_clients[ client_pos ]._msg_out.erase( 0, bytes_sent );
 } // send_message
 
 /* receive_message ────────────────────────────────────────────────────────────────── */
@@ -139,8 +142,8 @@ void irc::server::sendMsg( const int client_pos ) {
 void irc::server::recvMsg( const int client_pos ) {
 	bzero( _buff, 513 );
 	int bytes_rcvd = recv( _sockets[ client_pos + 1 ].fd, _buff, 512, 0 );
-	if ( bytes_rcvd == -1 ) THROW_EXCEPT( "Unable to recv() data from user" );
-	_users[ client_pos ]._msg_in.append( _buff, bytes_rcvd );
+	if ( bytes_rcvd == -1 ) THROW_EXCEPT( "Unable to recv() data from client" );
+	_clients[ client_pos ]._msg_in.append( _buff, bytes_rcvd );
 	std::cout << _buff;
 } // receive_message
 
@@ -152,9 +155,9 @@ void irc::server::runServer( void ) {
 	while ( 1 ) {
 		if ( poll( &_sockets.front(), _sockets.size(), -1 ) == -1 ) ERRNO_EXCEPT;
 		if ( _sockets.front().revents == POLLIN ) acceptClient();
-		for ( int idx = 0, end = static_cast< int >( _sockets.size() ); idx < end; ++idx ) {
+		for ( int idx = 0; idx < static_cast< int >( _clients.size() ); ++idx ) {
 			if ( _sockets[ idx + 1 ].revents & ( POLLERR | POLLHUP | POLLNVAL ) ) {
-				disconClient( idx );
+				disconClient( idx-- );
 				continue;
 			}
 			if ( _sockets[ idx + 1 ].revents & POLLIN ) recvMsg( idx );
