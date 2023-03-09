@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 18:22:31 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/09 17:05:09 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/09 19:01:08 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,16 @@ irc::server* irc::server::__serv = NULL;
 
 /* ctor ───────────────────────────────────────────────────────────────────────────── */
 
+void irc::server::sethostAddr( void ) {
+	char			tmp_hstname[ 64 ];
+	struct hostent* hostentry;
+	gethostname( tmp_hstname, 64 );
+	hostentry = gethostbyname( tmp_hstname );
+	if ( !hostentry ) this->_host_addr = const_cast< char* >( std::string( "127.0.0.1" ).c_str() );
+	else
+		this->_host_addr = inet_ntoa( *(struct in_addr*)hostentry->h_addr_list[ 0 ] );
+}
+
 irc::server::server( const int& ac, char** av ) {
 	this->parse_args( ac, av );
 	this->_buff = new char[ 513 ];
@@ -74,6 +84,8 @@ irc::server::server( const int& ac, char** av ) {
 	this->_shutdown_msg += "Until we chat again !";
 	// this->_shutdown_msg += "\033[22m";
 	this->_shutdown_msg += "\n";
+	sethostAddr();
+
 } // ctor
 
 /* dtor ───────────────────────────────────────────────────────────────────────────── */
@@ -100,25 +112,10 @@ void irc::server::parse_args( const int& ac, char** av ) {
 
 /* signal_handler ─────────────────────────────────────────────────────────────────── */
 
-void irc::server::sigHandler( int sig ) {
-	std::vector< client >::iterator client_it;
-	std::vector< pollfd >::iterator socket_it;
-	for ( client_it = this->_clients.end() - 1, socket_it = this->_sockets.end() - 1;
-		  socket_it != this->_sockets.begin(); --socket_it, --client_it ) {
-		if ( socket_it->revents & POLLOUT ) {
-			client_it->_msg_out = _shutdown_msg;
-			while ( !client_it->_msg_out.empty() ) sendMsg( socket_it, client_it );
-			close( socket_it->fd );
-		}
-	}
-	if ( close( this->_sockets.begin()->fd ) ) ERRNO_EXCEPT;
-	std::cout << "\n\n\033[2m\033[4m"
-			  << "IRC Server shut down successfully"
-			  << "\033[22m\033[24m\n";
+void irc::server::staticSigHandler( int sig ) {
+	__serv->shutDownServer();
 	exit( sig );
 } // signal_handler
-
-void irc::server::staticSigHandler( int sig ) { __serv->sigHandler( sig ); } // signal_handler
 
 /* accept_client ──────────────────────────────────────────────────────────────────── */
 
@@ -149,6 +146,8 @@ void irc::server::disconClient( std::vector< pollfd >::iterator& socket_it_,
 
 /* send_message ───────────────────────────────────────────────────────────────────── */
 
+int glob = 0;
+
 void irc::server::sendMsg( std::vector< pollfd >::iterator& socket_it_,
 						   std::vector< client >::iterator& client_it_ ) {
 	if ( client_it_->_msg_out.empty() ) return;
@@ -174,6 +173,10 @@ void irc::server::recvMsg( std::vector< pollfd >::iterator& socket_it_,
 			client_it_->_msg_in.erase( client_it_->_msg_in.size() - 1 ) );
 		std::cout << client_it_->_message;
 	}
+	glob++;
+	if ( glob == 3 )
+		client_it_->_msg_out =
+			REGISTRATION_SUCCESS( this->_host_addr, "souf", "souf", this->_create_time );
 } // receive_message
 
 /* initialize_server ──────────────────────────────────────────────────────────────── */
@@ -201,8 +204,9 @@ void irc::server::initServer( void ) {
 		ERRNO_EXCEPT;
 	this->_sockets.push_back( mastersocket );
 	freeaddrinfo( servinfo );
-	std::cout << "\033[2m\033[4m"
-			  << "IRC Server started successfully : port " << this->_port << "\033[22m\033[24m\n\n";
+	time_t rawtime;
+	time( &rawtime );
+	this->_create_time = asctime( localtime( &rawtime ) );
 } // initialize_server
 
 /* run_server ─────────────────────────────────────────────────────────────────────── */
@@ -212,6 +216,10 @@ void irc::server::runServer( void ) {
 	std::signal( SIGINT, server::staticSigHandler );
 	std::vector< client >::iterator client_it;
 	std::vector< pollfd >::iterator socket_it;
+	// start:
+	std::cout << "\033[2m\033[4m"
+			  << "IRC Server started successfully ~ " << this->_host_addr << ':' << this->_port
+			  << "\033[22m\033[24m\n\n";
 	while ( 1 ) {
 		if ( poll( &this->_sockets.front(), this->_sockets.size(), -1 ) == -1 ) ERRNO_EXCEPT;
 		if ( this->_sockets.front().revents == POLLIN ) acceptClient();
@@ -227,4 +235,29 @@ void irc::server::runServer( void ) {
 			} catch ( std::exception& e ) { std::cerr << "\033[1;31m" << e.what() << "\033[0m\n"; }
 		}
 	}
+	// restart:
+	// 	shutDownServer();
+	// 	goto start;
+	// shutdown:
+	// 	shutDownServer();
+	// 	exit( 0 );
 } // run_server
+
+/* shut_down_server ─────────────────────────────────────────────────────────────────── */
+
+void irc::server::shutDownServer( void ) {
+	std::vector< client >::iterator client_it;
+	std::vector< pollfd >::iterator socket_it;
+	for ( client_it = this->_clients.end() - 1, socket_it = this->_sockets.end() - 1;
+		  socket_it != this->_sockets.begin(); --socket_it, --client_it ) {
+		if ( socket_it->revents & POLLOUT ) {
+			client_it->_msg_out = _shutdown_msg;
+			while ( !client_it->_msg_out.empty() ) sendMsg( socket_it, client_it );
+			close( socket_it->fd );
+		}
+	}
+	if ( close( this->_sockets.begin()->fd ) ) ERRNO_EXCEPT;
+	std::cout << "\n\n\033[2m\033[4m"
+			  << "IRC Server shut down successfully"
+			  << "\033[22m\033[24m\n";
+} // signal_handler

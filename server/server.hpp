@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/09 17:04:40 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/09 19:01:38 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,19 @@
 #include "../channel/channel.hpp" // channel
 #include "../user/user.hpp"		  // user
 
+#include <arpa/inet.h>	// inet_ntoa
 #include <csignal>		// signal
 #include <cstddef>		// size_t
+#include <ctime>		// time_t, struct tm, time, localtime
 #include <exception>	// exception
 #include <fcntl.h>		// fcntl
-#include <iostream>		// cout - cerr
-#include <netdb.h>		// addrinfo
+#include <iostream>		// cout, cerr
+#include <netdb.h>		// addrinfo, gethostbyname
 #include <ostream>		// ostream
 #include <sstream>		// stringstream
 #include <string>		// string
-#include <sys/poll.h>	// pollfd - poll
-#include <sys/socket.h> // get / free addrinfo - socket - bind - listen - accept - send - recv
+#include <sys/poll.h>	// pollfd, poll
+#include <sys/socket.h> // get / free addrinfo, socket, bind, listen, accept, send, recv
 #include <sys/types.h>	// ( BSD )
 #include <unistd.h>		// close
 #include <vector>		// vector
@@ -47,12 +49,18 @@
 
 /* Client Responses ─────────────────────────────────────────────────────────────────── */
 
-#define NUMERIC_REPLY( num, target ) ":ircserv " num target
-#define RPL_WELCOME( target )		 NUMERIC_REPLY( "001", target )
-#define RPL_YOURHOST( target )		 NUMERIC_REPLY( "002", target )
-#define RPL_CREATED( target )		 NUMERIC_REPLY( "003", target )
-#define RPL_MYINFO( target )		 NUMERIC_REPLY( "004", target )
-#define REGISTRATION_SUCCESS		 RPL_WELCOME CRLF RPL_YOURHOST CRLF RPL_CREATED CRLF RPL_MYINFO
+#define NUMERIC_REPLY( host, num, nick ) ( COLON + host + SPACE + num + SPACE + nick )
+#define RPL_WELCOME( host, nick, user )                                                        \
+	( NUMERIC_REPLY( host, "001", nick ) + " :Welcome to the Internet Relay Network " + nick + \
+	  "!" + user + "@" + host + CRLF )
+#define RPL_YOURHOST( host, nick ) \
+	( NUMERIC_REPLY( host, "002", nick ) + " :Your host is ircserv, running version 1.0 " + CRLF )
+#define RPL_CREATED( host, nick, date )                                                        \
+	( NUMERIC_REPLY( host, "003", nick ) + " :This server was created " + date + " UTC + 1 " + \
+	  CRLF )
+#define REGISTRATION_SUCCESS( host, nick, user, date )               \
+	( RPL_WELCOME( host, nick, user ) + RPL_YOURHOST( host, nick ) + \
+	  RPL_CREATED( host, nick, date ) )
 
 /* Command Responses ────────────────────────────────────────────────────────────────── */
 
@@ -70,28 +78,32 @@ namespace irc {
 	std::ostream& operator<<( std::ostream&, message& );
 	class client {
 	  public:
+		bool		_registered;
 		user		_user;
 		message		_message;
 		std::string _msg_in;
 		std::string _msg_out;
-		client( void ) {}
+		client( void ) : _registered( false ) {}
 		~client( void ) {}
 	};
 	class server {
 	  private:
-		char*				   _buff;
-		unsigned short		   _port;
-		std::string			   _password;
-		std::string			   _welcome_msg;
-		std::string			   _shutdown_msg;
+		char*		   _buff;
+		std::string	   _host_addr;
+		unsigned short _port;
+		std::string	   _create_time;
+		std::string	   _password;
+		std::string	   _welcome_msg;
+		std::string	   _shutdown_msg;
+		// protoent*			   _host_infos;
 		std::vector< pollfd >  _sockets;
 		std::vector< client >  _clients;
 		std::vector< user >	   _users;
 		std::vector< channel > _channels;
 		static server*		   __serv;
 		void				   parse_args( const int&, char** );
-		void				   sigHandler( int );
 		static void			   staticSigHandler( int sg );
+		void				   sethostAddr( void );
 		void				   acceptClient( void );
 		void disconClient( std::vector< pollfd >::iterator&, std::vector< client >::iterator& );
 		void sendMsg( std::vector< pollfd >::iterator&, std::vector< client >::iterator& );
@@ -102,5 +114,6 @@ namespace irc {
 		~server( void );
 		void initServer( void );
 		void runServer( void );
+		void shutDownServer( void );
 	};
 } // namespace irc
