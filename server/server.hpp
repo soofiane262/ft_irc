@@ -37,6 +37,14 @@
 #define BACKLOG				   10
 
 namespace irc {
+	class client {
+	  public:
+		user		_user;
+		std::string _msg_in;
+		std::string _msg_out;
+		client( void ) {}
+		~client( void ) {}
+	};
 	class server {
 	  private:
 		char				  *_buff;
@@ -44,9 +52,10 @@ namespace irc {
 		std::string			   _password;
 		std::string			   _welcome_msg;
 		std::string			   _shutdown_msg;
-		std::vector< channel > _channels;
-		std::vector< user >	   _users;
 		std::vector< pollfd >  _sockets;
+		std::vector< client >  _clients;
+		std::vector< user >	   _users;
+		std::vector< channel > _channels;
 		static server		  *__serv;
 		void				   parse_args( const int &ac, char **av );
 		void				   sigHandler( int sig );

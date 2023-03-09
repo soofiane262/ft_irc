@@ -18,8 +18,6 @@ namespace irc {
 	class user {
 	  public:
 		std::string _nickname;
-		std::string _msg_in;
-		std::string _msg_out;
 		user( void ) {}
 	};
 } // namespace irc
