@@ -6,15 +6,11 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 18:22:31 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/10 12:12:11 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/10 13:45:57 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
-
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 /*                                        Message                                       */
@@ -33,7 +29,7 @@ std::ostream& irc::operator<<( std::ostream& o_, irc::message& message_ ) {
 	if ( message_._params.empty() ) o_ << "<empty>";
 	else
 		for ( std::size_t idx = 0; idx < message_._params.size(); ++idx )
-			o_ << "\n" << idx << "\t-->\t`\033[22m" << message_._command << "\033[2m`";
+			o_ << "\n" << idx << "\t--> `\033[22m" << message_._params[ idx ] << "\033[2m`";
 	o_ << "\033[22m\n";
 	return o_;
 }
@@ -46,12 +42,20 @@ void irc::message::clear( void ) {
 
 void irc::message::parseMsg( std::string& msg_ ) {
 	std::cout << msg_ << "\n";
+	//
 	if ( !msg_.find( COLON ) ) {
 		this->_prefix = msg_.erase( 0, 1 ).substr( 0, msg_.find( SPACE ) );
-		msg_.erase( 0, this->_prefix.size() );
+		msg_.erase( 0, msg_.find( SPACE ) + 1 );
 	}
-
-	msg_.clear();
+	this->_command = msg_.substr( 0, msg_.find( SPACE ) );
+	msg_.erase( 0, msg_.find( SPACE ) + 1 );
+	for ( std::size_t pos_space = msg_.find( SPACE ); !msg_.empty();
+		  pos_space				= msg_.find( SPACE ) ) {
+		this->_params.push_back( msg_.substr( 0, msg_.find( SPACE ) ) );
+		pos_space == std::string::npos ? msg_.erase( 0 ) : msg_.erase( 0, pos_space + 1 );
+	}
+	//
+	std::cout << *this << '\n';
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -59,20 +63,20 @@ void irc::message::parseMsg( std::string& msg_ ) {
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 irc::server* irc::server::__serv		  = NULL;
+std::string	 irc::server::__host_name	  = "";
 std::string	 irc::server::__host_addr	  = "";
 std::string	 irc::server::__creation_date = "";
 
 /* ctor ───────────────────────────────────────────────────────────────────────────── */
 
 void irc::server::sethostAddr( void ) {
-	char			tmp_hstname[ 64 ];
+	char			tmp_hstname[ 128 ];
 	struct hostent* hostentry;
-	gethostname( tmp_hstname, 64 );
-	std::cout << tmp_hstname << '\n';
-	hostentry = gethostbyname( tmp_hstname );
-	if ( !hostentry ) this->__host_addr = const_cast< char* >( std::string( "127.0.0.1" ).c_str() );
-	else
-		this->__host_addr = inet_ntoa( *(struct in_addr*)hostentry->h_addr_list[ 0 ] );
+	if ( gethostname( tmp_hstname, 128 ) ) ERRNO_EXCEPT;
+	this->__host_name = tmp_hstname;
+	hostentry		  = gethostbyname( tmp_hstname );
+	if ( !hostentry ) ERRNO_EXCEPT;
+	this->__host_addr = inet_ntoa( *reinterpret_cast< in_addr* >( hostentry->h_addr_list[ 0 ] ) );
 }
 
 irc::server::server( const int& ac, char** av ) {
@@ -119,9 +123,9 @@ void irc::server::parse_args( const int& ac, char** av ) {
 
 /* signal_handler ─────────────────────────────────────────────────────────────────── */
 
-void irc::server::staticSigHandler( int sig ) {
+void irc::server::staticSigHandler( int ) {
 	__serv->shutDownServer();
-	exit( sig );
+	exit( 0 );
 } // signal_handler
 
 /* accept_client ──────────────────────────────────────────────────────────────────── */
@@ -154,8 +158,6 @@ void irc::server::disconClient( std::vector< pollfd >::iterator& socket_it_,
 
 /* send_message ───────────────────────────────────────────────────────────────────── */
 
-int glob = 0;
-
 void irc::server::sendMsg( std::vector< pollfd >::iterator& socket_it_,
 						   std::vector< client >::iterator& client_it_ ) {
 	if ( client_it_->_msg_out.empty() ) return;
@@ -167,6 +169,11 @@ void irc::server::sendMsg( std::vector< pollfd >::iterator& socket_it_,
 
 /* receive_message ────────────────────────────────────────────────────────────────── */
 
+void irc::server::handleMsg( std::vector< client >::iterator& client_it_ ) {
+	client_it_->_message.parseMsg( client_it_->_msg_in.erase( client_it_->_msg_in.size() - 2 ) );
+	client_it_->_message.clear();
+}
+
 void irc::server::recvMsg( std::vector< pollfd >::iterator& socket_it_,
 						   std::vector< client >::iterator& client_it_ ) {
 	bzero( _buff, 513 );
@@ -176,11 +183,7 @@ void irc::server::recvMsg( std::vector< pollfd >::iterator& socket_it_,
 		THROW_EXCEPT( "Unable to recv() data from client" );
 	}
 	client_it_->_msg_in.append( _buff, bytes_rcvd );
-	if ( !client_it_->_msg_in.compare( client_it_->_msg_in.size() - 2, std::string::npos, CRLF ) ) {
-		client_it_->_message.parseMsg(
-			client_it_->_msg_in.erase( client_it_->_msg_in.size() - 1 ) );
-		std::cout << client_it_->_message;
-	}
+	if ( client_it_->_msg_in.rfind( CRLF ) ) { this->handleMsg( client_it_ ); }
 } // receive_message
 
 /* initialize_server ──────────────────────────────────────────────────────────────── */
@@ -190,7 +193,7 @@ void irc::server::initServer( void ) {
 	bzero( &hints, sizeof( hints ) );
 	hints.ai_family	  = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags	  = AI_PASSIVE | AI_ADDRCONFIG;
+	hints.ai_flags	  = AI_PASSIVE;
 	std::stringstream ss;
 	ss << this->_port;
 	int i = getaddrinfo( NULL, ss.str().c_str(), &hints, &servinfo );
@@ -201,10 +204,6 @@ void irc::server::initServer( void ) {
 		if ( ( mastersocket.fd = socket( servinfo->ai_family, servinfo->ai_socktype,
 										 servinfo->ai_protocol ) ) == -1 )
 			continue;
-	//
-	std::cout << inet_ntoa( reinterpret_cast< sockaddr_in* >( servinfo->ai_addr )->sin_addr )
-			  << '\n';
-	//
 	mastersocket.events = POLLIN | POLLOUT;
 	i					= 1;
 	if ( mastersocket.fd == -1 ||
