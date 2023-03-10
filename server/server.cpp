@@ -6,11 +6,15 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 18:22:31 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/09 19:01:08 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/10 12:12:11 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
+
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 /*                                        Message                                       */
@@ -29,7 +33,7 @@ std::ostream& irc::operator<<( std::ostream& o_, irc::message& message_ ) {
 	if ( message_._params.empty() ) o_ << "<empty>";
 	else
 		for ( std::size_t idx = 0; idx < message_._params.size(); ++idx )
-			o_ << "\n\t\t\t`\033[22m" << message_._command << "\033[2m`";
+			o_ << "\n" << idx << "\t-->\t`\033[22m" << message_._command << "\033[2m`";
 	o_ << "\033[22m\n";
 	return o_;
 }
@@ -42,11 +46,11 @@ void irc::message::clear( void ) {
 
 void irc::message::parseMsg( std::string& msg_ ) {
 	std::cout << msg_ << "\n";
-	// if ( msg_.empty() ) THROW_EXCEPT();
 	if ( !msg_.find( COLON ) ) {
 		this->_prefix = msg_.erase( 0, 1 ).substr( 0, msg_.find( SPACE ) );
 		msg_.erase( 0, this->_prefix.size() );
 	}
+
 	msg_.clear();
 }
 
@@ -54,7 +58,9 @@ void irc::message::parseMsg( std::string& msg_ ) {
 /*                                        Server                                        */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-irc::server* irc::server::__serv = NULL;
+irc::server* irc::server::__serv		  = NULL;
+std::string	 irc::server::__host_addr	  = "";
+std::string	 irc::server::__creation_date = "";
 
 /* ctor ───────────────────────────────────────────────────────────────────────────── */
 
@@ -62,10 +68,11 @@ void irc::server::sethostAddr( void ) {
 	char			tmp_hstname[ 64 ];
 	struct hostent* hostentry;
 	gethostname( tmp_hstname, 64 );
+	std::cout << tmp_hstname << '\n';
 	hostentry = gethostbyname( tmp_hstname );
-	if ( !hostentry ) this->_host_addr = const_cast< char* >( std::string( "127.0.0.1" ).c_str() );
+	if ( !hostentry ) this->__host_addr = const_cast< char* >( std::string( "127.0.0.1" ).c_str() );
 	else
-		this->_host_addr = inet_ntoa( *(struct in_addr*)hostentry->h_addr_list[ 0 ] );
+		this->__host_addr = inet_ntoa( *(struct in_addr*)hostentry->h_addr_list[ 0 ] );
 }
 
 irc::server::server( const int& ac, char** av ) {
@@ -127,8 +134,9 @@ void irc::server::acceptClient( void ) {
 	pfd.events = POLLIN | POLLOUT;
 	this->_sockets.push_back( pfd );
 	this->_clients.push_back( client() );
+	this->_clients.rbegin()->_msg_out = REGISTRATION_SUCCESS( "souf", "souf" );
 	std::cout << "\033[2m"
-			  << "New client connected"
+			  << "Client `" << this->_clients.rbegin()->_user._nickname << "` connected"
 			  << "\033[22m\n";
 } // accept_client
 
@@ -138,7 +146,7 @@ void irc::server::disconClient( std::vector< pollfd >::iterator& socket_it_,
 								std::vector< client >::iterator& client_it_ ) {
 	close( socket_it_->fd );
 	std::cout << "\033[2m"
-			  << "client `" << client_it_->_user._nickname << "` disconnected"
+			  << "Client `" << client_it_->_user._nickname << "` disconnected"
 			  << "\033[22m\n";
 	socket_it_ = this->_sockets.erase( socket_it_ ) - 1;
 	client_it_ = this->_clients.erase( client_it_ ) - 1;
@@ -173,27 +181,30 @@ void irc::server::recvMsg( std::vector< pollfd >::iterator& socket_it_,
 			client_it_->_msg_in.erase( client_it_->_msg_in.size() - 1 ) );
 		std::cout << client_it_->_message;
 	}
-	glob++;
-	if ( glob == 3 )
-		client_it_->_msg_out =
-			REGISTRATION_SUCCESS( this->_host_addr, "souf", "souf", this->_create_time );
 } // receive_message
 
 /* initialize_server ──────────────────────────────────────────────────────────────── */
 
 void irc::server::initServer( void ) {
-	addrinfo hints, *servinfo = NULL;
+	addrinfo hints, *servinfo = NULL, *ptr = NULL;
 	bzero( &hints, sizeof( hints ) );
-	hints.ai_family	  = AF_INET;
+	hints.ai_family	  = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags	  = AI_PASSIVE;
+	hints.ai_flags	  = AI_PASSIVE | AI_ADDRCONFIG;
 	std::stringstream ss;
 	ss << this->_port;
 	int i = getaddrinfo( NULL, ss.str().c_str(), &hints, &servinfo );
 	if ( i ) i == EAI_SYSTEM ? ERRNO_EXCEPT : ERRCODE_EXCEPT( i );
 	pollfd mastersocket;
 	bzero( &mastersocket, sizeof( mastersocket ) );
-	mastersocket.fd = socket( servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol );
+	for ( ptr = servinfo; ptr; ptr = ptr->ai_next )
+		if ( ( mastersocket.fd = socket( servinfo->ai_family, servinfo->ai_socktype,
+										 servinfo->ai_protocol ) ) == -1 )
+			continue;
+	//
+	std::cout << inet_ntoa( reinterpret_cast< sockaddr_in* >( servinfo->ai_addr )->sin_addr )
+			  << '\n';
+	//
 	mastersocket.events = POLLIN | POLLOUT;
 	i					= 1;
 	if ( mastersocket.fd == -1 ||
@@ -204,9 +215,10 @@ void irc::server::initServer( void ) {
 		ERRNO_EXCEPT;
 	this->_sockets.push_back( mastersocket );
 	freeaddrinfo( servinfo );
-	time_t rawtime;
-	time( &rawtime );
-	this->_create_time = asctime( localtime( &rawtime ) );
+	std::time_t rawtime;
+	std::time( &rawtime );
+	( this->__creation_date = std::asctime( localtime( &rawtime ) ) )
+		.erase( this->__creation_date.end() - 1 );
 } // initialize_server
 
 /* run_server ─────────────────────────────────────────────────────────────────────── */
@@ -218,7 +230,7 @@ void irc::server::runServer( void ) {
 	std::vector< pollfd >::iterator socket_it;
 	// start:
 	std::cout << "\033[2m\033[4m"
-			  << "IRC Server started successfully ~ " << this->_host_addr << ':' << this->_port
+			  << "IRC Server started successfully ~ " << this->__host_addr << ':' << this->_port
 			  << "\033[22m\033[24m\n\n";
 	while ( 1 ) {
 		if ( poll( &this->_sockets.front(), this->_sockets.size(), -1 ) == -1 ) ERRNO_EXCEPT;

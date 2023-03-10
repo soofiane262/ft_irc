@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/09 19:01:38 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/10 10:49:53 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,18 +49,20 @@
 
 /* Client Responses ─────────────────────────────────────────────────────────────────── */
 
-#define NUMERIC_REPLY( host, num, nick ) ( COLON + host + SPACE + num + SPACE + nick )
-#define RPL_WELCOME( host, nick, user )                                                        \
-	( NUMERIC_REPLY( host, "001", nick ) + " :Welcome to the Internet Relay Network " + nick + \
-	  "!" + user + "@" + host + CRLF )
-#define RPL_YOURHOST( host, nick ) \
-	( NUMERIC_REPLY( host, "002", nick ) + " :Your host is ircserv, running version 1.0 " + CRLF )
-#define RPL_CREATED( host, nick, date )                                                        \
-	( NUMERIC_REPLY( host, "003", nick ) + " :This server was created " + date + " UTC + 1 " + \
-	  CRLF )
-#define REGISTRATION_SUCCESS( host, nick, user, date )               \
-	( RPL_WELCOME( host, nick, user ) + RPL_YOURHOST( host, nick ) + \
-	  RPL_CREATED( host, nick, date ) )
+#define NUMERIC_REPLY( num, nick ) COLON + irc::server::__host_addr + SPACE + num + SPACE + nick
+#define RPL_WELCOME( nick, user )                                                            \
+	NUMERIC_REPLY( "001", nick ) + " :Welcome to the Internet Relay Network " + nick + "!" + \
+		user + "@" + irc::server::__host_addr + CRLF
+#define RPL_YOURHOST( nick ) \
+	NUMERIC_REPLY( "002", nick ) + " :Your host is ircserv, running version 1.0 " + CRLF
+#define RPL_CREATED( nick )                                                                      \
+	NUMERIC_REPLY( "003", nick ) + " :This server was created " + irc::server::__creation_date + \
+		" UTC+1 " + CRLF
+#define RPL_MYINFO( nick )         \
+	NUMERIC_REPLY( "004", nick ) + \
+		" :ircserv v1.0 aAbcCdefFghHiIjkKmnoOPrRsSwxXy AbceiIjklLmMnoOpPrRsStv beIjklov" + CRLF
+#define REGISTRATION_SUCCESS( nick, user ) \
+	RPL_WELCOME( nick, user ) + RPL_YOURHOST( nick ) + RPL_CREATED( nick ) + RPL_MYINFO( nick )
 
 /* Command Responses ────────────────────────────────────────────────────────────────── */
 
@@ -88,19 +90,18 @@ namespace irc {
 	};
 	class server {
 	  private:
-		char*		   _buff;
-		std::string	   _host_addr;
-		unsigned short _port;
-		std::string	   _create_time;
-		std::string	   _password;
-		std::string	   _welcome_msg;
-		std::string	   _shutdown_msg;
-		// protoent*			   _host_infos;
+		static server*		   __serv;
+		static std::string	   __host_addr;
+		static std::string	   __creation_date;
+		char*				   _buff;
+		unsigned short		   _port;
+		std::string			   _password;
+		std::string			   _welcome_msg;
+		std::string			   _shutdown_msg;
 		std::vector< pollfd >  _sockets;
 		std::vector< client >  _clients;
 		std::vector< user >	   _users;
 		std::vector< channel > _channels;
-		static server*		   __serv;
 		void				   parse_args( const int&, char** );
 		static void			   staticSigHandler( int sg );
 		void				   sethostAddr( void );
