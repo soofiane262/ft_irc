@@ -6,10 +6,10 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:42:14 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/08 18:28:56 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/10 18:41:48 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "server/server.hpp"
+#include "srcs/irc.hpp"

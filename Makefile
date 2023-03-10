@@ -6,7 +6,7 @@
 #    By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/08 14:44:10 by sel-mars          #+#    #+#              #
-#    Updated: 2023/03/08 18:31:13 by sel-mars         ###   ########.fr        #
+#    Updated: 2023/03/10 18:41:45 by sel-mars         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CPP		=	c++
 
 FLAGS	=	-O3 -std=c++98 -Wall -Wextra -Werror -Wpedantic
 
-SRCS	=	main.cpp server/server.cpp
+SRCS	=	main.cpp $(addprefix srcs/,server.cpp commands.cpp message.cpp)
 
 all: $(NAME)
 
