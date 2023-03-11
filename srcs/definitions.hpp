@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/10 18:41:41 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/11 12:49:38 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,10 @@
 		RPL_MYINFO( client_it_->_nickname )
 
 /* Command Responses ────────────────────────────────────────────────────────────────── */
+
+#define ERR_UNKNOWNCOMMAND( client_it_ )                                                    \
+	NUMERIC_REPLY( "421", client_it_->_nickname ) + client_it_->_message._command + SPCLN + \
+		"Unknown command" + CRLF
 
 #define ERR_NEEDMOREPARAMS( client_it_ )                                                    \
 	NUMERIC_REPLY( "461", client_it_->_nickname ) + client_it_->_message._command + SPCLN + \

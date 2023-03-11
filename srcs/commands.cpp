@@ -6,11 +6,13 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:27:13 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/10 18:41:42 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/11 12:50:04 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "irc.hpp"
+
+#include <utility>
 
 irc::commands::commands( void ) {
 	this->_commands[ "PASS" ] = &commands::pass;
@@ -21,7 +23,11 @@ irc::commands::commands( void ) {
 irc::commands::~commands( void ) {}
 
 std::string irc::commands::operator[]( std::vector< client >::iterator& client_it_ ) {
-	return ( this->*( this->_commands[ client_it_->_message._command ] ) )( client_it_ );
+	std::map< std::string, std::string ( irc::commands::* )(
+							   std::vector< client >::iterator& ) >::iterator func_it =
+		this->_commands.find( client_it_->_message._command );
+	if ( func_it == this->_commands.end() ) return ERR_UNKNOWNCOMMAND( client_it_ );
+	return ( this->*func_it->second )( client_it_ );
 }
 
 std::string irc::commands::pass( std::vector< client >::iterator& client_it_ ) {
