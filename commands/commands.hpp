@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/09 11:54:34 by acmaghou          #+#    #+#             */
-/*   Updated: 2023/03/09 14:44:11 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/09 17:06:57 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define COMMANDS_HPP
 
 #include "../user/user.hpp"
+#include "../channel/channel.hpp"
 
 #include <csignal>		// signal
 #include <cstddef>		// size_t
@@ -29,21 +30,22 @@
 #include <unistd.h>		// close
 #include <vector>		// vector
 
+# define COM irc::commands
+
 namespace	irc {
 	class	commands {
 		private:
 			std::string	cmd;
-			std::string	arg;
 		public:
-			commands(std::string cmd, std::string arg);
+			commands(std::string cmd);
 			~commands();
-			void	join(const irc::user &x, const std::string &message);
+			void	join(const irc::user &x, const std::string &cmd, const std::string &channel_name);
 			void	part(const irc::user &x, const std::string &message);
-			void	msg(const irc::user &x, const std::string &message);
 			void	whois(const irc::user &x, const std::string &message);
 			void	nick(const irc::user &x, const std::string &message);
 			void	setUserName(const irc::user &x, const std::string &message);
-			void	privmsg(const irc::user &x, const int &targetUser);
+			void	privmsg(const irc::user &x, const irc::user &targetUser, const std::string &message);
+			std::string	getCmd();
 	};
 }
 
