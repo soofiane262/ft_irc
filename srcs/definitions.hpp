@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/11 12:49:38 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/11 14:16:06 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,25 +43,24 @@
 #define RPL_MYINFO( nick )                                    \
 	NUMERIC_REPLY( "004", nick ) + irc::server::__host_name + \
 		" v1.0 <available user modes> <available channel modes>" + CRLF
-#define REGISTRATION_SUCCESS( client_it_ )                                             \
-	RPL_WELCOME( client_it_->_nickname, client_it_->_username ) +                      \
-		RPL_YOURHOST( client_it_->_nickname ) + RPL_CREATED( client_it_->_nickname ) + \
-		RPL_MYINFO( client_it_->_nickname )
+#define REGISTRATION_SUCCESS( client_ )                                                       \
+	RPL_WELCOME( client_._nickname, client_._username ) + RPL_YOURHOST( client_._nickname ) + \
+		RPL_CREATED( client_._nickname ) + RPL_MYINFO( client_._nickname )
 
 /* Command Responses ────────────────────────────────────────────────────────────────── */
 
-#define ERR_UNKNOWNCOMMAND( client_it_ )                                                    \
-	NUMERIC_REPLY( "421", client_it_->_nickname ) + client_it_->_message._command + SPCLN + \
+#define ERR_UNKNOWNCOMMAND( client_ )                                               \
+	NUMERIC_REPLY( "421", client_._nickname ) + client_._message._command + SPCLN + \
 		"Unknown command" + CRLF
 
-#define ERR_NEEDMOREPARAMS( client_it_ )                                                    \
-	NUMERIC_REPLY( "461", client_it_->_nickname ) + client_it_->_message._command + SPCLN + \
+#define ERR_NEEDMOREPARAMS( client_ )                                               \
+	NUMERIC_REPLY( "461", client_._nickname ) + client_._message._command + SPCLN + \
 		"Not enough parameters" + CRLF
 
-#define ERR_ALREADYREGISTRED( client_it_ )                                                  \
-	NUMERIC_REPLY( "462", client_it_->_nickname ) + client_it_->_message._command + SPCLN + \
+#define ERR_ALREADYREGISTRED( client_ )                                             \
+	NUMERIC_REPLY( "462", client_._nickname ) + client_._message._command + SPCLN + \
 		"Unauthorized command (already registered)" + CRLF
 
-#define ERR_PASSWDMISMATCH( client_it_ )                                                    \
-	NUMERIC_REPLY( "464", client_it_->_nickname ) + client_it_->_message._command + SPCLN + \
+#define ERR_PASSWDMISMATCH( client_ )                                               \
+	NUMERIC_REPLY( "464", client_._nickname ) + client_._message._command + SPCLN + \
 		"Password incorrect" + CRLF

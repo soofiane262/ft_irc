@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/10 18:42:59 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/11 15:21:54 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,54 +47,62 @@ namespace irc {
 	/* client ──────────────────────────────────────────────────────────────────────────── */
 	class client {
 	  public:
-		int			 _fd;
+		pollfd&		 _pfd;
 		std::string	 _nickname, _username, _msg_in, _msg_out;
 		irc::message _message;
-		client( const int& fd ) : _fd( fd ), _nickname( "*" ), _username( "*" ) {}
+		client( pollfd& pfd ) : _pfd( pfd ), _nickname( "*" ), _username( "*" ) {}
 		~client( void ) {}
 	}; // client
 	/* channel ─────────────────────────────────────────────────────────────────────────── */
 	class channel {
 	  public:
-		std::string				   _name;
-		std::vector< irc::client > _members;
+		typedef std::map< int, irc::client > clients_type;
+		std::string							 _name;
+		clients_type						 _members;
 		channel( void ) {}
 		~channel( void ) {}
 	}; // channel
 	/* commands ────────────────────────────────────────────────────────────────────────── */
 	class commands {
 	  private:
-		std::map< std::string,
-				  std::string ( irc::commands::* )( std::vector< client >::iterator& ) >
-					_commands;
-		std::string pass( std::vector< irc::client >::iterator& );
-		std::string nick( std::vector< irc::client >::iterator& );
-		std::string user( std::vector< irc::client >::iterator& );
+		typedef std::map< int, irc::client >::iterator clients_iterator;
+		typedef std::map< std::string, std::string ( irc::commands::* )( irc::client& ) >
+			commands_type;
+		typedef std::map< std::string, std::string ( irc::commands::* )( irc::client& ) >::iterator
+					  commands_iterator;
+		commands_type _commands;
+		std::string	  pass( irc::client& );
+		std::string	  nick( irc::client& );
+		std::string	  user( irc::client& );
+		std::string	  quit( irc::client& );
 
 	  public:
-		std::string operator[]( std::vector< irc::client >::iterator& );
+		std::string operator[]( irc::client& );
 		commands( void );
 		~commands( void );
 	}; // commands
 	/* server ──────────────────────────────────────────────────────────────────────────── */
 	class server {
 	  private:
-		char*						_buff;
-		unsigned short				_port;
-		std::string					_welcome_msg, _shutdown_msg;
-		std::vector< pollfd >		_sockets;
-		std::vector< irc::client >	_clients;
-		std::vector< irc::channel > _channels;
-		commands					_commands;
-		void						parse_args( const int&, char** );
-		static void					staticSigHandler( int sg );
-		void						acceptClient( void );
-		void						disconClient( std::vector< pollfd >::iterator&,
-												  std::vector< irc::client >::iterator& );
-		void sendMsg( std::vector< pollfd >::iterator&, std::vector< irc::client >::iterator& );
-		void recvMsg( std::vector< pollfd >::iterator&, std::vector< irc::client >::iterator& );
-		void handleMsg( std::vector< irc::client >::iterator& );
-		void connectRegistr( std::vector< irc::client >::iterator& );
+		typedef std::map< int, irc::channel >			channels_type;
+		typedef std::map< int, irc::channel >::iterator channels_iterator;
+		typedef std::map< int, irc::client >			clients_type;
+		typedef std::map< int, irc::client >::iterator	clients_iterator;
+		char*											_buff;
+		unsigned short									_port;
+		std::string										_welcome_msg, _shutdown_msg;
+		std::vector< pollfd >							_sockets;
+		clients_type									_clients;
+		channels_type									_channels;
+		commands										_commands;
+		void											parse_args( const int&, char** );
+		static void										staticSigHandler( int sg );
+		void											acceptClient( void );
+		void											disconClient( clients_iterator& );
+		void											sendMsg( irc::client& );
+		void											recvMsg( irc::client& );
+		void											handleMsg( irc::client& );
+		void											connectRegistr( irc::client& );
 
 	  public:
 		static server*	   __serv;
