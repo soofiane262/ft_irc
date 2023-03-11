@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 18:22:31 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/10 18:47:17 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/11 15:22:52 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,52 +81,55 @@ void irc::server::acceptClient( void ) {
 	if ( pfd.fd == -1 ) return;
 	pfd.events = POLLIN | POLLOUT;
 	this->_sockets.push_back( pfd );
-	this->_clients.push_back( irc::client( pfd.fd ) );
+	this->_clients.insert( std::make_pair( pfd.fd, irc::client( this->_sockets.back() ) ) );
 } // accept_client
 
 /* diconnect_client ───────────────────────────────────────────────────────────────── */
 
-void irc::server::disconClient( std::vector< pollfd >::iterator&	  socket_it_,
-								std::vector< irc::client >::iterator& client_it_ ) {
-	close( socket_it_->fd );
+void irc::server::disconClient( clients_iterator& client_it_ ) {
+	close( client_it_->second._pfd.fd );
 	std::cout << "\033[2m"
-			  << "User `" << client_it_->_nickname << "` disconnected"
+			  << "User `" << client_it_->second._username << "` disconnected"
 			  << "\033[22m\n";
-	socket_it_ = this->_sockets.erase( socket_it_ ) - 1;
-	client_it_ = this->_clients.erase( client_it_ ) - 1;
+	std::vector< pollfd >::iterator pfd_it = this->_sockets.begin();
+	while ( pfd_it->fd != client_it_->second._pfd.fd ) pfd_it++;
+	this->_sockets.erase( pfd_it );
+	for ( channels_iterator channel_it = this->_channels.begin(); channel_it != _channels.end();
+		  ++channel_it )
+		channel_it->second._members.erase( client_it_->second._pfd.fd );
+	this->_clients.erase( client_it_ );
+	client_it_ = this->_clients.begin();
 } // diconnect_client
 
 /* send_message ───────────────────────────────────────────────────────────────────── */
 
-void irc::server::sendMsg( std::vector< pollfd >::iterator&		 socket_it_,
-						   std::vector< irc::client >::iterator& client_it_ ) {
-	if ( client_it_->_msg_out.empty() ) return;
+void irc::server::sendMsg( irc::client& client_ ) {
+	if ( client_._msg_out.empty() ) return;
 	int bytes_sent =
-		send( socket_it_->fd, client_it_->_msg_out.c_str(), client_it_->_msg_out.length(), 0 );
+		send( client_._pfd.fd, client_._msg_out.c_str(), client_._msg_out.length(), 0 );
 	if ( bytes_sent == -1 ) THROW_EXCEPT( "Unable to send() data to client" );
-	client_it_->_msg_out.erase( 0, bytes_sent );
+	client_._msg_out.erase( 0, bytes_sent );
 } // send_message
 
 /* receive_message ────────────────────────────────────────────────────────────────── */
 
-void irc::server::recvMsg( std::vector< pollfd >::iterator&		 socket_it_,
-						   std::vector< irc::client >::iterator& client_it_ ) {
+void irc::server::recvMsg( irc::client& client_ ) {
 	bzero( _buff, 513 );
-	int bytes_rcvd = recv( socket_it_->fd, _buff, 512, 0 );
+	int bytes_rcvd = recv( client_._pfd.fd, _buff, 512, 0 );
 	if ( bytes_rcvd == -1 ) {
-		client_it_->_msg_in.clear();
+		client_._msg_in.clear();
 		THROW_EXCEPT( "Unable to recv() data from client" );
 	}
-	client_it_->_msg_in.append( _buff, bytes_rcvd );
-	if ( client_it_->_msg_in.rfind( CRLF ) ) this->handleMsg( client_it_ );
+	client_._msg_in.append( _buff, bytes_rcvd );
+	if ( client_._msg_in.rfind( CRLF ) ) this->handleMsg( client_ );
 } // receive_message
 
 /* handle_message ───────────────────────────────────────────────────────────────────── */
 
-void irc::server::handleMsg( std::vector< irc::client >::iterator& client_it_ ) {
-	client_it_->_message.parseMsg( client_it_->_msg_in.erase( client_it_->_msg_in.size() - 2 ) );
-	client_it_->_msg_out = this->_commands[ client_it_ ];
-	client_it_->_message.clear();
+void irc::server::handleMsg( irc::client& client_ ) {
+	client_._message.parseMsg( client_._msg_in.erase( client_._msg_in.size() - 2 ) );
+	client_._msg_out = this->_commands[ client_ ];
+	client_._message.clear();
 } // handle_message
 
 /* initialize_server ──────────────────────────────────────────────────────────────── */
@@ -168,23 +171,22 @@ void irc::server::initServer( void ) {
 void irc::server::runServer( void ) {
 	irc::server::__serv = this;
 	std::signal( SIGINT, server::staticSigHandler );
-	std::vector< irc::client >::iterator client_it;
-	std::vector< pollfd >::iterator		 socket_it;
+	clients_iterator client_it;
 	std::cout << "\033[2m\033[4m"
 			  << "IRC Server started successfully ~ " << this->__host_addr << ':' << this->_port
 			  << "\033[22m\033[24m\n\n";
 	while ( 1 ) {
 		if ( poll( &this->_sockets.front(), this->_sockets.size(), -1 ) == -1 ) ERRNO_EXCEPT;
 		if ( this->_sockets.front().revents == POLLIN ) acceptClient();
-		for ( client_it = this->_clients.begin(), socket_it = this->_sockets.begin() + 1;
-			  client_it != this->_clients.end(); ++client_it, ++socket_it ) {
-			if ( socket_it->revents & ( POLLERR | POLLHUP | POLLNVAL ) ) {
-				disconClient( socket_it, client_it );
+		for ( client_it = this->_clients.begin(); client_it != this->_clients.end();
+			  client_it != this->_clients.end() ? ++client_it : client_it ) {
+			if ( client_it->second._pfd.revents & ( POLLERR | POLLHUP | POLLNVAL ) ) {
+				disconClient( client_it );
 				continue;
 			}
 			try {
-				if ( socket_it->revents & POLLIN ) recvMsg( socket_it, client_it );
-				if ( socket_it->revents & POLLOUT ) sendMsg( socket_it, client_it );
+				if ( client_it->second._pfd.revents & POLLIN ) recvMsg( client_it->second );
+				if ( client_it->second._pfd.revents & POLLOUT ) sendMsg( client_it->second );
 			} catch ( std::exception& e ) { std::cerr << "\033[1;31m" << e.what() << "\033[0m\n"; }
 		}
 	}
@@ -193,15 +195,11 @@ void irc::server::runServer( void ) {
 /* shut_down_server ─────────────────────────────────────────────────────────────────── */
 
 void irc::server::shutDownServer( void ) {
-	std::vector< irc::client >::iterator client_it;
-	std::vector< pollfd >::iterator		 socket_it;
-	for ( client_it = this->_clients.end() - 1, socket_it = this->_sockets.end() - 1;
-		  socket_it != this->_sockets.begin(); --socket_it, --client_it ) {
-		if ( socket_it->revents & POLLOUT ) {
-			client_it->_msg_out = _shutdown_msg;
-			while ( !client_it->_msg_out.empty() ) sendMsg( socket_it, client_it );
-			close( socket_it->fd );
-		}
+	clients_iterator client_it;
+	for ( client_it = this->_clients.begin(); client_it != this->_clients.end(); ++client_it ) {
+		client_it->second._msg_out = _shutdown_msg;
+		while ( !client_it->second._msg_out.empty() ) sendMsg( client_it->second );
+		close( client_it->second._pfd.fd );
 	}
 	if ( close( this->_sockets.begin()->fd ) ) ERRNO_EXCEPT;
 	std::cout << "\n\n\033[2m\033[4m"
