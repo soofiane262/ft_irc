@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/11 15:21:54 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/11 17:50:41 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,7 @@ namespace irc {
 		void											recvMsg( irc::client& );
 		void											handleMsg( irc::client& );
 		void											connectRegistr( irc::client& );
+		bool											checkNick( const std::string &nick );
 
 	  public:
 		static server*	   __serv;

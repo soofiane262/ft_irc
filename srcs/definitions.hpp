@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   definitions.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/11 14:16:06 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/11 18:52:26 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,3 +64,15 @@
 #define ERR_PASSWDMISMATCH( client_ )                                               \
 	NUMERIC_REPLY( "464", client_._nickname ) + client_._message._command + SPCLN + \
 		"Password incorrect" + CRLF
+
+#define ERR_NICKNAMEINUSE( nick )													\
+	NUMERIC_REPLY( "433", nick ) + nick + SPCLN + nick +							\
+		"Nickname is already in use" + CRLF
+
+#define	ERR_NONICKNAMEGIVEN( nick )													\
+	NUMERIC_REPLY("431", nick) + nick + SPCLN + nick +								\
+		"No nickname given" + CRLF
+
+
+// #define	ERR_NONICKNAMEGIVEN()
+// 	NUMERIC_REPLY("431", "") + "No nickname given" + CRLF

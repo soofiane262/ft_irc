@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 18:22:31 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/11 15:22:52 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/11 18:52:42 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,3 +206,15 @@ void irc::server::shutDownServer( void ) {
 			  << "IRC Server shut down successfully"
 			  << "\033[22m\033[24m\n";
 } // signal_handler
+
+/* check nickname */
+
+bool	irc::server::checkNick( const std::string &nick ) {
+	clients_iterator it = _clients.begin();
+	for (; it != _clients.end(); ++it) {
+		if (it->second._nickname == nick)
+			throw	ERR_NICKNAMEINUSE(nick);
+		else if (nick == "")
+			throw	ERR_NONICKNAMEGIVEN(nick);
+	}
+}
