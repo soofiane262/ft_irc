@@ -6,11 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2023/03/13 13:33:21 by sel-mars         ###   ########.fr       */
-=======
-/*   Updated: 2023/03/13 13:33:21 by sel-mars         ###   ########.fr       */
->>>>>>> origin/master
+/*   Updated: 2023/03/13 18:52:06 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +110,7 @@ namespace irc {
 		static std::string __password, __host_name, __host_addr, __creation_date;
 		server( const int& ac, char** av );
 		~server( void );
+		bool findClientByNick( const std::string& nick_ );
 		void initServer( void );
 		void runServer( void );
 		void shutDownServer( void );

@@ -6,11 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 18:22:31 by sel-mars          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2023/03/13 13:55:40 by sel-mars         ###   ########.fr       */
-=======
-/*   Updated: 2023/03/13 13:55:40 by sel-mars         ###   ########.fr       */
->>>>>>> origin/master
+/*   Updated: 2023/03/13 18:55:36 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,6 +210,16 @@ void irc::server::shutDownServer( void ) {
 			  << "IRC Server shut down successfully"
 			  << "\033[22m\033[24m\n";
 } // signal_handler
+
+/* find_client_by_nickname ──────────────────────────────────────────────────────────── */
+
+bool irc::server::findClientByNick( const std::string& nick_ ) {
+	irc::server::clients_iterator cl_it;
+	for ( cl_it = this->_clients.begin();
+		  cl_it != this->_clients.end() && cl_it->second._nickname.compare( nick_ ); cl_it++ )
+		continue;
+	return cl_it != this->_clients.end();
+} // find_client_by_nickname
 
 /* check nickname */
 
