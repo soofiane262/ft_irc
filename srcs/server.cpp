@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 18:22:31 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/11 15:22:52 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/13 13:55:40 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,9 @@ void irc::server::recvMsg( irc::client& client_ ) {
 		THROW_EXCEPT( "Unable to recv() data from client" );
 	}
 	client_._msg_in.append( _buff, bytes_rcvd );
-	if ( client_._msg_in.rfind( CRLF ) ) this->handleMsg( client_ );
+	if ( client_._msg_in.size() >= 2 &&
+		 !client_._msg_in.compare( client_._msg_in.size() - 2, 2, CRLF ) )
+		this->handleMsg( client_ );
 } // receive_message
 
 /* handle_message ───────────────────────────────────────────────────────────────────── */
@@ -198,7 +200,9 @@ void irc::server::shutDownServer( void ) {
 	clients_iterator client_it;
 	for ( client_it = this->_clients.begin(); client_it != this->_clients.end(); ++client_it ) {
 		client_it->second._msg_out = _shutdown_msg;
-		while ( !client_it->second._msg_out.empty() ) sendMsg( client_it->second );
+		try {
+			while ( !client_it->second._msg_out.empty() ) sendMsg( client_it->second );
+		} catch ( ... ) {}
 		close( client_it->second._pfd.fd );
 	}
 	if ( close( this->_sockets.begin()->fd ) ) ERRNO_EXCEPT;
