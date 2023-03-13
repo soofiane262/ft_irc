@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:26:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/11 15:23:14 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/13 13:55:34 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,11 @@ std::ostream& irc::operator<<( std::ostream& o_, irc::message& message_ ) {
 		o_ << "`\033[22m" << message_._command << "\033[2m`";
 	o_ << "\n\033[2mparams\t: ";
 	if ( message_._params.empty() ) o_ << "<empty>";
-	else
+	else {
+		o_ << "size " << message_._params.size();
 		for ( std::size_t idx = 0; idx < message_._params.size(); ++idx )
 			o_ << "\n" << idx << "\t--> `\033[22m" << message_._params[ idx ] << "\033[2m`";
+	}
 	o_ << "\033[22m\n";
 	return o_;
 }
@@ -49,20 +51,23 @@ void irc::message::clear( void ) {
 void irc::message::parseMsg( std::string& msg_ ) {
 	std::cout << msg_ << '\n';
 	// tmp
+	std::size_t pos = msg_.find( SPACE );
 	if ( !msg_.find( COLON ) ) {
-		this->_prefix = msg_.erase( 0, 1 ).substr( 0, msg_.find( SPACE ) );
-		msg_.erase( 0, msg_.find( SPACE ) + 1 );
+		this->_prefix = msg_.erase( 0, 1 ).substr( 0, pos );
+		msg_.erase( 0, pos + ( pos != std::string::npos ) );
 	}
-	this->_command = msg_.substr( 0, msg_.find( SPACE ) );
-	msg_.erase( 0, msg_.find( SPACE ) + 1 );
-	for ( std::size_t pos = msg_.find_first_not_of( SPACE ); !msg_.empty();
-		  pos			  = msg_.find_first_not_of( SPACE ) ) {
-		pos == std::string::npos ? msg_.erase( 0 ) : msg_.erase( 0, pos );
-		pos = msg_.front() == COLON ?
-				  msg_.erase( 0, 1 ).npos :
-				  ( this->_params.size() == 14 ? std::string::npos : msg_.find( SPACE ) );
+	pos			   = msg_.find( SPACE );
+	this->_command = msg_.substr( 0, pos );
+	msg_.erase( 0, pos + ( pos != std::string::npos ) );
+	for ( pos = msg_.find_first_not_of( SPACE ); !msg_.empty();
+		  pos = msg_.find_first_not_of( SPACE ) ) {
+		msg_.erase( 0, pos );
+		if ( msg_.front() == COLON || this->_params.size() == 14 )
+			pos = msg_.erase( 0, msg_.front() == COLON ).npos;
+		else
+			pos = msg_.find( SPACE );
 		this->_params.push_back( msg_.substr( 0, pos ) );
-		pos == std::string::npos ? msg_.erase( 0 ) : msg_.erase( 0, pos + 1 );
+		msg_.erase( 0, pos + ( pos != std::string::npos ) );
 	}
 	msg_.clear();
 	// tmp
