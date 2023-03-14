@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/13 18:52:06 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/14 13:19:55 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,6 @@ namespace irc {
 		void											recvMsg( irc::client& );
 		void											handleMsg( irc::client& );
 		void											connectRegistr( irc::client& );
-		bool											checkNick( const std::string &nick );
 
 	  public:
 		static server*	   __serv;
