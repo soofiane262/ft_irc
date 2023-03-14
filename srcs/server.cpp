@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 18:22:31 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/13 18:55:36 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/14 13:20:09 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,15 +220,3 @@ bool irc::server::findClientByNick( const std::string& nick_ ) {
 		continue;
 	return cl_it != this->_clients.end();
 } // find_client_by_nickname
-
-/* check nickname */
-
-bool	irc::server::checkNick( const std::string &nick ) {
-	clients_iterator it = _clients.begin();
-	for (; it != _clients.end(); ++it) {
-		if (it->second._nickname == nick)
-			throw	ERR_NICKNAMEINUSE(nick);
-		else if (nick == "")
-			throw	ERR_NONICKNAMEGIVEN(nick);
-	}
-}
