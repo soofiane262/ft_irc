@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 18:22:31 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/14 13:20:09 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/15 16:46:41 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,7 +216,9 @@ void irc::server::shutDownServer( void ) {
 bool irc::server::findClientByNick( const std::string& nick_ ) {
 	irc::server::clients_iterator cl_it;
 	for ( cl_it = this->_clients.begin();
-		  cl_it != this->_clients.end() && cl_it->second._nickname.compare( nick_ ); cl_it++ )
-		continue;
+		  cl_it != this->_clients.end() && cl_it->second._nickname.compare( nick_ ); cl_it++ ) {
+			std::cout << "cl_it->second._nickname => "<< cl_it->second._nickname << std::endl;
+			continue;
+		  }
 	return cl_it != this->_clients.end();
 } // find_client_by_nickname

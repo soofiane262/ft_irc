@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/11 18:52:26 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/14 13:24:10 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,14 +65,10 @@
 	NUMERIC_REPLY( "464", client_._nickname ) + client_._message._command + SPCLN + \
 		"Password incorrect" + CRLF
 
-#define ERR_NICKNAMEINUSE( nick )													\
-	NUMERIC_REPLY( "433", nick ) + nick + SPCLN + nick +							\
+#define ERR_NICKNAMEINUSE( client_ )													\
+	NUMERIC_REPLY( "433", client_._nickname ) + client_._message._command + SPCLN + \
 		"Nickname is already in use" + CRLF
 
-#define	ERR_NONICKNAMEGIVEN( nick )													\
-	NUMERIC_REPLY("431", nick) + nick + SPCLN + nick +								\
+#define	ERR_NONICKNAMEGIVEN( client_ )													\
+	NUMERIC_REPLY( "431", client_._nickname ) + client_._message._command + SPCLN + \
 		"No nickname given" + CRLF
-
-
-// #define	ERR_NONICKNAMEGIVEN()
-// 	NUMERIC_REPLY("431", "") + "No nickname given" + CRLF

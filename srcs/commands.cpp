@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:27:13 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/14 13:19:40 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/15 16:49:11 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,11 @@ std::string irc::commands::pass( irc::client& client_ ) {
 }
 
 std::string irc::commands::nick( irc::client& client_ ) {
-	(void)client_;
 	std::string result;
+	if (client_._message._params.empty())
+		result = ERR_NONICKNAMEGIVEN( client_ );
+	if (irc::server::__serv->findClientByNick(client_._message._params.front()))
+		result = ERR_NICKNAMEINUSE( client_ );
 	return result;
 }
 
