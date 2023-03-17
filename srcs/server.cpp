@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 18:22:31 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/13 18:27:31 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/17 17:20:33 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,16 +123,8 @@ void irc::server::recvMsg( irc::client& client_ ) {
 	client_._msg_in.append( _buff, bytes_rcvd );
 	if ( client_._msg_in.size() >= 2 &&
 		 !client_._msg_in.compare( client_._msg_in.size() - 2, 2, CRLF ) )
-		this->handleMsg( client_ );
+		this->_commands[ client_ ];
 } // receive_message
-
-/* handle_message ───────────────────────────────────────────────────────────────────── */
-
-void irc::server::handleMsg( irc::client& client_ ) {
-	client_._message.parseMsg( client_._msg_in.erase( client_._msg_in.size() - 2 ) );
-	client_._msg_out = this->_commands[ client_ ];
-	client_._message.clear();
-} // handle_message
 
 /* initialize_server ──────────────────────────────────────────────────────────────── */
 
@@ -162,8 +154,7 @@ void irc::server::initServer( void ) {
 		ERRNO_EXCEPT;
 	this->_sockets.push_back( mastersocket );
 	freeaddrinfo( servinfo );
-	std::time_t rawtime;
-	std::time( &rawtime );
+	std::time_t rawtime = std::time( NULL );
 	( irc::server::__creation_date = std::asctime( localtime( &rawtime ) ) )
 		.erase( this->__creation_date.end() - 1 );
 } // initialize_server
