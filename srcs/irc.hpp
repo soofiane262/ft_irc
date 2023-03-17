@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/14 13:19:55 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/17 19:16:16 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,20 @@
 #include <vector>		// vector
 
 namespace irc {
+	/* utils ───────────────────────────────────────────────────────────────────────────── */
+	namespace utils {
+		bool nickIsValid( const std::string& nick_ );
+		bool userIsValid( const std::string& user_ );
+	} // namespace utils
 	/* message ─────────────────────────────────────────────────────────────────────────── */
 	class message {
 	  public:
-		std::string				   _prefix, _command;
+		std::string				   _command;
 		std::vector< std::string > _params;
 		message( void ) {}
 		~message( void ) {}
 		void parseMsg( std::string& );
+		void checkMsg( std::string& );
 		void clear( void );
 	}; // message
 	std::ostream& operator<<( std::ostream&, irc::message& );
@@ -48,9 +54,12 @@ namespace irc {
 	class client {
 	  public:
 		pollfd&		 _pfd;
-		std::string	 _nickname, _username, _msg_in, _msg_out;
+		std::time_t	 _nick_change;
+		std::string	 _nickname, _username, _realname, _msg_in, _msg_out;
 		irc::message _message;
-		client( pollfd& pfd ) : _pfd( pfd ), _nickname( "*" ), _username( "*" ) {}
+		client( pollfd& pfd )
+			: _pfd( pfd ), _nick_change( -1 ), _nickname( "*" ), _username( "*" ),
+			  _realname( "*" ) {}
 		~client( void ) {}
 	}; // client
 	/* channel ─────────────────────────────────────────────────────────────────────────── */
@@ -65,19 +74,18 @@ namespace irc {
 	/* commands ────────────────────────────────────────────────────────────────────────── */
 	class commands {
 	  private:
-		typedef std::map< int, irc::client >::iterator clients_iterator;
-		typedef std::map< std::string, std::string ( irc::commands::* )( irc::client& ) >
-			commands_type;
-		typedef std::map< std::string, std::string ( irc::commands::* )( irc::client& ) >::iterator
+		typedef std::map< int, irc::client >::iterator							   clients_iterator;
+		typedef std::map< std::string, void ( irc::commands::* )( irc::client& ) > commands_type;
+		typedef std::map< std::string, void ( irc::commands::* )( irc::client& ) >::iterator
 					  commands_iterator;
 		commands_type _commands;
-		std::string	  pass( irc::client& );
-		std::string	  nick( irc::client& );
-		std::string	  user( irc::client& );
-		std::string	  quit( irc::client& );
+		void		  pass( irc::client& );
+		void		  nick( irc::client& );
+		void		  user( irc::client& );
+		void		  quit( irc::client& );
 
 	  public:
-		std::string operator[]( irc::client& );
+		void operator[]( irc::client& );
 		commands( void );
 		~commands( void );
 	}; // commands
@@ -101,7 +109,6 @@ namespace irc {
 		void											disconClient( clients_iterator& );
 		void											sendMsg( irc::client& );
 		void											recvMsg( irc::client& );
-		void											handleMsg( irc::client& );
 		void											connectRegistr( irc::client& );
 
 	  public:

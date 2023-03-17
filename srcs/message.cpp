@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:26:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/13 13:55:34 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/17 17:29:36 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,6 @@
 // tmp - print message
 std::ostream& irc::operator<<( std::ostream& o_, irc::message& message_ ) {
 	o_ << "\033[2mprefix\t: ";
-	if ( message_._prefix.empty() ) o_ << "<empty>";
-	else
-		o_ << "`\033[22m" << message_._prefix << "\033[2m`";
 	o_ << "\n\033[2mcommand\t: ";
 	if ( message_._command.empty() ) o_ << "<empty>";
 	else
@@ -41,19 +38,20 @@ std::ostream& irc::operator<<( std::ostream& o_, irc::message& message_ ) {
 /* clear ────────────────────────────────────────────────────────────────────────────── */
 
 void irc::message::clear( void ) {
-	this->_prefix.clear();
 	this->_command.clear();
 	this->_params.clear();
 } // clear
+
+/* check_message ────────────────────────────────────────────────────────────────────── */
 
 /* parse_message ────────────────────────────────────────────────────────────────────── */
 
 void irc::message::parseMsg( std::string& msg_ ) {
 	std::cout << msg_ << '\n';
 	// tmp
-	std::size_t pos = msg_.find( SPACE );
+	std::size_t pos;
 	if ( !msg_.find( COLON ) ) {
-		this->_prefix = msg_.erase( 0, 1 ).substr( 0, pos );
+		pos = msg_.find( SPACE );
 		msg_.erase( 0, pos + ( pos != std::string::npos ) );
 	}
 	pos			   = msg_.find( SPACE );
