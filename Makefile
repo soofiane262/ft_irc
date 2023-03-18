@@ -6,7 +6,7 @@
 #    By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/08 14:44:10 by sel-mars          #+#    #+#              #
-#    Updated: 2023/03/17 15:14:12 by sel-mars         ###   ########.fr        #
+#    Updated: 2023/03/18 15:03:19 by sel-mars         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME	=	ircserv
 
 CPP		=	c++
 
-FLAGS	=	-O3 -std=c++98 -Wall -Wextra -Werror -Wpedantic
+FLAGS	=	-O3 -std=c++98 -Wall -Wextra -Werror -Wpedantic -Wno-c++11-extensions
 
 SRCS	=	main.cpp $(addprefix srcs/,server.cpp commands.cpp message.cpp utils.cpp)
 
