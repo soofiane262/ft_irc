@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/18 18:14:43 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/19 11:55:54 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,10 +82,15 @@ enum user_modes {
 #define RPL_LUSERME( client_ )                              \
 	NUMERIC_REPLY( "255", client_._nickname ) + "I have " + \
 		irc::server::__serv->getClientsSize() + " clients and 0 servers" + CRLF
+#define RPL_NAMREPLY( client_, channel_members ,channel_name ) \
+	NUMERIC_REPLY( "353", client_._nickname ) + "=" + channel_name  + SPCL + channel_members + CRLF
+#define RPL_ENDOFNAMES( client_, channel_name ) \
+	NUMERIC_REPLY( "366", client_._nickname ) + channel_name  + " :End of NAMES list" + CRLF
+
 
 /* Errors ───────────────────────────────────────────────────────────────────────────── */
 
-#define ERR_NOSUCHSERVER( client_, server_ ) \
+#define ERR_NOSUCHSERVER( client_, server_ )										\
 	ERR_REPLY_BASE( "402", client_ ) + server_ + SPCL + "No such server" + CRLF
 #define ERR_CLOSINGLINK( client_ )                                                  \
 	ERR_REPLY_BASE( "404", client_ ) + "Closing Link: " + client_._nickname + "[" + \
@@ -93,7 +98,7 @@ enum user_modes {
 #define ERR_NOORIGIN( client_ )		  ERR_REPLY_BASE( "409", client_ ) + "No origin specified" + CRLF
 #define ERR_NOCOMMANDGIVEN( client_ ) ERR_REPLY_BASE( "421", client_ ) + "No command given" + CRLF
 #define ERR_UNKNOWNCOMMAND( client_ ) ERR_REPLY_BASE( "421", client_ ) + "Unknown command" + CRLF
-#define ERR_NEEDMOREPARAMS( client_ ) \
+#define ERR_NEEDMOREPARAMS( client_ )													\
 	ERR_REPLY_BASE( "461", client_ ) + "Not enough parameters" + CRLF
 #define ERR_ALREADYREGISTRED( client_ ) \
 	ERR_REPLY_BASE( "462", client_ ) + "Unauthorized command (already registered)" + CRLF
@@ -109,3 +114,5 @@ enum user_modes {
 		" seconds before attempting to change your nickname again." + CRLF
 #define ERR_RESTRICTED( client_ ) \
 	ERR_REPLY_BASE( "484", client_ ) + "Your connection is restricted!" + CRLF
+#define ERR_USERONCHANNEL( client_, channel_name ) \
+	ERR_REPLY_BASE( "443", client_ ) + channel_name + " :is already on channel" + CRLF

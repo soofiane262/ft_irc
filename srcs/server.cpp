@@ -6,11 +6,12 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 18:22:31 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/18 18:14:41 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/19 14:25:13 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "irc.hpp"
+
 
 #include <cstdlib>
 
@@ -221,14 +222,57 @@ void irc::server::shutDownServer( void ) {
 			  << "\033[22m\033[24m\n";
 } // signal_handler
 
+
+irc::channel::channel(const std::string& name) {
+	_name = name;
+}
+
 /* find_client_by_nickname ──────────────────────────────────────────────────────────── */
 
 bool irc::server::findClientByNick( const std::string& nick_ ) {
 	irc::server::client_iterator cl_it;
 	for ( cl_it = this->_clients.begin();
-		  cl_it != this->_clients.end() && cl_it->second._nickname.compare( nick_ ); cl_it++ ) {
-			std::cout << "cl_it->second._nickname => "<< cl_it->second._nickname << std::endl;
-			continue;
-		  }
+		  cl_it != this->_clients.end() && cl_it->second._nickname.compare( nick_ ); cl_it++ )
+		continue;
 	return cl_it != this->_clients.end();
 } // find_client_by_nickname
+
+irc::channel	*irc::server::findChannelByName( const std::string& name_ ) {
+	irc::server::channels_iterator ch_it;
+	for ( ch_it = this->_channels.begin();
+		  ch_it != this->_channels.end() && ch_it->second._name.compare( name_ ); ch_it++ )
+		continue;
+	return ( ch_it != this->_channels.end() ? &ch_it->second : NULL);
+} // find_channel_by_name
+
+irc::channel	irc::server::newChannel( const std::string& new_channel_name ) {
+	irc::channel	new_channel;
+	new_channel._name = new_channel_name;
+	return new_channel;
+}
+
+bool	irc::server::addChannel(const irc::channel& channel_, const std::string& name_) {
+	return (_channels.insert(std::make_pair(name_, channel_)).second);
+}
+
+/* getMembers in channel ----------------------------------------------- */
+
+std::string	irc::channel::getMembers( void ) {
+	std::string	res;
+	client_iterator	it;
+	for (; it != _members.end(); ++it) {
+		res += it->second._username + ' ';
+	}
+	return res;
+}
+
+bool		irc::channel::isMember( irc::client& client_ ) {
+	client_iterator  it = _members.find(client_._pfd.fd);
+	return (it != _members.end());
+}
+
+bool		irc::channel::addMember( irc::client& client_ ) {
+	return (_members.insert(std::make_pair(client_._pfd.fd, client_)).second);
+}
+
+

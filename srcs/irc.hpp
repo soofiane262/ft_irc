@@ -6,11 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2023/03/17 19:16:16 by acmaghou         ###   ########.fr       */
-=======
-/*   Updated: 2023/03/18 18:06:49 by sel-mars         ###   ########.fr       */
->>>>>>> origin/master
+/*   Updated: 2023/03/19 13:40:49 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +33,9 @@
 #include <sys/types.h>	// ( BSD )
 #include <unistd.h>		// close
 #include <vector>		// vector
+#include <strings.h>	// bzero
+#include <cstring>		// strchr
+
 
 namespace irc {
 	/* utils ───────────────────────────────────────────────────────────────────────────── */
@@ -79,12 +78,19 @@ namespace irc {
 	// tmp
 	/* channel ─────────────────────────────────────────────────────────────────────────── */
 	class channel {
-	  public:
-		typedef std::map< int, irc::client > clients_type;
-		std::string							 _name;
-		clients_type						 _members;
-		channel( void ) {}
-		~channel( void ) {}
+		public:
+			typedef std::map< int, irc::client >			clients_type;
+			typedef std::map< int, irc::client >::iterator	client_iterator;
+
+			std::string							 _name;
+			clients_type						 _members;
+			channel( void ) {}
+			~channel( void ) {}
+			channel( const std::string& );
+			std::string	getMembers( void );
+			bool	isMember( irc::client& );
+			bool	addMember( irc::client& );
+			// void	delMember( irc::client& );
 	}; // channel
 	/* commands ────────────────────────────────────────────────────────────────────────── */
 	class commands {
@@ -99,45 +105,50 @@ namespace irc {
 		void		  user( irc::client& );
 		void		  pong( irc::client& );
 		void		  quit( irc::client& );
+		void		  join( irc::client& );
 
 	  public:
 		void operator[]( irc::client& );
+		
 		commands( void );
 		~commands( void );
 	}; // commands
 	/* server ──────────────────────────────────────────────────────────────────────────── */
 	class server {
 	  private:
-		typedef std::map< int, irc::channel >			channels_type;
-		typedef std::map< int, irc::channel >::iterator channels_iterator;
-		typedef std::map< int, irc::client >			clients_type;
-		typedef std::map< int, irc::client >::iterator	client_iterator;
-		char*											_buff;
-		unsigned short									_port;
-		std::vector< pollfd >							_sockets;
-		clients_type									_clients;
-		channels_type									_channels;
-		commands										_commands;
-		void											parse_args( const int&, char** );
-		static void										staticSigHandler( int sg );
-		void											acceptClient( void );
-		void											disconClient( client_iterator& );
-		void											disconClient( const int& client_fd_ );
-		void											recvMsg( irc::client& );
-		void											sendMsg( irc::client& );
-		void											sendMsg( client_iterator& client_it_ );
-		void											connectRegistr( irc::client& );
+		typedef std::map< std::string, irc::channel >					channels_type;
+		typedef std::map< std::string, irc::channel >::iterator			channels_iterator;
+		typedef std::map< int, irc::client >							clients_type;
+		typedef std::map< int, irc::client >::iterator					client_iterator;
+		char*															_buff;
+		unsigned short													_port;
+		std::vector< pollfd >											_sockets;
+		clients_type													_clients;
+		channels_type													_channels;
+		commands														_commands;
+		void															parse_args( const int&, char** );
+		static void														staticSigHandler( int sg );
+		void															acceptClient( void );
+		void															disconClient( client_iterator& );
+		void															disconClient( const int& client_fd_ );
+		void															recvMsg( irc::client& );
+		void															sendMsg( irc::client& );
+		void															sendMsg( client_iterator& client_it_ );
+		void															connectRegistr( irc::client& );
 
 	  public:
 		static server*	   __serv;
 		static std::string __password, __hostaddr, __creationdate;
 		server( const int& ac, char** av );
 		~server( void );
-		bool		findClientByNick( const std::string& nick_ );
-		std::string getClientsSize( void );
-		std::string getChannelsSize( void );
-		void		initServer( void );
-		void		runServer( void );
-		void		shutDownServer( void );
+		bool			findClientByNick( const std::string& nick_ );
+		std::string 	getClientsSize( void );
+		std::string 	getChannelsSize( void );
+		void			initServer( void );
+		void			runServer( void );
+		void			shutDownServer( void );
+		irc::channel	*findChannelByName( const std::string& name_ );
+		irc::channel	newChannel( const std::string& name_ );
+		bool			addChannel( const irc::channel& channel_ , const std::string& name_ );
 	}; // server
 } // namespace irc
