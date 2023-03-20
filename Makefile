@@ -6,7 +6,7 @@
 #    By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/08 14:44:10 by sel-mars          #+#    #+#              #
-#    Updated: 2023/03/18 20:43:10 by acmaghou         ###   ########.fr        #
+#    Updated: 2023/03/20 17:38:04 by acmaghou         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,13 @@ CPP		=	c++
 
 FLAGS	=	
 
-SRCS	=	main.cpp $(addprefix srcs/,server.cpp commands.cpp message.cpp utils.cpp)
+COMMANDS = $(addprefix commands/,commands.cpp JOIN.cpp NICK.cpp PASS.cpp PONG.cpp QUIT.cpp USER.cpp)
+
+SERVER = $(addprefix server/, channel_ops.cpp client_ops.cpp message_ops.cpp server_ops.cpp server.cpp)
+
+CHANNEL = $(addprefix channel/, channel.cpp)
+
+SRCS	=	main.cpp  $(addprefix srcs/,message.cpp utils.cpp $(COMMANDS) $(SERVER) $(CHANNEL))
 
 all: $(NAME)
 
