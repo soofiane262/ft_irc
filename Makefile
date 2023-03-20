@@ -6,7 +6,7 @@
 #    By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/08 14:44:10 by sel-mars          #+#    #+#              #
-#    Updated: 2023/03/18 15:03:19 by sel-mars         ###   ########.fr        #
+#    Updated: 2023/03/20 17:10:21 by sel-mars         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,13 @@ CPP		=	c++
 
 FLAGS	=	-O3 -std=c++98 -Wall -Wextra -Werror -Wpedantic -Wno-c++11-extensions
 
-SRCS	=	main.cpp $(addprefix srcs/,server.cpp commands.cpp message.cpp utils.cpp)
+COMMANDS = $(addprefix commands/,commands.cpp JOIN.cpp NICK.cpp PASS.cpp PONG.cpp QUIT.cpp USER.cpp)
+
+SERVER = $(addprefix server/, channel_ops.cpp client_ops.cpp message_ops.cpp server_ops.cpp server.cpp)
+
+CHANNEL = $(addprefix channel/, channel.cpp)
+
+SRCS	=	main.cpp  $(addprefix srcs/,message.cpp utils.cpp $(COMMANDS) $(SERVER) $(CHANNEL))
 
 all: $(NAME)
 
