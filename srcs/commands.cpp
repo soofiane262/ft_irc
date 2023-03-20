@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:27:13 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/19 13:38:43 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/20 11:55:57 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,31 +121,25 @@ void irc::commands::quit(irc::client &client_)
 }
 
 // join channel
-void irc::commands::join( irc::client &client_)
-{
-	puts("here");
-	if (client_._message._params.empty())
-		client_._msg_out = ERR_NEEDMOREPARAMS(client_);
-	else
-	{
-		irc::channel	*channel_ = irc::server::__serv->findChannelByName(client_._message._params.front());
-		if (channel_)
-		{
+
+void	irc::commands::join( irc::client& client_ ) {
+	if ( client_._message._params.empty() ) {
+		client_._msg_out = ERR_NEEDMOREPARAMS( client_ );
+		return ;
+	}
+	std::string channel_name = client_._message._params.front();
+	if ( channel_name[0] != '#' ) {
+		client_._msg_out = ERR_NOSUCHCHANNEL( client_, channel_name );
+		return ;
+	}
+	else {
+		irc::channel*	channel_ = irc::server::__serv->findChannelByName( channel_name );
+		if (channel_) {
 			if (!channel_->addMember(client_))
-				client_._msg_out = ERR_USERONCHANNEL(client_, channel_->_name);
-			else
-			{
-				client_._msg_out = RPL_NAMREPLY(client_, channel_->getMembers() ,channel_->_name);
-				client_._msg_out += RPL_ENDOFNAMES(client_, channel_->_name);
+				client_._msg_out = ERR_USERONCHANNEL( client_, channel_name);
+			else {
+				
 			}
-		}
-		else
-		{
-			irc::channel 	new_channel(client_._message._params.front());
-			new_channel.addMember(client_);
-			irc::server::__serv->addChannel(new_channel, client_._message._params.front());
-			client_._msg_out = RPL_NAMREPLY(client_, channel_->getMembers() ,new_channel._name);
-			client_._msg_out += RPL_ENDOFNAMES(client_, new_channel._name);
 		}
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 18:22:31 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/19 14:25:13 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/20 11:28:34 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,6 +237,7 @@ bool irc::server::findClientByNick( const std::string& nick_ ) {
 	return cl_it != this->_clients.end();
 } // find_client_by_nickname
 
+/* find_channel_by_name ──────────────────────────────────────────────────────────── */
 irc::channel	*irc::server::findChannelByName( const std::string& name_ ) {
 	irc::server::channels_iterator ch_it;
 	for ( ch_it = this->_channels.begin();
@@ -249,13 +250,13 @@ irc::channel	irc::server::newChannel( const std::string& new_channel_name ) {
 	irc::channel	new_channel;
 	new_channel._name = new_channel_name;
 	return new_channel;
-}
+} // newChannel
 
 bool	irc::server::addChannel(const irc::channel& channel_, const std::string& name_) {
 	return (_channels.insert(std::make_pair(name_, channel_)).second);
-}
+} // addChannel
 
-/* getMembers in channel ----------------------------------------------- */
+/* getMembers ──────────────────────────────────────────────────────────── */
 
 std::string	irc::channel::getMembers( void ) {
 	std::string	res;

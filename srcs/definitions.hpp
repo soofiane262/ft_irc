@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/19 11:55:54 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/20 11:47:10 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,3 +116,9 @@ enum user_modes {
 	ERR_REPLY_BASE( "484", client_ ) + "Your connection is restricted!" + CRLF
 #define ERR_USERONCHANNEL( client_, channel_name ) \
 	ERR_REPLY_BASE( "443", client_ ) + channel_name + " :is already on channel" + CRLF
+
+#define	ERR_NOSUCHCHANNEL( client_, channel_name ) \
+	ERR_REPLY_BASE( "403", client_ ) + channel_name + " :No such channel" + CRLF
+
+#define	ERR_TOOMANYCHANNELS( client_, channel_name ) \
+	ERR_REPLY_BASE( "405", client_ ) + channel_name + " :You have joined too many channels" + CRLF

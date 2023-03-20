@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/19 13:40:49 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/20 11:55:26 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,12 +60,17 @@ namespace irc {
 	std::ostream& operator<<( std::ostream&, irc::message& );
 	// tmp
 	/* client ──────────────────────────────────────────────────────────────────────────── */
+	class	channel;
 	class client {
 	  public:
-		pollfd&		  _pfd;
-		std::time_t	  _nick_change;
-		unsigned char _mode;
-		std::string	  _hostaddr, _hostname, _hostport, _nickname, _username, _realname, _msg_in,
+	  	typedef std::map< std::string, irc::channel >					channels_type;
+		typedef std::map< std::string, irc::channel >::iterator			channels_iterator;
+
+		channels_type	_channels;
+		pollfd&			_pfd;
+		std::time_t		_nick_change;
+		unsigned char	_mode;
+		std::string		_hostaddr, _hostname, _hostport, _nickname, _username, _realname, _msg_in,
 			_msg_out;
 		irc::message _message;
 		client( pollfd& pfd )
