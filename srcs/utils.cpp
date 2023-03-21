@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/17 14:55:06 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/20 17:37:55 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/21 11:42:02 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ std::ostream& irc::operator<<( std::ostream& o_, irc::message& message_ ) {
 // tmp - print client infos
 std::ostream& irc::operator<<( std::ostream& o_, irc::client& client_ ) {
 	o_ << "\n\033[2mclient infos:\n";
-	o_ << "\tfd\t\t: " << client_._pfd.fd << "\n";
+	o_ << "\tfd\t\t: " << client_._fd << "\n";
 	o_ << "\tnickname\t: " << client_._nickname << "\n";
 	o_ << "\tusername\t: " << client_._username << "\n";
 	o_ << "\trealname\t: " << client_._realname << "\n";

@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/21 10:02:48 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/21 11:41:28 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,8 @@ enum channel_modes {
 #define ERR_TOOMANYCHANNELS( client_, channel_name ) \
 	ERR_REPLY_BASE( "405", client_ ) + channel_name + " :You have joined too many channels" + CRLF
 #define ERR_NOORIGIN( client_ )		  ERR_REPLY_BASE( "409", client_ ) + "No origin specified" + CRLF
+#define ERR_NORECIPIENT( client_ )	  ERR_REPLY_BASE( "411", client_ ) + "No recipient given" + CRLF
+#define ERR_NOTEXTTOSEND( client_ )	  ERR_REPLY_BASE( "412", client_ ) + "No text to send" + CRLF
 #define ERR_NOCOMMANDGIVEN( client_ ) ERR_REPLY_BASE( "421", client_ ) + "No command given" + CRLF
 #define ERR_UNKNOWNCOMMAND( client_ ) ERR_REPLY_BASE( "421", client_ ) + "Unknown command" + CRLF
 #define ERR_USERONCHANNEL( client_, channel_name )                                       \
