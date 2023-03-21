@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/17 14:55:06 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/21 11:42:02 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/21 18:17:23 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,10 @@ bool irc::utils::nickIsValid( const std::string& nick_ ) {
 	if ( it != nick_.end() ) return false;
 	return true;
 } // nickIsValid
+
+bool irc::utils::pollfd_cmp( const pollfd& pfd_a_, const pollfd& pfd_b_ ) {
+	return pfd_a_.fd < pfd_b_.fd;
+}
 
 /* parse_mode ───────────────────────────────────────────────────────────────────────── */
 

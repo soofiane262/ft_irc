@@ -6,7 +6,7 @@
 #    By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/08 14:44:10 by sel-mars          #+#    #+#              #
-#    Updated: 2023/03/21 11:42:06 by acmaghou         ###   ########.fr        #
+#    Updated: 2023/03/21 14:29:40 by acmaghou         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CPP		=	c++
 
 FLAGS	=	
 
-COMMANDS = $(addprefix commands/,$(addsuffix .cpp,commands JOIN NICK PASS PONG QUIT USER PRIVMSG))
+COMMANDS = $(addprefix commands/,$(addsuffix .cpp,commands JOIN NICK PASS PONG QUIT USER PRIVMSG PART))
 
 SERVER = $(addprefix server/,$(addsuffix .cpp,channel_ops client_ops message_ops server_ops server))
 

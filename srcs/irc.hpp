@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/21 11:42:45 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/21 18:16:49 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ namespace irc {
 	namespace utils {
 		bool		  nickIsValid( const std::string& nick_ );
 		unsigned char intToMode( const int& mode_ );
+		bool			pollfd_cmp( const pollfd& , const pollfd& );
 	} // namespace utils
 	/* message ─────────────────────────────────────────────────────────────────────────── */
 	class message {
@@ -105,6 +106,7 @@ namespace irc {
 		void		  JOIN( irc::client& );
 		void		  QUIT( irc::client& );
 		void		  PRIVMSG( irc::client& );
+		void		  PART( irc::client& );
 
 	  public:
 		void operator[]( irc::client& );
@@ -151,5 +153,6 @@ namespace irc {
 		void		  addChannel( irc::channel* );
 		void		  shutDownServer( void );
 		irc::channel* findChannel( std::string& );
+		irc::client*	findClient( const std::string& );
 	}; // server
 } // namespace irc
