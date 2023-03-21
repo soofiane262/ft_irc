@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 17:01:00 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/20 17:01:32 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/21 11:24:10 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,22 +56,28 @@ void irc::server::initServer( void ) {
 
 void irc::server::runServer( void ) {
 	client_iterator client_it;
+	poll_iterator	poll_it;
 	std::cout << "\033[2m\033[4m"
 			  << "IRC Server started successfully ~ " << this->__hostaddr << ':' << this->_port
 			  << "\033[22m\033[24m\n\n";
 	while ( 1 ) {
 		if ( poll( &this->_sockets.front(), this->_sockets.size(), -1 ) == -1 ) ERRNO_EXCEPT;
+		// std::cout << "\033[1;32m" << this->_clients.size() << " clients connected\033[0m\n";
+		// std::cout << "\033[1;32m" << this->_sockets.size() - 1 << " clients connected\033[0m\n";
 		if ( this->_sockets.front().revents == POLLIN ) acceptClient();
-		for ( client_it = this->_clients.begin(); client_it != this->_clients.end();
-			  client_it != this->_clients.end() ? ++client_it : client_it ) {
-			if ( client_it->second._pfd.revents & ( POLLERR | POLLHUP | POLLNVAL ) ) {
-				disconClient( client_it );
+		for ( poll_it = this->_sockets.begin() + 1, client_it = this->_clients.begin();
+			  client_it != this->_clients.end();
+			  client_it != this->_clients.end() ? ++client_it : client_it,
+			  poll_it != this->_sockets.end() ? ++poll_it : poll_it ) {
+			if ( poll_it->revents & ( POLLERR | POLLHUP | POLLNVAL ) ) {
+				disconClient( client_it, poll_it );
 				continue;
 			}
 			try {
-				if ( client_it->second._pfd.revents & POLLIN ) recvMsg( client_it->second );
-				if ( client_it->second._pfd.revents & POLLOUT ) sendMsg( client_it );
+				if ( poll_it->revents & POLLIN ) recvMsg( client_it->second );
+				if ( poll_it->revents & POLLOUT ) sendMsg( client_it );
 			} catch ( std::exception& e ) { std::cerr << "\033[1;31m" << e.what() << "\033[0m\n"; }
+			if ( client_it->second._quit ) disconClient( client_it, poll_it );
 		}
 	}
 } // run_server
@@ -84,7 +90,7 @@ void irc::server::shutDownServer( void ) {
 		try {
 			while ( !client_it->second._msg_out.empty() ) sendMsg( client_it->second );
 		} catch ( ... ) {}
-		close( client_it->second._pfd.fd );
+		close( client_it->second._fd );
 	}
 	if ( close( this->_sockets.begin()->fd ) ) ERRNO_EXCEPT;
 	std::cout << "\n\n\033[2m\033[4m"

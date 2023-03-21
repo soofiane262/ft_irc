@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:27:13 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/20 16:58:36 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/21 11:28:13 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,13 @@
 
 /* ctor ─────────────────────────────────────────────────────────────────────────────── */
 irc::commands::commands( void ) {
-	this->_commands[ "PASS" ] = &commands::PASS;
-	this->_commands[ "NICK" ] = &commands::NICK;
-	this->_commands[ "USER" ] = &commands::USER;
-	this->_commands[ "PONG" ] = &commands::PONG;
-	this->_commands[ "JOIN" ] = &commands::JOIN;
-	this->_commands[ "QUIT" ] = &commands::QUIT;
+	this->_commands[ "PASS" ]	 = &commands::PASS;
+	this->_commands[ "NICK" ]	 = &commands::NICK;
+	this->_commands[ "USER" ]	 = &commands::USER;
+	this->_commands[ "PONG" ]	 = &commands::PONG;
+	this->_commands[ "JOIN" ]	 = &commands::JOIN;
+	this->_commands[ "QUIT" ]	 = &commands::QUIT;
+	this->_commands[ "PRIVMSG" ] = &commands::PRIVMSG;
 }
 
 /* dtor ─────────────────────────────────────────────────────────────────────────────── */
