@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/20 17:36:47 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/21 10:02:48 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,3 +138,7 @@ enum channel_modes {
 		" seconds before attempting to change your nickname again." + CRLF
 #define ERR_RESTRICTED( client_ ) \
 	ERR_REPLY_BASE( "484", client_ ) + "Your connection is restricted!" + CRLF
+
+#define ERR_NORECIPIENT( client_ ) ERR_REPLY_BASE( "411", client_ ) + "No recipient given" + CRLF
+
+#define ERR_NOTEXTTOSEND( client_ ) ERR_REPLY_BASE( "412", client_ ) + "No text to send" + CRLF
