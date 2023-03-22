@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 11:25:32 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/21 13:26:53 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/22 14:13:39 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,7 @@ void irc::commands::PRIVMSG( irc::client& client_ ) {
 		irc::client* user = irc::server::__serv->findClient( client_._message._params.front() );
 		if ( user == NULL )
 			client_._msg_out += ERR_NOSUCHNICK( client_, client_._message._params.front() );
-		else {
+		else
 			user->_msg_out += MSG( client_, user->_nickname, client_._message._params.back() );
-			std::cout << "MSG: " << user->_msg_out << std::endl;
-		}
 	}
 }

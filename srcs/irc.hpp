@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/21 18:16:49 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/22 13:44:20 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,7 @@ namespace irc {
 		void		  QUIT( irc::client& );
 		void		  PRIVMSG( irc::client& );
 		void		  PART( irc::client& );
+		void		  NOTICE( irc::client& );
 
 	  public:
 		void operator[]( irc::client& );
