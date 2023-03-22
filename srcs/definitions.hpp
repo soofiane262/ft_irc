@@ -6,7 +6,7 @@
 /*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/21 14:34:22 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/22 15:06:38 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,6 +156,9 @@ enum channel_modes {
 #define	MSG( client_, target_, message_ ) \
 	":" + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + " PRIVMSG " + \
 		target_ + " :" + message_ + CRLF
+
+#define NOTICE_MSG( client_, target_, message_ ) \
+	":" + client_._nickname + " NOTICE " + target_ + " :" + message_ + CRLF
 
 /* PARTMSG ──────────────────────────────────────────────────────────────────────────── */
 
