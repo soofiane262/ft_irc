@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   definitions.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/21 11:26:27 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/21 14:34:22 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,3 +140,25 @@ enum channel_modes {
 		" seconds before attempting to change your nickname again." + CRLF
 #define ERR_RESTRICTED( client_ ) \
 	ERR_REPLY_BASE( "484", client_ ) + "Your connection is restricted!" + CRLF
+
+#define ERR_NORECIPIENT( client_ ) ERR_REPLY_BASE( "411", client_ ) + "No recipient given" + CRLF
+
+#define ERR_NOTEXTTOSEND( client_ ) ERR_REPLY_BASE( "412", client_ ) + "No text to send" + CRLF
+
+#define	ERR_NOSUCHNICK( client_, nickname_ ) \
+	ERR_REPLY_BASE( "401", client_ ) + nickname_ + " :No such nick/channel" + CRLF
+#define	ERR_NOTONCHANNEL( client_, channel_name ) \
+	ERR_REPLY_BASE( "442", client_ ) + channel_name + " :You're not on that channel" + CRLF
+
+
+/* PRIVMSG ──────────────────────────────────────────────────────────────────────────── */
+
+#define	MSG( client_, target_, message_ ) \
+	":" + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + " PRIVMSG " + \
+		target_ + " :" + message_ + CRLF
+
+/* PARTMSG ──────────────────────────────────────────────────────────────────────────── */
+
+#define PARTMSG( client_, channel_name ) \
+	":" + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + " PART " + \
+		channel_name + CRLF

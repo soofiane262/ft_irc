@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/21 11:25:53 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/21 18:16:49 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,16 @@
 #include <sys/types.h>	// ( BSD )
 #include <unistd.h>		// close
 #include <vector>		// vector
+#include <strings.h>	// bzero
+#include <cstring>		// strchr
+
 
 namespace irc {
 	/* utils ───────────────────────────────────────────────────────────────────────────── */
 	namespace utils {
 		bool		  nickIsValid( const std::string& nick_ );
 		unsigned char intToMode( const int& mode_ );
+		bool			pollfd_cmp( const pollfd& , const pollfd& );
 	} // namespace utils
 	/* message ─────────────────────────────────────────────────────────────────────────── */
 	class message {
@@ -56,6 +60,7 @@ namespace irc {
 	std::ostream& operator<<( std::ostream&, irc::message& );
 	// tmp
 	/* client ──────────────────────────────────────────────────────────────────────────── */
+	class	channel;
 	class client {
 	  public:
 		int			  _fd;
@@ -101,9 +106,11 @@ namespace irc {
 		void		  JOIN( irc::client& );
 		void		  QUIT( irc::client& );
 		void		  PRIVMSG( irc::client& );
+		void		  PART( irc::client& );
 
 	  public:
 		void operator[]( irc::client& );
+		
 		commands( void );
 		~commands( void );
 	}; // commands
@@ -146,5 +153,6 @@ namespace irc {
 		void		  addChannel( irc::channel* );
 		void		  shutDownServer( void );
 		irc::channel* findChannel( std::string& );
+		irc::client*	findClient( const std::string& );
 	}; // server
 } // namespace irc

@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+         #
+#    By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/08 14:44:10 by sel-mars          #+#    #+#              #
-#    Updated: 2023/03/21 11:27:23 by sel-mars         ###   ########.fr        #
+#    Updated: 2023/03/21 14:29:40 by acmaghou         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,9 +14,9 @@ NAME	=	ircserv
 
 CPP		=	c++
 
-FLAGS	=	-O3 -std=c++98 -Wall -Wextra -Werror -Wpedantic -Wno-c++11-extensions
+FLAGS	=	
 
-COMMANDS = $(addprefix commands/,$(addsuffix .cpp,commands JOIN NICK PASS PONG QUIT USER PRIVMSG))
+COMMANDS = $(addprefix commands/,$(addsuffix .cpp,commands JOIN NICK PASS PONG QUIT USER PRIVMSG PART))
 
 SERVER = $(addprefix server/,$(addsuffix .cpp,channel_ops client_ops message_ops server_ops server))
 

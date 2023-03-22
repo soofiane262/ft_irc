@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:27:13 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/21 11:28:13 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/21 14:24:38 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ irc::commands::commands( void ) {
 	this->_commands[ "JOIN" ]	 = &commands::JOIN;
 	this->_commands[ "QUIT" ]	 = &commands::QUIT;
 	this->_commands[ "PRIVMSG" ] = &commands::PRIVMSG;
+	this->_commands[ "PART" ]	 = &commands::PART;
 }
 
 /* dtor ─────────────────────────────────────────────────────────────────────────────── */

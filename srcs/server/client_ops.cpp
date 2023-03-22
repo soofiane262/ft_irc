@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client_ops.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 17:01:48 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/21 11:13:51 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/21 18:06:15 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,15 @@ bool irc::server::findClientByNick( const std::string& nick_ ) {
 	return cl_it != this->_clients.end();
 } // find_client_by_nickname
 
+irc::client* irc::server::findClient( const std::string& nick_ ) {
+	irc::server::client_iterator cl_it;
+	for ( cl_it = this->_clients.begin();
+		  cl_it != this->_clients.end() && cl_it->second._nickname.compare( nick_ ); cl_it++ )
+		continue;
+	return cl_it != this->_clients.end() ? &cl_it->second : NULL;
+} // find_client_by_nickname
+
+
 /* accept_client ──────────────────────────────────────────────────────────────────── */
 
 void irc::server::acceptClient( void ) {
@@ -28,8 +37,10 @@ void irc::server::acceptClient( void ) {
 	bzero( &pfd, sizeof( pfd ) );
 	pfd.fd = accept( this->_sockets.front().fd, NULL, NULL );
 	if ( pfd.fd == -1 ) return;
-	pfd.events = POLLIN | POLLOUT;
-	this->_sockets.push_back( pfd );
+	pfd.events                           = POLLIN | POLLOUT;
+	irc::server::poll_iterator poll_it = std::lower_bound(
+		this->_sockets.begin(), this->_sockets.end(), pfd, irc::utils::pollfd_cmp );
+	this->_sockets.insert( poll_it, pfd );
 	this->_clients.insert( std::make_pair( pfd.fd, irc::client( pfd.fd ) ) );
 } // accept_client
 
