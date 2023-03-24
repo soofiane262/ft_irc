@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/22 13:44:20 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/24 14:39:16 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <csignal>		// signal
 #include <cstddef>		// size_t
 #include <cstdlib>		// system
+#include <cstring>		// strchr
 #include <ctime>		// time_t, struct tm, time, localtime
 #include <exception>	// exception
 #include <fcntl.h>		// fcntl
@@ -29,21 +30,19 @@
 #include <set>			// set
 #include <sstream>		// stringstream
 #include <string>		// string
+#include <strings.h>	// bzero
 #include <sys/poll.h>	// pollfd, poll
 #include <sys/socket.h> // get / free addrinfo, socket, bind, listen, accept, send, recv
 #include <sys/types.h>	// ( BSD )
 #include <unistd.h>		// close
 #include <vector>		// vector
-#include <strings.h>	// bzero
-#include <cstring>		// strchr
-
 
 namespace irc {
 	/* utils ───────────────────────────────────────────────────────────────────────────── */
 	namespace utils {
 		bool		  nickIsValid( const std::string& nick_ );
 		unsigned char intToMode( const int& mode_ );
-		bool			pollfd_cmp( const pollfd& , const pollfd& );
+		bool		  pollfd_cmp( const pollfd&, const pollfd& );
 	} // namespace utils
 	/* message ─────────────────────────────────────────────────────────────────────────── */
 	class message {
@@ -60,7 +59,7 @@ namespace irc {
 	std::ostream& operator<<( std::ostream&, irc::message& );
 	// tmp
 	/* client ──────────────────────────────────────────────────────────────────────────── */
-	class	channel;
+	class channel;
 	class client {
 	  public:
 		int			  _fd;
@@ -81,11 +80,11 @@ namespace irc {
 	/* channel ─────────────────────────────────────────────────────────────────────────── */
 	class channel {
 	  public:
-		typedef std::set< irc::client* >		   member_type;
-		typedef std::set< irc::client* >::iterator member_iterator;
-		std::string								   _name, _topic;
-		unsigned char							   _mode;
-		member_type								   _members;
+		typedef std::map< irc::client*, unsigned char >			  member_type;
+		typedef std::map< irc::client*, unsigned char >::iterator member_iterator;
+		std::string												  _name, _topic;
+		unsigned char											  _mode;
+		member_type												  _members;
 		channel( const std::string name_ = std::string() ) : _name( name_ ) {}
 		~channel( void ) {}
 		bool		addMember( irc::client* );
@@ -111,7 +110,7 @@ namespace irc {
 
 	  public:
 		void operator[]( irc::client& );
-		
+
 		commands( void );
 		~commands( void );
 	}; // commands
@@ -154,6 +153,6 @@ namespace irc {
 		void		  addChannel( irc::channel* );
 		void		  shutDownServer( void );
 		irc::channel* findChannel( std::string& );
-		irc::client*	findClient( const std::string& );
+		irc::client*  findClient( const std::string& );
 	}; // server
 } // namespace irc

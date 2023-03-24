@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PRIVMSG.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 11:25:32 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/22 14:13:39 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/24 14:25:11 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,11 @@ void irc::commands::PRIVMSG( irc::client& client_ ) {
 		else {
 			for ( irc::channel::member_iterator it = channel->_members.begin();
 				  it != channel->_members.end(); ++it )
-				if ( ( *it )->_nickname != client_._nickname )
-					( *it )->_msg_out += MSG( client_, channel->_name, client_._message._params.back());
+				if ( ( *it ).first->_nickname != client_._nickname )
+					( *it ).first->_msg_out +=
+						MSG( client_, channel->_name, client_._message._params.back() );
 		}
-	}
-	else {
+	} else {
 		irc::client* user = irc::server::__serv->findClient( client_._message._params.front() );
 		if ( user == NULL )
 			client_._msg_out += ERR_NOSUCHNICK( client_, client_._message._params.front() );

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   definitions.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/22 15:06:38 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/24 14:39:57 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #define SPCL			   " :"
 #define SPECIAL_CHARACTERS "[\\]^_'{|}"
 #define NULCRLFSPCL		   "\0\r\n :"
+#define CHANNEL_PREFIX	   "#&+!"
 #define NUMERIC_REPLY( num, nick ) \
 	COLON + irc::server::__hostaddr + SPACE + num + SPACE + nick + SPCL
 #define NUMERIC_REPLY_NOCL( num, nick ) \
@@ -26,7 +27,7 @@
 #define ERR_REPLY_BASE( num, client_ ) \
 	NUMERIC_REPLY( num, client_._nickname ) + client_._message._command + SPCL
 #define NICK_DELAY 30
-enum user_modes {
+enum user_server_modes {
 	UMODE_AWAY		 = 1,
 	UMODE_WALLOPS	 = 2,
 	UMODE_INVISIBLE	 = 4,
@@ -34,6 +35,7 @@ enum user_modes {
 	UMODE_OPERATOR	 = 16,
 	UMODE_RECEIPT	 = 32
 };
+enum user_channel_modes { UMODE_CHANOP = 1, UMODE_VOICE = 2, UMODE_CHANOWNER = 4 };
 enum channel_modes {
 	CMODE_INVITE	 = 1,
 	CMODE_MODERATED	 = 2,
@@ -145,23 +147,22 @@ enum channel_modes {
 
 #define ERR_NOTEXTTOSEND( client_ ) ERR_REPLY_BASE( "412", client_ ) + "No text to send" + CRLF
 
-#define	ERR_NOSUCHNICK( client_, nickname_ ) \
+#define ERR_NOSUCHNICK( client_, nickname_ ) \
 	ERR_REPLY_BASE( "401", client_ ) + nickname_ + " :No such nick/channel" + CRLF
-#define	ERR_NOTONCHANNEL( client_, channel_name ) \
+#define ERR_NOTONCHANNEL( client_, channel_name ) \
 	ERR_REPLY_BASE( "442", client_ ) + channel_name + " :You're not on that channel" + CRLF
-
 
 /* PRIVMSG ──────────────────────────────────────────────────────────────────────────── */
 
-#define	MSG( client_, target_, message_ ) \
-	":" + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + " PRIVMSG " + \
-		target_ + " :" + message_ + CRLF
+#define MSG( client_, target_, message_ )                                               \
+	":" + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + \
+		" PRIVMSG " + target_ + " :" + message_ + CRLF
 
 #define NOTICE_MSG( client_, target_, message_ ) \
 	":" + client_._nickname + " NOTICE " + target_ + " :" + message_ + CRLF
 
 /* PARTMSG ──────────────────────────────────────────────────────────────────────────── */
 
-#define PARTMSG( client_, channel_name ) \
+#define PARTMSG( client_, channel_name )                                                           \
 	":" + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + " PART " + \
 		channel_name + CRLF
