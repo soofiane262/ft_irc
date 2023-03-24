@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   join.cpp                                           :+:      :+:    :+:   */
+/*   JOIN.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 15:44:53 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/20 16:57:52 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/24 14:24:33 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void irc::commands::JOIN( irc::client& client_ ) {
 		if ( channel->addMember( &client_ ) ) {
 			for ( irc::channel::member_iterator it = channel->_members.begin();
 				  it != channel->_members.end(); ++it )
-				( *it )->_msg_out += RPL_JOIN( client_, channel->_name );
+				( *it ).first->_msg_out += RPL_JOIN( client_, channel->_name );
 			if ( !channel->_topic.empty() )
 				client_._msg_out += RPL_TOPIC( client_, channel->_name, channel->_topic );
 			client_._msg_out += RPL_NAMREPLY( client_, channel->_name, channel->getMembers() );
