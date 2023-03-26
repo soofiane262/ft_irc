@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+         #
+#    By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/08 14:44:10 by sel-mars          #+#    #+#              #
-#    Updated: 2023/03/22 13:46:39 by acmaghou         ###   ########.fr        #
+#    Updated: 2023/03/26 09:08:32 by mel-hous         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,7 @@ CPP		=	c++
 FLAGS	=	
 
 COMMANDS = $(addprefix commands/,$(addsuffix .cpp,commands JOIN NICK PASS PONG QUIT \
-										NOTICE USER PRIVMSG PART))
+										NOTICE USER PRIVMSG PART MODE))
 
 SERVER = $(addprefix server/,$(addsuffix .cpp,channel_ops client_ops message_ops server_ops server))
 

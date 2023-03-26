@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:27:13 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/22 13:43:53 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/26 09:12:48 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ irc::commands::commands( void ) {
 	this->_commands[ "PRIVMSG" ] = &commands::PRIVMSG;
 	this->_commands[ "PART" ]	 = &commands::PART;
 	this->_commands[ "NOTICE" ]	 = &commands::NOTICE;
+	// this->_commands[ "MODE" ]	 = &commands::MODE;
 }
 
 /* dtor ─────────────────────────────────────────────────────────────────────────────── */

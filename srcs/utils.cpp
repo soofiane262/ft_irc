@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/17 14:55:06 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/21 18:17:23 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/26 11:52:39 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,4 +83,8 @@ unsigned char irc::utils::intToMode( const int& mode_ ) {
 	if ( mode_ & UMODE_OPERATOR ) ret |= UMODE_OPERATOR;
 	if ( mode_ & UMODE_RECEIPT ) ret |= UMODE_RECEIPT;
 	return ret;
+}
+
+void    msg_out_creator( irc::client& client_, std::string error_reply) {
+	client_._msg_out = error_reply;
 }
