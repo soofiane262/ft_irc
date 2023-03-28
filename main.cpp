@@ -6,11 +6,11 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:41:31 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/10 18:41:49 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/28 15:40:29 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "main.hpp"
+#include "srcs/irc.hpp"
 
 int main( int ac, char** av ) {
 	try {

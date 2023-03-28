@@ -6,14 +6,15 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 14:24:56 by acmaghou          #+#    #+#             */
-/*   Updated: 2023/03/24 14:24:48 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/28 16:39:11 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../irc.hpp"
 
 void irc::commands::PART( irc::client& client_ ) {
-	if ( client_._message._params.empty() ) client_._msg_out += ERR_NEEDMOREPARAMS( client_ );
+	if ( client_._message._params.empty() || client_._message._params.front().empty() )
+		client_._msg_out += ERR_NEEDMOREPARAMS( client_ );
 	else {
 		irc::channel* channel =
 			irc::server::__serv->findChannel( client_._message._params.front() );
@@ -24,10 +25,10 @@ void irc::commands::PART( irc::client& client_ ) {
 			if ( it == channel->_members.end() )
 				client_._msg_out += ERR_NOTONCHANNEL( client_, channel->_name );
 			else {
+				for ( irc::channel::member_iterator it2 = channel->_members.begin();
+					  it2 != channel->_members.end(); ++it2 )
+					( *it2 ).first->_msg_out += PARTMSG( client_, channel->_name );
 				channel->_members.erase( it );
-				for ( irc::channel::member_iterator it = channel->_members.begin();
-					  it != channel->_members.end(); ++it )
-					( *it ).first->_msg_out += PARTMSG( client_, channel->_name );
 			}
 		}
 	}

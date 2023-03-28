@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:27:13 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/27 13:59:41 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/28 16:24:52 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,12 @@ irc::commands::~commands( void ) {}
 /* operator[] ───────────────────────────────────────────────────────────────────────── */
 void irc::commands::operator[]( irc::client& client_ ) {
 	client_._message.parseMsg( client_._msg_in.erase( client_._msg_in.size() - 2 ) );
-	if ( client_._message._command.empty() ) client_._msg_out = ERR_NOCOMMANDGIVEN( client_ );
+	if ( client_._message._command.empty() ) client_._msg_out += ERR_NOCOMMANDGIVEN( client_ );
 	else {
 		commands_iterator func_it = this->_commands.find( client_._message._command );
-		if ( func_it == this->_commands.end() ) client_._msg_out = ERR_UNKNOWNCOMMAND( client_ );
+		if ( func_it == this->_commands.end() ) client_._msg_out += ERR_UNKNOWNCOMMAND( client_ );
 		else
 			( this->*func_it->second )( client_ );
 	}
 	client_._message.clear();
-	std::cout << client_ << '\n';
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   definitions.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/28 08:38:13 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/28 17:41:52 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,20 @@
 
 #define BACKLOG			   10
 #define CRLF			   "\r\n"
+#define BELL			   '\a'
 #define COLON			   ':'
 #define SPACE			   ' '
 #define SPCL			   " :"
 #define SPECIAL_CHARACTERS "[\\]^_'{|}"
 #define NULCRLFSPCL		   "\0\r\n :"
-#define CHANNEL_PREFIX	   "#&+!"
 #define NUMERIC_REPLY( num, nick ) \
 	COLON + irc::server::__hostaddr + SPACE + num + SPACE + nick + SPCL
 #define NUMERIC_REPLY_NOCL( num, nick ) \
 	COLON + irc::server::__hostaddr + SPACE + num + SPACE + nick + SPACE
 #define ERR_REPLY_BASE( num, client_ ) \
 	NUMERIC_REPLY( num, client_._nickname ) + client_._message._command + SPCL
-#define NICK_DELAY 30
+#define NICK_DELAY	 30
+#define UMODES_AVAIL "awiroR"
 enum user_modes {
 	UMODE_AWAY		 = 1,
 	UMODE_WALLOPS	 = 2,
@@ -36,13 +37,16 @@ enum user_modes {
 	UMODE_RECEIPT	 = 32
 };
 enum user_channel_modes { UMODE_CHANOP = 1, UMODE_VOICE = 2, UMODE_CHANOWNER = 4 };
+#define CMODES_AVAIL "imnsptkl"
 enum channel_modes {
 	CMODE_INVITE	 = 1,
 	CMODE_MODERATED	 = 2,
 	CMODE_NOEXTERNAL = 4,
 	CMODE_SECRET	 = 8,
 	CMODE_PRIVATE	 = 16,
-	CMODE_TOPIC		 = 32
+	CMODE_TOPIC		 = 32,
+	CMODE_KEY		 = 64,
+	CMODE_LIMIT		 = 128
 };
 
 /* Exceptions ───────────────────────────────────────────────────────────────────────── */
@@ -67,9 +71,9 @@ enum channel_modes {
 #define RPL_CREATED( nick )                                                                   \
 	NUMERIC_REPLY( "003", nick ) + "This server was created " + irc::server::__creationdate + \
 		" UTC+1 " + CRLF
-#define RPL_MYINFO( nick )                                   \
-	NUMERIC_REPLY( "004", nick ) + irc::server::__hostaddr + \
-		" v1.0 <available user modes> <available channel modes>" + CRLF
+#define RPL_MYINFO( nick )                                                                    \
+	NUMERIC_REPLY( "004", nick ) + irc::server::__hostaddr + " v1.0" + SPACE + UMODES_AVAIL + \
+		SPACE + CMODES_AVAIL + CRLF
 #define REGISTRATION_SUCCESS( client_ )                                                       \
 	RPL_WELCOME( client_._nickname, client_._username ) + RPL_YOURHOST( client_._nickname ) + \
 		RPL_CREATED( client_._nickname ) + RPL_MYINFO( client_._nickname )
@@ -106,6 +110,8 @@ enum channel_modes {
 #define RPL_JOIN( newMember_, channel_name )                                                  \
 	":" + newMember_._nickname + "!" + newMember_._username + "@" + irc::server::__hostaddr + \
 		" JOIN :" + channel_name + CRLF
+#define RPL_CHANNELMODEIS( client_, channel_name, channel_modes ) \
+	NUMERIC_REPLY_NOCL( "324", client_._nickname ) + channel_name + SPACE + channel_modes + CRLF
 
 /* Errors ───────────────────────────────────────────────────────────────────────────── */
 
@@ -168,5 +174,4 @@ enum channel_modes {
 		channel_name + CRLF
 /* MODE_MSG ──────────────────────────────────────────────────────────────────────────── */
 
-#define MODEMSG( client_, channel_name, c,  op )                                                           \
-	client_._nickname + ": Has changed mode "  + op + c
+#define MODEMSG( client_, channel_name, c, op ) client_._nickname + ": Has changed mode " + op + c

@@ -6,17 +6,18 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 11:25:32 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/24 14:25:11 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/28 16:56:59 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../irc.hpp"
 
 void irc::commands::PRIVMSG( irc::client& client_ ) {
-	if ( client_._message._params.empty() ) client_._msg_out += ERR_NORECIPIENT( client_ );
-	else if ( client_._message._params.size() < 2 )
+	if ( client_._message._params.empty() || client_._message._params.front().empty() )
+		client_._msg_out += ERR_NORECIPIENT( client_ );
+	else if ( client_._message._params.size() < 2 || client_._message._params[ 2 ].empty() )
 		client_._msg_out += ERR_NOTEXTTOSEND( client_ );
-	else if ( client_._message._params.front().at( 0 ) == '#' ) {
+	else if ( client_._message._params.front()[ 0 ] != '#' ) {
 		irc::channel* channel =
 			irc::server::__serv->findChannel( client_._message._params.front() );
 		if ( channel == NULL )

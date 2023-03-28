@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/17 14:55:06 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/26 11:52:39 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/28 17:31:53 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,19 @@ bool irc::utils::pollfd_cmp( const pollfd& pfd_a_, const pollfd& pfd_b_ ) {
 	return pfd_a_.fd < pfd_b_.fd;
 }
 
+/* channel_name_is_valid ────────────────────────────────────────────────────────────── */
+/* BNF: chan_name = "#" *50(%x01-07 / %x08-09 / %x0B-0C / %x0E-1F / %x21-2B / %x2D-39 / %x3B-FF) */
+bool irc::utils::channelNameIsValid( const std::string& channel_name_ ) {
+	if ( channel_name_.length() < 2 || channel_name_.length() > 51 || channel_name_[ 0 ] != '#' )
+		return false;
+	std::string::const_iterator it = channel_name_.begin() + 1;
+	while ( it != channel_name_.end() && !std::strchr( NULCRLFSPCL, *it ) && *it != BELL &&
+			*it != COLON )
+		++it;
+	if ( it != channel_name_.end() ) return false;
+	return true;
+} // channelNameIsValid
+
 /* parse_mode ───────────────────────────────────────────────────────────────────────── */
 
 unsigned char irc::utils::intToMode( const int& mode_ ) {
@@ -85,6 +98,6 @@ unsigned char irc::utils::intToMode( const int& mode_ ) {
 	return ret;
 }
 
-void    msg_out_creator( irc::client& client_, std::string error_reply) {
-	client_._msg_out = error_reply;
+void msg_out_creator( irc::client& client_, std::string error_reply ) {
+	client_._msg_out += error_reply;
 }
