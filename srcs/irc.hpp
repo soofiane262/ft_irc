@@ -6,7 +6,7 @@
 /*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/26 13:30:56 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/28 10:43:00 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,12 @@
 
 namespace irc {
 	/* utils ───────────────────────────────────────────────────────────────────────────── */
+	class client;
 	namespace utils {
 		bool		  nickIsValid( const std::string& nick_ );
 		unsigned char intToMode( const int& mode_ );
 		bool		  pollfd_cmp( const pollfd&, const pollfd& );
-		void    msg_out_creator( irc::client& client_, std::string error_reply);
+		void    msg_out_creator( client& , std::string );
 		
 	} // namespace utils
 	/* message ─────────────────────────────────────────────────────────────────────────── */
@@ -64,9 +65,12 @@ namespace irc {
 	class channel;
 	class client {
 	  public:
+	  	typedef std::map< irc::client*, unsigned char >			  member_type;
+		typedef std::map< irc::client*, unsigned char >::iterator member_iterator;
 		int			  _fd;
 		std::time_t	  _nick_change;
 		unsigned char _mode;
+		std::string	 last_channel;
 		bool		  _quit;
 		std::string	  _hostaddr, _hostname, _hostport, _nickname, _username, _realname, _msg_in,
 			_msg_out;
@@ -93,6 +97,7 @@ namespace irc {
 		bool		addMember( irc::client* );
 		std::string getMembers( void );
 		bool getMember( irc::client* );
+		member_iterator getMemberValue( irc::client* );
 	}; // channel
 	/* commands ────────────────────────────────────────────────────────────────────────── */
 	class commands {

@@ -6,7 +6,7 @@
 /*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/26 13:40:30 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/28 08:38:13 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,3 +166,7 @@ enum channel_modes {
 #define PARTMSG( client_, channel_name )                                                           \
 	":" + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + " PART " + \
 		channel_name + CRLF
+/* MODE_MSG ──────────────────────────────────────────────────────────────────────────── */
+
+#define MODEMSG( client_, channel_name, c,  op )                                                           \
+	client_._nickname + ": Has changed mode "  + op + c

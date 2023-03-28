@@ -6,7 +6,7 @@
 /*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:27:13 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/26 09:12:48 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/27 13:59:41 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ irc::commands::commands( void ) {
 	this->_commands[ "PRIVMSG" ] = &commands::PRIVMSG;
 	this->_commands[ "PART" ]	 = &commands::PART;
 	this->_commands[ "NOTICE" ]	 = &commands::NOTICE;
-	// this->_commands[ "MODE" ]	 = &commands::MODE;
+	this->_commands[ "MODE" ]	 = &commands::MODE;
 }
 
 /* dtor ─────────────────────────────────────────────────────────────────────────────── */

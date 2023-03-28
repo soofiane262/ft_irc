@@ -6,7 +6,7 @@
 #    By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/08 14:44:10 by sel-mars          #+#    #+#              #
-#    Updated: 2023/03/26 09:08:32 by mel-hous         ###   ########.fr        #
+#    Updated: 2023/03/28 09:40:18 by mel-hous         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME	=	ircserv
 
 CPP		=	c++
 
-FLAGS	=	
+FLAGS	=	-g
 
 COMMANDS = $(addprefix commands/,$(addsuffix .cpp,commands JOIN NICK PASS PONG QUIT \
 										NOTICE USER PRIVMSG PART MODE))
@@ -23,7 +23,7 @@ SERVER = $(addprefix server/,$(addsuffix .cpp,channel_ops client_ops message_ops
 
 CHANNEL = $(addprefix channel/, channel.cpp)
 
-SRCS	=	main.cpp  $(addprefix srcs/,message.cpp utils.cpp $(COMMANDS) $(SERVER) $(CHANNEL))
+SRCS	=	main.cpp  $(addprefix srcs/,message.cpp utils.cpp client.cpp $(COMMANDS) $(SERVER) $(CHANNEL))
 
 all: $(NAME)
 

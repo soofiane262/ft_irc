@@ -6,7 +6,7 @@
 /*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 17:02:42 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/26 11:03:27 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/28 09:26:50 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,4 +28,9 @@ bool irc::channel::getMember( irc::client* member) {
 	irc::channel::member_iterator member_it;
 	member_it = _members.find(member);
 	return (member_it != _members.end());
+}
+irc::channel::member_iterator irc::channel::getMemberValue( irc::client* member) {
+	irc::channel::member_iterator member_it;
+	member_it = _members.find(member);
+	return(member_it);
 }

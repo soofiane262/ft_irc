@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   JOIN.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 15:44:53 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/24 14:24:33 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/28 10:45:07 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,6 @@ void irc::commands::JOIN( irc::client& client_ ) {
 		} else {
 			client_._msg_out = ERR_USERONCHANNEL( client_, channel->_name );
 		}
+		client_.last_channel = channel->_name;
 	}
 }
