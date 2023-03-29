@@ -1,18 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   QUIT.cpp                                           :+:      :+:    :+:   */
+/*   client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/20 16:47:20 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/29 15:41:52 by sel-mars         ###   ########.fr       */
+/*   Created: 2023/03/26 13:32:25 by mel-hous          #+#    #+#             */
+/*   Updated: 2023/03/26 13:35:34 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../irc.hpp"
+#include"irc.hpp"
 
-void irc::commands::QUIT( irc::client& client_ ) {
-	client_._quit	 = true;
-	client_._msg_out = ERR_CLOSINGLINK( client_ );
-}
+bool irc::client::has_mode(int mode){
+    return ((this->_mode &= mode) == mode);
+};

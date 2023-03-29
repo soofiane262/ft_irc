@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/17 14:55:06 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/21 18:17:23 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/29 18:11:07 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,33 @@ bool irc::utils::pollfd_cmp( const pollfd& pfd_a_, const pollfd& pfd_b_ ) {
 	return pfd_a_.fd < pfd_b_.fd;
 }
 
+/* channel_name_is_valid ────────────────────────────────────────────────────────────── */
+/* BNF: chan_name = "#" *50(%x01-07 / %x08-09 / %x0B-0C / %x0E-1F / %x21-2B / %x2D-39 / %x3B-FF) */
+bool irc::utils::channelNameIsValid( const std::string& channel_name_ ) {
+	if ( channel_name_.length() < 2 || channel_name_.length() > 51 || channel_name_[ 0 ] != '#' )
+		return false;
+	std::string::const_iterator it = channel_name_.begin() + 1;
+	while ( it != channel_name_.end() && !std::strchr( NULCRLFSPCL, *it ) && *it != BELL &&
+			*it != COLON )
+		++it;
+	if ( it != channel_name_.end() ) return false;
+	return true;
+} // channelNameIsValid
+
+/* string_to_int ─────────────────────────────────────────────────────────────────────── */
+int irc::utils::ft_stoi( const std::string& str_ ) {
+	int				  ret;
+	std::stringstream ss;
+	ss << str_;
+	ss >> ret;
+	ss.str( std::string() );
+	ss.clear();
+	ss << ret;
+	std::string _str( &str_[ str_[ 0 ] && str_[ 0 ] == '+' ] );
+	if ( ss.str().compare( _str ) ) ret = -1;
+	return ret;
+} // string_to_int
+
 /* parse_mode ───────────────────────────────────────────────────────────────────────── */
 
 unsigned char irc::utils::intToMode( const int& mode_ ) {
@@ -82,5 +109,24 @@ unsigned char irc::utils::intToMode( const int& mode_ ) {
 	if ( mode_ & UMODE_RESTRICTED ) ret |= UMODE_RESTRICTED;
 	if ( mode_ & UMODE_OPERATOR ) ret |= UMODE_OPERATOR;
 	if ( mode_ & UMODE_RECEIPT ) ret |= UMODE_RECEIPT;
+	return ret;
+}
+
+std::vector< std::string > irc::utils::split( const std::string& str_, const char& sep_ ) {
+	std::vector< std::string >	ret;
+	std::string::const_iterator it = str_.begin();
+	std::string::const_iterator it2;
+
+	std::cout << "split: " << str_ << std::endl;
+
+	while ( it != str_.end() ) {
+		it2 = std::find( it, str_.end(), sep_ );
+		ret.push_back( std::string( it, it2 ) );
+		it = it2;
+		if ( it != str_.end() ) ++it;
+	}
+	// print everything
+	for ( std::size_t idx = 0; idx < ret.size(); ++idx )
+		std::cout << "split: " << ret[ idx ] << std::endl;
 	return ret;
 }

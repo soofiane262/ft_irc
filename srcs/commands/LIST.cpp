@@ -1,42 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   PART.cpp                                           :+:      :+:    :+:   */
+/*   LIST.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/21 14:24:56 by acmaghou          #+#    #+#             */
-/*   Updated: 2023/03/29 17:23:52 by sel-mars         ###   ########.fr       */
+/*   Created: 2023/03/29 17:24:34 by sel-mars          #+#    #+#             */
+/*   Updated: 2023/03/29 17:42:47 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../irc.hpp"
 
-static void partChannel( irc::client& client_, std::string& channel_name_ ) {
+static void listChannel( irc::client& client_, std::string& channel_name_ ) {
 	irc::channel* channel = irc::server::__serv->findChannel( channel_name_ );
 	if ( channel == NULL ) client_._msg_out += ERR_NOSUCHCHANNEL( client_, channel_name_ );
 	else {
-		irc::channel::member_iterator it = channel->_members.find( &client_ );
-		if ( it == channel->_members.end() )
-			client_._msg_out += ERR_NOTONCHANNEL( client_, channel->_name );
-		else {
-			for ( irc::channel::member_iterator it2 = channel->_members.begin();
-				  it2 != channel->_members.end(); ++it2 )
-				( *it2 ).first->_msg_out += PARTMSG( client_, channel->_name );
-			channel->_members.erase( it );
-			if ( channel->_members.empty() ) irc::server::__serv->removeChannel( *channel );
-		}
+		std::stringstream ss;
+		ss << channel->_members.size();
+		client_._msg_out += RPL_LIST( client_, channel->_name, ss.str(), channel->_topic );
 	}
 }
 
-void irc::commands::PART( irc::client& client_ ) {
-	if ( client_._message._params.empty() || client_._message._params.front().empty() )
-		client_._msg_out += ERR_NEEDMOREPARAMS( client_ );
-	else {
+void irc::commands::LIST( irc::client& client_ ) {
+	if ( client_._message._params.empty() || client_._message._params.front().empty() ) {
+		if ( irc::server::__serv->getChannels().size() > 10 )
+			client_._msg_out += ERR_TOOMANYMATCHES( client_ );
+		for ( irc::server::channel_iterator it = irc::server::__serv->getChannels().begin();
+			  it != irc::server::__serv->getChannels().end(); ++it )
+			listChannel( client_, it->second->_name );
+	} else {
 		std::vector< std::string > channel_names =
 			irc::utils::split( client_._message._params[ 1 ], ',' );
 		for ( std::vector< std::string >::iterator it = channel_names.begin();
 			  it != channel_names.end(); ++it )
-			partChannel( client_, *it );
+			listChannel( client_, *it );
 	}
+	client_._msg_out += RPL_LISTEND( client_ );
 }
