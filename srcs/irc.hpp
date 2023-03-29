@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/28 17:45:33 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/29 17:36:25 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,12 @@ namespace irc {
 	/* utils ───────────────────────────────────────────────────────────────────────────── */
 	class client;
 	namespace utils {
-		bool		  nickIsValid( const std::string& );
-		bool		  channelNameIsValid( const std::string& );
-		unsigned char intToMode( const int& mode_ );
-		bool		  pollfd_cmp( const pollfd&, const pollfd& );
-		void		  msg_out_creator( client&, std::string );
+		int						   ft_stoi( const std::string& str_ );
+		bool					   nickIsValid( const std::string& );
+		bool					   channelNameIsValid( const std::string& );
+		unsigned char			   intToMode( const int& mode_ );
+		bool					   pollfd_cmp( const pollfd&, const pollfd& );
+		std::vector< std::string > split( const std::string&, const char& );
 	} // namespace utils
 	/* message ─────────────────────────────────────────────────────────────────────────── */
 	class message {
@@ -89,18 +90,28 @@ namespace irc {
 	  public:
 		typedef std::map< irc::client*, unsigned char >			  member_type;
 		typedef std::map< irc::client*, unsigned char >::iterator member_iterator;
-		std::string												  _name, _topic;
-		unsigned char											  _mode;
-		member_type												  _members;
+
+	  private:
+		void addModes( const std::string& );
+		void addModes( member_iterator, const std::string& );
+		void delModes( const std::string& );
+		void delModes( member_iterator, const std::string& );
+
+	  public:
+		std::string	   _key, _name, _topic;
+		unsigned char  _mode;
+		unsigned short _limit;
+		member_type	   _members;
 		channel( const std::string name_ = std::string() ) : _name( name_ ) {}
 		~channel( void ) {}
-		bool			addMember( irc::client* );
-		std::string		getMembers( void );
-		std::string		getModes( void );
-		void			setMode( const std::string& );
-		void			setMode( member_iterator, const std::string& );
-		bool			getMember( irc::client* );
-		member_iterator getMemberValue( irc::client* );
+		bool		addMember( irc::client* );
+		std::string getMembers( void );
+		std::string getModes( void );
+		void		setModes( const std::string& );
+		void		setModes( member_iterator, const std::string& );
+		// bool			isMember( irc::client* );
+		member_iterator getMember( std::string& );
+		member_iterator getMember( irc::client* );
 	}; // channel
 	/* commands ────────────────────────────────────────────────────────────────────────── */
 	class commands {
@@ -120,6 +131,9 @@ namespace irc {
 		void		  PART( irc::client& );
 		void		  NOTICE( irc::client& );
 		void		  MODE( irc::client& );
+		void		  TOPIC( irc::client& );
+		void		  LIST( irc::client& );
+		void		  NAMES( irc::client& );
 
 	  public:
 		void operator[]( irc::client& );
@@ -165,5 +179,7 @@ namespace irc {
 		irc::channel* addChannel( std::string& );
 		irc::channel* findChannel( std::string& );
 		irc::client*  findClient( const std::string& );
+		void		  removeChannel( channel& );
+		channel_type& getChannels( void );
 	}; // server
 } // namespace irc

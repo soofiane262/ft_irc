@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 13:43:28 by acmaghou          #+#    #+#             */
-/*   Updated: 2023/03/28 16:56:59 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/29 15:46:07 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,11 @@ void irc::commands::NOTICE( irc::client& client_ ) {
 			irc::channel* channel =
 				irc::server::__serv->findChannel( client_._message._params.front() );
 			if ( channel ) {
+				irc::channel::member_iterator member = channel->getMember( &client_ );
+				if ( ( channel->_mode & CMODE_NOEXTERNAL && member == channel->_members.end() ) ||
+					 ( channel->_mode & CMODE_MODERATED && member != channel->_members.end() &&
+					   !( member->second & UMODE_VOICE ) ) )
+					return;
 				for ( irc::channel::member_iterator it = channel->_members.begin();
 					  it != channel->_members.end(); ++it )
 					if ( ( *it ).first->_nickname != client_._nickname )

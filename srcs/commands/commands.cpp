@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:27:13 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/28 16:24:52 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/29 17:36:53 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,9 @@ irc::commands::commands( void ) {
 	this->_commands[ "PART" ]	 = &commands::PART;
 	this->_commands[ "NOTICE" ]	 = &commands::NOTICE;
 	this->_commands[ "MODE" ]	 = &commands::MODE;
+	this->_commands[ "TOPIC" ]	 = &commands::TOPIC;
+	this->_commands[ "LIST" ]	 = &commands::LIST;
+	this->_commands[ "NAMES" ]	 = &commands::NAMES;
 }
 
 /* dtor ─────────────────────────────────────────────────────────────────────────────── */

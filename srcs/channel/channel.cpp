@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 17:02:42 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/28 17:35:57 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/29 16:48:54 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 bool irc::channel::addMember( irc::client* client_ ) {
 	std::pair< irc::channel::member_iterator, bool > it =
 		this->_members.insert( std::make_pair( client_, '\0' ) );
-	if ( !this->_mode ) it.first->second = UMODE_CHANOP | UMODE_CHANOWNER;
+	if ( this->_members.size() == 1 ) it.first->second = UMODE_CHANOP | UMODE_CHANOWNER;
 	return it.second;
 }
 
@@ -40,13 +40,73 @@ std::string irc::channel::getModes( void ) {
 	return modes;
 }
 
-bool irc::channel::getMember( irc::client* member ) {
-	irc::channel::member_iterator member_it;
-	member_it = _members.find( member );
-	return ( member_it != _members.end() );
+void irc::channel::addModes( const std::string& modes_ ) {
+	std::string::const_iterator it;
+	for ( it = modes_.begin(); it != modes_.end(); ++it ) {
+		if ( *it == '+' ) {
+			// this->_mode = 0xFFFFFFFF;
+		} else if ( *it == '-' ) {
+			this->_mode = 0;
+		} else if ( *it == 'i' ) {
+			this->_mode |= CMODE_INVITE;
+		} else if ( *it == 'm' ) {
+			this->_mode |= CMODE_MODERATED;
+		} else if ( *it == 'n' ) {
+			this->_mode |= CMODE_NOEXTERNAL;
+		} else if ( *it == 's' ) {
+			this->_mode |= CMODE_SECRET;
+		} else if ( *it == 'p' ) {
+			this->_mode |= CMODE_PRIVATE;
+		} else if ( *it == 't' ) {
+			this->_mode |= CMODE_TOPIC;
+		} else if ( *it == 'k' ) {
+			this->_mode |= CMODE_KEY;
+		} else if ( *it == 'l' ) {
+			this->_mode |= CMODE_LIMIT;
+		}
+	}
 }
-irc::channel::member_iterator irc::channel::getMemberValue( irc::client* member ) {
-	irc::channel::member_iterator member_it;
-	member_it = _members.find( member );
+
+void irc::channel::setModes( const std::string& modes_ ) {
+	std::string::const_iterator it;
+	for ( it = modes_.begin(); it != modes_.end(); ++it ) {
+		if ( *it == '+' ) {
+			this->_mode = 0;
+		} else if ( *it == '-' ) {
+			// this->_mode = 0xFFFFFFFF;
+		} else if ( *it == 'i' ) {
+			this->_mode ^= CMODE_INVITE;
+		} else if ( *it == 'm' ) {
+			this->_mode ^= CMODE_MODERATED;
+		} else if ( *it == 'n' ) {
+			this->_mode ^= CMODE_NOEXTERNAL;
+		} else if ( *it == 's' ) {
+			this->_mode ^= CMODE_SECRET;
+		} else if ( *it == 'p' ) {
+			this->_mode ^= CMODE_PRIVATE;
+		} else if ( *it == 't' ) {
+			this->_mode ^= CMODE_TOPIC;
+		} else if ( *it == 'k' ) {
+			this->_mode ^= CMODE_KEY;
+		} else if ( *it == 'l' ) {
+			this->_mode ^= CMODE_LIMIT;
+		}
+	}
+}
+
+// bool irc::channel::isMember( irc::client* member ) {
+// 	irc::channel::member_iterator member_it;
+// 	member_it = _members.find( member );
+// 	return ( member_it != _members.end() );
+// }
+
+irc::channel::member_iterator irc::channel::getMember( std::string& member_name_ ) {
+	irc::channel::member_iterator member_it = _members.begin();
+	while ( member_it != _members.end() && member_it->first->_nickname != member_name_ )
+		member_it++;
 	return ( member_it );
+}
+
+irc::channel::member_iterator irc::channel::getMember( irc::client* member_ ) {
+	return ( _members.find( member_ ) );
 }

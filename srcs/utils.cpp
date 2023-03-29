@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/17 14:55:06 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/28 17:31:53 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/29 18:11:07 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,20 @@ bool irc::utils::channelNameIsValid( const std::string& channel_name_ ) {
 	return true;
 } // channelNameIsValid
 
+/* string_to_int ─────────────────────────────────────────────────────────────────────── */
+int irc::utils::ft_stoi( const std::string& str_ ) {
+	int				  ret;
+	std::stringstream ss;
+	ss << str_;
+	ss >> ret;
+	ss.str( std::string() );
+	ss.clear();
+	ss << ret;
+	std::string _str( &str_[ str_[ 0 ] && str_[ 0 ] == '+' ] );
+	if ( ss.str().compare( _str ) ) ret = -1;
+	return ret;
+} // string_to_int
+
 /* parse_mode ───────────────────────────────────────────────────────────────────────── */
 
 unsigned char irc::utils::intToMode( const int& mode_ ) {
@@ -98,6 +112,21 @@ unsigned char irc::utils::intToMode( const int& mode_ ) {
 	return ret;
 }
 
-void msg_out_creator( irc::client& client_, std::string error_reply ) {
-	client_._msg_out += error_reply;
+std::vector< std::string > irc::utils::split( const std::string& str_, const char& sep_ ) {
+	std::vector< std::string >	ret;
+	std::string::const_iterator it = str_.begin();
+	std::string::const_iterator it2;
+
+	std::cout << "split: " << str_ << std::endl;
+
+	while ( it != str_.end() ) {
+		it2 = std::find( it, str_.end(), sep_ );
+		ret.push_back( std::string( it, it2 ) );
+		it = it2;
+		if ( it != str_.end() ) ++it;
+	}
+	// print everything
+	for ( std::size_t idx = 0; idx < ret.size(); ++idx )
+		std::cout << "split: " << ret[ idx ] << std::endl;
+	return ret;
 }

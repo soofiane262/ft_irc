@@ -6,12 +6,13 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/28 17:41:52 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/29 17:47:03 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /* General ──────────────────────────────────────────────────────────────────────────── */
 
+#define MAX_FD			   1024
 #define BACKLOG			   10
 #define CRLF			   "\r\n"
 #define BELL			   '\a'
@@ -36,6 +37,7 @@ enum user_modes {
 	UMODE_OPERATOR	 = 16,
 	UMODE_RECEIPT	 = 32
 };
+#define UMODES_CHAN "ov"
 enum user_channel_modes { UMODE_CHANOP = 1, UMODE_VOICE = 2, UMODE_CHANOWNER = 4 };
 #define CMODES_AVAIL "imnsptkl"
 enum channel_modes {
@@ -99,16 +101,19 @@ enum channel_modes {
 	NUMERIC_REPLY( "255", client_._nickname ) + "I have " + \
 		irc::server::__serv->getClientsSize() + " clients and 0 servers" + CRLF
 #define RPL_NOTOPIC( client_, channel_name ) \
-	NUMERIC_REPLY( "331", client_._nickname ) + channel_name + " :No topic is set" + CRLF
+	NUMERIC_REPLY_NOCL( "331", client_._nickname ) + channel_name + " :No topic is set" + CRLF
 #define RPL_TOPIC( client_, channel_name, topic_ ) \
-	NUMERIC_REPLY( "332", client_._nickname ) + channel_name + SPCL + topic_ + CRLF
+	NUMERIC_REPLY_NOCL( "332", client_._nickname ) + channel_name + SPCL + topic_ + CRLF
+#define RPL_TOPIC_CHANGE( client_ptr_, channel_name, topic_ )             \
+	COLON + client_ptr_->_nickname + "!" + client_ptr_->_username + "@" + \
+		irc::server::__hostaddr + " TOPIC " + channel_name + SPCL + topic_ + CRLF
 #define RPL_NAMREPLY( client_, channel_name, users_ )                                             \
 	NUMERIC_REPLY_NOCL( "353", client_._nickname ) + "=" + SPACE + channel_name + SPCL + users_ + \
 		CRLF
 #define RPL_ENDOFNAMES( client_, channel_name ) \
 	NUMERIC_REPLY_NOCL( "366", client_._nickname ) + channel_name + " :End of NAMES list" + CRLF
-#define RPL_JOIN( newMember_, channel_name )                                                  \
-	":" + newMember_._nickname + "!" + newMember_._username + "@" + irc::server::__hostaddr + \
+#define RPL_JOIN( newMember_, channel_name )                                                    \
+	COLON + newMember_._nickname + "!" + newMember_._username + "@" + irc::server::__hostaddr + \
 		" JOIN :" + channel_name + CRLF
 #define RPL_CHANNELMODEIS( client_, channel_name, channel_modes ) \
 	NUMERIC_REPLY_NOCL( "324", client_._nickname ) + channel_name + SPACE + channel_modes + CRLF
@@ -122,22 +127,30 @@ enum channel_modes {
 #define ERR_CLOSINGLINK( client_ )                                                  \
 	ERR_REPLY_BASE( "404", client_ ) + "Closing Link: " + client_._nickname + "[" + \
 		client_._username + "@" + irc::server::__hostaddr + "]" + CRLF
+#define ERR_CANNOTSENDTOCHAN( client_, channel_name ) \
+	ERR_REPLY_BASE( "404", client_ ) + channel_name + " :Cannot send to channel" + CRLF
 #define ERR_TOOMANYCHANNELS( client_, channel_name ) \
 	ERR_REPLY_BASE( "405", client_ ) + channel_name + " :You have joined too many channels" + CRLF
-#define ERR_NOORIGIN( client_ )		  ERR_REPLY_BASE( "409", client_ ) + "No origin specified" + CRLF
-#define ERR_NORECIPIENT( client_ )	  ERR_REPLY_BASE( "411", client_ ) + "No recipient given" + CRLF
-#define ERR_NOTEXTTOSEND( client_ )	  ERR_REPLY_BASE( "412", client_ ) + "No text to send" + CRLF
-#define ERR_NOCOMMANDGIVEN( client_ ) ERR_REPLY_BASE( "421", client_ ) + "No command given" + CRLF
-#define ERR_UNKNOWNCOMMAND( client_ ) ERR_REPLY_BASE( "421", client_ ) + "Unknown command" + CRLF
+#define ERR_NOORIGIN( client_ )		   ERR_REPLY_BASE( "409", client_ ) + "No origin specified" + CRLF
+#define ERR_NORECIPIENT( client_ )	   ERR_REPLY_BASE( "411", client_ ) + "No recipient given" + CRLF
+#define ERR_NOTEXTTOSEND( client_ )	   ERR_REPLY_BASE( "412", client_ ) + "No text to send" + CRLF
+#define ERR_NOCOMMANDGIVEN( client_ )  ERR_REPLY_BASE( "421", client_ ) + "No command given" + CRLF
+#define ERR_UNKNOWNCOMMAND( client_ )  ERR_REPLY_BASE( "421", client_ ) + "Unknown command" + CRLF
+#define ERR_NONICKNAMEGIVEN( client_ ) ERR_REPLY_BASE( "431", client_ ) + "No nickname given" + CRLF
 #define ERR_USERONCHANNEL( client_, channel_name )                                       \
 	NUMERIC_REPLY( "443", client_._nickname ) + client_._nickname + " " + channel_name + \
 		" :is already on channel" + CRLF
 #define ERR_NEEDMOREPARAMS( client_ ) \
 	ERR_REPLY_BASE( "461", client_ ) + "Not enough parameters" + CRLF
+#define ERR_MODELIMITNEEDMOREPARAMS( client_ ) \
+	NUMERIC_REPLY_NOCL( "461", client_._nickname ) + "MODE +l :Not enough parameters" + CRLF
 #define ERR_ALREADYREGISTRED( client_ ) \
 	ERR_REPLY_BASE( "462", client_ ) + "Unauthorized command (already registered)" + CRLF
-#define ERR_PASSWDMISMATCH( client_ )  ERR_REPLY_BASE( "464", client_ ) + "Password incorrect" + CRLF
-#define ERR_NONICKNAMEGIVEN( client_ ) ERR_REPLY_BASE( "431", client_ ) + "No nickname given" + CRLF
+#define ERR_PASSWDMISMATCH( client_ ) ERR_REPLY_BASE( "464", client_ ) + "Password incorrect" + CRLF
+#define ERR_KEYSET( client_, channel_name ) \
+	ERR_REPLY_BASE( "467", client_ ) + channel_name + " :Channel key already set" + CRLF
+#define ERR_UNKNOWNMODE( client_, mode_ ) \
+	NUMERIC_REPLY_NOCL( "472", client_._nickname ) + mode_ + " :is unknown mode char to me" + CRLF
 #define ERR_ERRONEUSNICKNAME( client_ ) \
 	ERR_REPLY_BASE( "432", client_ ) + "Erroneous nickname" + CRLF
 #define ERR_NICKNAMEINUSE( client_ ) \
@@ -146,8 +159,26 @@ enum channel_modes {
 #define ERR_UNAVAILRESOURCE( client_, time_left )                   \
 	ERR_REPLY_BASE( "437", client_ ) + "Please wait " + time_left + \
 		" seconds before attempting to change your nickname again." + CRLF
+#define ERR_CHANNELISFULL( client_, channel_name ) \
+	ERR_REPLY_BASE( "471", client_ ) + channel_name + " :Cannot join channel (+l)" + CRLF
+#define ERR_BADCHANNELKEY( client_, channel_name ) \
+	ERR_REPLY_BASE( "475", client_ ) + channel_name + " :Cannot join channel (+k)" + CRLF
+#define RPL_LIST( client_, channel_name, users, topic )                                     \
+	NUMERIC_REPLY_NOCL( "322", client_._nickname ) + channel_name + SPACE + users + SPACE + \
+		topic + CRLF
+#define RPL_LISTEND( client_ )		  NUMERIC_REPLY_NOCL( "323", client_._nickname ) + "End of LIST" + CRLF
+#define ERR_TOOMANYMATCHES( client_ ) ERR_REPLY_BASE( "416", client_ ) + " :Too many matches" + CRLF
+#define ERR_TOOMANYMATCHESNAMES( client_, channel_name_ ) \
+	ERR_REPLY_BASE( "416", client_ ) + channel_name_ + " :Too many matches" + CRLF
+// #define ERR_INVITEONLYCHAN( client_, channel_name ) \
+// 	ERR_REPLY_BASE( "473", client_ ) + channel_name + " :Cannot join channel (+i)" + CRLF
+#define ERR_CHANOPRIVSNEEDED( client_, channel_name ) \
+	ERR_REPLY_BASE( "482", client_ ) + channel_name + " :You're not channel operator" + CRLF
 #define ERR_RESTRICTED( client_ ) \
 	ERR_REPLY_BASE( "484", client_ ) + "Your connection is restricted!" + CRLF
+#define ERR_USERNOTINCHANNEL( client_, absent_, channel_name )        \
+	ERR_REPLY_BASE( "441", client_ ) + absent_ + " " + channel_name + \
+		" :They aren't on that channel" + CRLF
 
 #define ERR_NORECIPIENT( client_ ) ERR_REPLY_BASE( "411", client_ ) + "No recipient given" + CRLF
 
