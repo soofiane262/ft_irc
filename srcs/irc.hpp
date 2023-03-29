@@ -6,7 +6,7 @@
 /*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/28 10:43:00 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/29 12:17:37 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ namespace irc {
 		std::string	  _hostaddr, _hostname, _hostport, _nickname, _username, _realname, _msg_in,
 			_msg_out;
 		irc::message _message;
-		bool has_mode(int );
+		bool hasmodeOP(irc::channel& );
 		client( int& fd )
 			: _fd( fd ), _nick_change( -1 ), _mode( 0 ), _quit( false ), _nickname( "*" ),
 			  _username( "*" ), _realname( "*" ) {}
@@ -89,14 +89,16 @@ namespace irc {
 	  public:
 		typedef std::map< irc::client*, unsigned char >			  member_type;
 		typedef std::map< irc::client*, unsigned char >::iterator member_iterator;
-		std::string												  _name, _topic;
+		std::string												  _name, _topic, _key;
 		unsigned char											  _mode;
 		member_type												  _members;
+		unsigned int											  limit;
 		channel( const std::string name_ = std::string() ) : _name( name_ ) {}
 		~channel( void ) {}
 		bool		addMember( irc::client* );
 		std::string getMembers( void );
 		bool getMember( irc::client* );
+		member_iterator getMember( std::string );
 		member_iterator getMemberValue( irc::client* );
 	}; // channel
 	/* commands ────────────────────────────────────────────────────────────────────────── */

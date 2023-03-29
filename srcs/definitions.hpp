@@ -6,7 +6,7 @@
 /*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/28 08:38:13 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/29 13:11:02 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,9 @@ enum channel_modes {
 	CMODE_NOEXTERNAL = 4,
 	CMODE_SECRET	 = 8,
 	CMODE_PRIVATE	 = 16,
-	CMODE_TOPIC		 = 32
+	CMODE_TOPIC		 = 32,
+	CMODE_KEYLOCK	 = 64,
+	CMODE_LIMIT	     = 128
 };
 
 /* Exceptions ───────────────────────────────────────────────────────────────────────── */
@@ -123,6 +125,7 @@ enum channel_modes {
 #define ERR_NOTEXTTOSEND( client_ )	  ERR_REPLY_BASE( "412", client_ ) + "No text to send" + CRLF
 #define ERR_NOCOMMANDGIVEN( client_ ) ERR_REPLY_BASE( "421", client_ ) + "No command given" + CRLF
 #define ERR_UNKNOWNCOMMAND( client_ ) ERR_REPLY_BASE( "421", client_ ) + "Unknown command" + CRLF
+// #define ERR_UNKNOWNMODE( client_ ) ERR_REPLY_BASE( "472", client_ ) + "Unknown command" + CRLF
 #define ERR_USERONCHANNEL( client_, channel_name )                                       \
 	NUMERIC_REPLY( "443", client_._nickname ) + client_._nickname + " " + channel_name + \
 		" :is already on channel" + CRLF
