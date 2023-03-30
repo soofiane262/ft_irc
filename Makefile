@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+         #
+#    By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/08 14:44:10 by sel-mars          #+#    #+#              #
-#    Updated: 2023/03/28 09:40:18 by mel-hous         ###   ########.fr        #
+#    Updated: 2023/03/29 18:05:13 by sel-mars         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,16 +14,18 @@ NAME	=	ircserv
 
 CPP		=	c++
 
-FLAGS	=	-g
+FLAGS	=	-Wall -Wextra -Werror -std=c++98
 
-COMMANDS = $(addprefix commands/,$(addsuffix .cpp,commands JOIN NICK PASS PONG QUIT \
-										NOTICE USER PRIVMSG PART MODE))
+COMMANDS = $(addprefix commands/,$(addsuffix .cpp,\
+			commands JOIN NICK PASS PONG QUIT NOTICE USER PRIVMSG PART MODE TOPIC LIST NAMES))
 
-SERVER = $(addprefix server/,$(addsuffix .cpp,channel_ops client_ops message_ops server_ops server))
+SERVER = $(addprefix server/,$(addsuffix .cpp,\
+			channel_ops client_ops message_ops server_ops server))
 
 CHANNEL = $(addprefix channel/, channel.cpp)
 
-SRCS	=	main.cpp  $(addprefix srcs/,message.cpp utils.cpp client.cpp $(COMMANDS) $(SERVER) $(CHANNEL))
+SRCS	=	main.cpp  $(addprefix srcs/,\
+			message.cpp utils.cpp client.cpp $(COMMANDS) $(SERVER) $(CHANNEL))
 
 all: $(NAME)
 

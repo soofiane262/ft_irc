@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server_ops.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 17:01:00 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/25 10:36:07 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/28 16:07:55 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void irc::server::initServer( void ) {
 	this->_sockets.push_back( mastersocket );
 	freeaddrinfo( servinfo );
 	std::time_t rawtime = std::time( NULL );
-	( irc::server::__creationdate = std::asctime( localtime( &rawtime ) ) )
+	( irc::server::__creationdate = std::asctime( std::localtime( &rawtime ) ) )
 		.erase( this->__creationdate.end() - 1 );
 } // initialize_server
 
@@ -62,8 +62,6 @@ void irc::server::runServer( void ) {
 			  << "\033[22m\033[24m\n\n";
 	while ( 1 ) {
 		if ( poll( &this->_sockets.front(), this->_sockets.size(), -1 ) == -1 ) ERRNO_EXCEPT;
-		// std::cout << "\033[1;32m" << this->_clients.size() << " clients connected\033[0m\n";
-		// std::cout << "\033[1;32m" << this->_sockets.size() - 1 << " clients connected\033[0m\n";
 		if ( this->_sockets.front().revents == POLLIN ) acceptClient();
 		for ( poll_it = this->_sockets.begin() + 1, client_it = this->_clients.begin();
 			  client_it != this->_clients.end();
@@ -75,7 +73,8 @@ void irc::server::runServer( void ) {
 			}
 			try {
 				if ( poll_it->revents & POLLIN ) recvMsg( client_it->second );
-				if ( poll_it->revents & POLLOUT ) sendMsg( client_it );
+				if ( poll_it->revents & POLLOUT && !client_it->second._msg_out.empty() )
+					sendMsg( client_it->second );
 			} catch ( std::exception& e ) { std::cerr << "\033[1;31m" << e.what() << "\033[0m\n"; }
 			if ( client_it->second._quit ) disconClient( client_it, poll_it );
 		}
