@@ -6,7 +6,7 @@
 /*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/29 17:24:34 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/30 15:24:41 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/30 17:38:34 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void irc::commands::LIST( irc::client& client_ ) {
 			client_._msg_out += ERR_TOOMANYMATCHES( client_ );
 		for ( irc::server::channel_iterator it = irc::server::__serv->getChannels().begin();
 			  it != irc::server::__serv->getChannels().end(); ++it ) {
-				if (!(it->second->_mode &  CMODE_SECRET))
+				if (!(it->second->_mode &  CMODE_SECRET) && !(it->second->_mode &  CMODE_PRIVATE))
 					listChannel( client_, it->second->_name );
 			  }
 	} else {

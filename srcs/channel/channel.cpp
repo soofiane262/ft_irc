@@ -6,7 +6,7 @@
 /*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 17:02:42 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/30 14:53:40 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/30 16:26:06 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,11 +94,11 @@ void irc::channel::setModes( const std::string& modes_ ) {
 	}
 }
 
-// bool irc::channel::isMember( irc::client* member ) {
-// 	irc::channel::member_iterator member_it;
-// 	member_it = _members.find( member );
-// 	return ( member_it != _members.end() );
-// }
+bool irc::channel::isMember( irc::client* member ) {
+	irc::channel::member_iterator member_it;
+	member_it = _members.find( member );
+	return ( member_it != _members.end() );
+}
 
 irc::channel::member_iterator irc::channel::getMember( std::string& member_name_ ) {
 	irc::channel::member_iterator member_it = _members.begin();
@@ -109,16 +109,4 @@ irc::channel::member_iterator irc::channel::getMember( std::string& member_name_
 
 irc::channel::member_iterator irc::channel::getMember( irc::client* member_ ) {
 	return ( _members.find( member_ ) );
-}
-
-irc::channel::member_iterator irc::channel::getMember( std::string member) {
-	irc::channel::member_iterator member_it;
-	member_it = _members.begin();
-	while(member_it != _members.end())
-	{
-		if (member_it->first->_nickname == member)
-			break;
-		member_it++;
-	}
-	return(member_it);
 }

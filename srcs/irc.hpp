@@ -6,7 +6,7 @@
 /*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/30 14:53:53 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/30 16:28:19 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ namespace irc {
 			_msg_out;
 		irc::message _message;
 		bool		 has_mode( int );
+		bool		 hasmodeOP(irc::channel& channel);
 		client( int& fd )
 			: _fd( fd ), _nick_change( -1 ), _mode( 0 ), _quit( false ), _nickname( "*" ),
 			  _username( "*" ), _realname( "*" ) {}
@@ -109,9 +110,10 @@ namespace irc {
 		std::string getModes( void );
 		void		setModes( const std::string& );
 		void		setModes( member_iterator, const std::string& );
-		// bool			isMember( irc::client* );
+		bool			isMember( irc::client* );
 		member_iterator getMember( std::string& );
 		member_iterator getMember( irc::client* );
+		
 	}; // channel
 	/* commands ────────────────────────────────────────────────────────────────────────── */
 	class commands {
@@ -134,6 +136,7 @@ namespace irc {
 		void		  TOPIC( irc::client& );
 		void		  LIST( irc::client& );
 		void		  NAMES( irc::client& );
+		void		  KICK( irc::client& );
 
 	  public:
 		void operator[]( irc::client& );

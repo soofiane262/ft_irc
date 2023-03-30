@@ -6,7 +6,7 @@
 /*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/24 15:22:19 by mel-hous          #+#    #+#             */
-/*   Updated: 2023/03/30 14:53:19 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/30 17:42:51 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,11 @@ static void assignMode( irc::client& client_, char mode_, bool& add_, irc::chann
 		channel_._mode |= CMODE_MODERATED;
 	else if ( mode_ == 'm' )
 		channel_._mode &= ~CMODE_MODERATED;
-	else if ( mode_ == 's' && add_ )
+	else if ( mode_ == 's' && add_ && !(channel_._mode & CMODE_PRIVATE))
 		channel_._mode |= CMODE_SECRET;
 	else if ( mode_ == 's' )
 		channel_._mode &= ~CMODE_SECRET;
-	else if ( mode_ == 'p' && add_ )
+	else if ( mode_ == 'p' && add_ && !(channel_._mode & CMODE_SECRET))
 		channel_._mode |= CMODE_PRIVATE;
 	else if ( mode_ == 'p' )
 		channel_._mode &= ~CMODE_PRIVATE;
