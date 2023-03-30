@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/17 14:55:06 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/29 18:11:07 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/30 15:06:59 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,16 +117,11 @@ std::vector< std::string > irc::utils::split( const std::string& str_, const cha
 	std::string::const_iterator it = str_.begin();
 	std::string::const_iterator it2;
 
-	std::cout << "split: " << str_ << std::endl;
-
 	while ( it != str_.end() ) {
 		it2 = std::find( it, str_.end(), sep_ );
 		ret.push_back( std::string( it, it2 ) );
 		it = it2;
 		if ( it != str_.end() ) ++it;
 	}
-	// print everything
-	for ( std::size_t idx = 0; idx < ret.size(); ++idx )
-		std::cout << "split: " << ret[ idx ] << std::endl;
 	return ret;
 }

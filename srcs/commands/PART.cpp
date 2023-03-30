@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PART.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 14:24:56 by acmaghou          #+#    #+#             */
-/*   Updated: 2023/03/29 17:23:52 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/30 15:09:23 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void irc::commands::PART( irc::client& client_ ) {
 		client_._msg_out += ERR_NEEDMOREPARAMS( client_ );
 	else {
 		std::vector< std::string > channel_names =
-			irc::utils::split( client_._message._params[ 1 ], ',' );
+			irc::utils::split( client_._message._params[ 0 ], ',' );
 		for ( std::vector< std::string >::iterator it = channel_names.begin();
 			  it != channel_names.end(); ++it )
 			partChannel( client_, *it );
