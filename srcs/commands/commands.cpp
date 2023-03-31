@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:27:13 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 14:16:05 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 16:27:28 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ irc::commands::commands( void ) {
 	this->_commands[ "WHO" ]	 = &commands::WHO;
 	this->_commands[ "OPER" ]	 = &commands::OPER;
 	this->_commands[ "INVITE" ]	 = &commands::INVITE;
+	this->_commands[ "WHOIS" ]	 = &commands::WHOIS;
 }
 
 /* dtor ─────────────────────────────────────────────────────────────────────────────── */

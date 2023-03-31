@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+         #
+#    By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/08 14:44:10 by sel-mars          #+#    #+#              #
-#    Updated: 2023/03/31 13:38:06 by sel-mars         ###   ########.fr        #
+#    Updated: 2023/03/31 16:23:11 by acmaghou         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ FLAGS	=	-Wall -Wextra -Werror -std=c++98
 
 COMMANDS = $(addprefix commands/,$(addsuffix .cpp,\
 			commands JOIN NICK PASS PONG QUIT NOTICE USER PRIVMSG PART MODE\
-			TOPIC LIST NAMES KICK WHO OPER INVITE))
+			TOPIC LIST NAMES KICK WHO OPER INVITE WHOIS))
 
 SERVER = $(addprefix server/,$(addsuffix .cpp,\
 			channel_ops client_ops message_ops server_ops server))
