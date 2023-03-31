@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MODE.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/24 15:22:19 by mel-hous          #+#    #+#             */
-/*   Updated: 2023/03/31 15:02:31 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 16:20:33 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,7 @@ void irc::commands::MODE( irc::client& client_ ) {
 				for ( irc::channel::member_iterator it = channel->_members.begin();
 					  it != channel->_members.end(); ++it ) {
 					it->first->_msg_out +=
-						RPL_CHANMODE( it->first, channel->_name, channel_modes[ 0 ] );
+						RPL_CHANMODE( client_, channel->_name, channel_modes[ 0 ] );
 				}
 			}
 		}

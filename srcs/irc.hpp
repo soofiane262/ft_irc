@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 14:23:36 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 17:27:32 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,6 +190,7 @@ namespace irc {
 		void		  initServer( void );
 		void		  runServer( void );
 		void		  shutDownServer( void );
+		client_type	  &getClients();
 		std::string	  getClientsSize( void );
 		std::string	  getOpersSize( void );
 		std::string	  getChannelsSize( void );

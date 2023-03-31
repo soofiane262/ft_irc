@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 18:22:31 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 14:28:04 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 17:27:25 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,10 @@ std::string irc::server::getClientsSize( void ) {
 	ss << this->_clients.size();
 	return ss.str();
 } // getClientsSize
+
+irc::server::client_type	  &irc::server::getClients(){
+	return(_clients);
+};
 
 std::string irc::server::getOpersSize( void ) {
 	std::stringstream ss;

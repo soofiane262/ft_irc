@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   definitions.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 14:56:39 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 16:14:16 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,9 +120,9 @@ enum channel_modes {
 #define RPL_UMODE( client_ )                                                                     \
 	COLON + client_._nickname + SPACE + "MODE" + client_._nickname + SPCL + client_.getModes() + \
 		CRLF
-#define RPL_CHANMODE( client_ptr_, channel_name_, channel_modes_ )        \
-	COLON + client_ptr_->_nickname + "!" + client_ptr_->_username + "@" + \
-		irc::server::__hostaddr + " MODE " + channel_name_ + channel_modes_ + CRLF
+#define RPL_CHANMODE( client_, channel_name_, channel_modes_ )        \
+	COLON + client_._nickname + "!" + client_._username + "@" + \
+		irc::server::__hostaddr + " MODE " + channel_name_ + SPACE + channel_modes_ + CRLF
 #define RPL_UMODEIS( client_ ) \
 	NUMERIC_REPLY_NOCL( "221", client_._nickname ) + client_.getModes() + CRLF
 #define RPL_YOUREOPER( client_ ) \
