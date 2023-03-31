@@ -6,13 +6,14 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/29 17:47:03 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 14:56:39 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /* General ──────────────────────────────────────────────────────────────────────────── */
 
 #define MAX_FD			   1024
+#define MAX_USERS		   "1024"
 #define BACKLOG			   10
 #define CRLF			   "\r\n"
 #define BELL			   '\a'
@@ -34,8 +35,7 @@ enum user_modes {
 	UMODE_WALLOPS	 = 2,
 	UMODE_INVISIBLE	 = 4,
 	UMODE_RESTRICTED = 8,
-	UMODE_OPERATOR	 = 16,
-	UMODE_RECEIPT	 = 32
+	UMODE_OPERATOR	 = 16
 };
 #define UMODES_CHAN "ov"
 enum user_channel_modes { UMODE_CHANOP = 1, UMODE_VOICE = 2, UMODE_CHANOWNER = 4 };
@@ -86,14 +86,14 @@ enum channel_modes {
 	NUMERIC_REPLY( "372", client_._nickname ) + "-" + SPACE + motd_ + CRLF
 #define RPL_ENDOFMOTD( client_ ) \
 	NUMERIC_REPLY( "376", client_._nickname ) + "End of MOTD command" + CRLF
-#define RPL_LUSERCLIENT( client_ )                              \
-	NUMERIC_REPLY( "251", client_._nickname ) + "There are " +  \
-		irc::server::__serv->getClientsSize() + " users and " + \
-		irc::server::__serv->getChannelsSize() + " channels on " + irc::server::__hostaddr + CRLF
-#define RPL_LUSEROP( client_ ) \
-	NUMERIC_REPLY( "252", client_._nickname ) + "0 :operator(s) online" + CRLF
-#define RPL_LUSERUNKNOWN( client_ ) \
-	NUMERIC_REPLY( "253", client_._nickname ) + "0 :unknown connection(s)" + CRLF
+#define RPL_LUSERCLIENT( client_ )                                                           \
+	NUMERIC_REPLY( "251", client_._nickname ) + "There are " +                               \
+		irc::server::__serv->getClientsSize() + " users and " +                              \
+		irc::server::__serv->getChannelsSize() + " channels on " + irc::server::__hostaddr + \
+		" Max: " + MAX_USERS + CRLF
+#define RPL_LUSEROP( client_ )                                                        \
+	NUMERIC_REPLY( "252", client_._nickname ) + irc::server::__serv->getOpersSize() + \
+		" :operator(s) online" + CRLF
 #define RPL_LUSERCHANNELS( client_ )                                                     \
 	NUMERIC_REPLY( "254", client_._nickname ) + irc::server::__serv->getChannelsSize() + \
 		" :channels formed" + CRLF
@@ -117,6 +117,21 @@ enum channel_modes {
 		" JOIN :" + channel_name + CRLF
 #define RPL_CHANNELMODEIS( client_, channel_name, channel_modes ) \
 	NUMERIC_REPLY_NOCL( "324", client_._nickname ) + channel_name + SPACE + channel_modes + CRLF
+#define RPL_UMODE( client_ )                                                                     \
+	COLON + client_._nickname + SPACE + "MODE" + client_._nickname + SPCL + client_.getModes() + \
+		CRLF
+#define RPL_CHANMODE( client_ptr_, channel_name_, channel_modes_ )        \
+	COLON + client_ptr_->_nickname + "!" + client_ptr_->_username + "@" + \
+		irc::server::__hostaddr + " MODE " + channel_name_ + channel_modes_ + CRLF
+#define RPL_UMODEIS( client_ ) \
+	NUMERIC_REPLY_NOCL( "221", client_._nickname ) + client_.getModes() + CRLF
+#define RPL_YOUREOPER( client_ ) \
+	NUMERIC_REPLY_NOCL( "381", client_._nickname ) + "You are now an IRC operator" + CRLF
+#define RPL_INVITING( client_, channel_name, target_nick_ )                               \
+	COLON + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + \
+		" INVITE " + target_nick_ + " :" + channel_name + CRLF
+#define RPL_AWAY( client_, target_nick_, away_msg_ ) \
+	NUMERIC_REPLY_NOCL( "301", client_._nickname ) + target_nick_ + SPCL + away_msg_ + CRLF
 
 /* Errors ───────────────────────────────────────────────────────────────────────────── */
 
@@ -170,8 +185,8 @@ enum channel_modes {
 #define ERR_TOOMANYMATCHES( client_ ) ERR_REPLY_BASE( "416", client_ ) + " :Too many matches" + CRLF
 #define ERR_TOOMANYMATCHESNAMES( client_, channel_name_ ) \
 	ERR_REPLY_BASE( "416", client_ ) + channel_name_ + " :Too many matches" + CRLF
-// #define ERR_INVITEONLYCHAN( client_, channel_name ) \
-// 	ERR_REPLY_BASE( "473", client_ ) + channel_name + " :Cannot join channel (+i)" + CRLF
+#define ERR_INVITEONLYCHAN( client_, channel_name ) \
+	ERR_REPLY_BASE( "473", client_ ) + channel_name + " :Cannot join channel (+i)" + CRLF
 #define ERR_CHANOPRIVSNEEDED( client_, channel_name ) \
 	ERR_REPLY_BASE( "482", client_ ) + channel_name + " :You're not channel operator" + CRLF
 #define ERR_RESTRICTED( client_ ) \
@@ -188,6 +203,10 @@ enum channel_modes {
 	ERR_REPLY_BASE( "401", client_ ) + nickname_ + " :No such nick/channel" + CRLF
 #define ERR_NOTONCHANNEL( client_, channel_name ) \
 	ERR_REPLY_BASE( "442", client_ ) + channel_name + " :You're not on that channel" + CRLF
+#define ERR_USERSDONTMATCH( client_ ) \
+	ERR_REPLY_BASE( "502", client_ ) + "Can't change mode for other users" + CRLF
+#define ERR_RESTRICTED( client_ ) \
+	ERR_REPLY_BASE( "484", client_ ) + "Your connection is restricted!" + CRLF
 
 /* PRIVMSG ──────────────────────────────────────────────────────────────────────────── */
 
@@ -200,9 +219,9 @@ enum channel_modes {
 
 /* PARTMSG ──────────────────────────────────────────────────────────────────────────── */
 
-#define PARTMSG( client_, channel_name )                                                           \
+#define RPL_PART( client_, channel_name )                                                          \
 	":" + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + " PART " + \
 		channel_name + CRLF
-/* MODE_MSG ──────────────────────────────────────────────────────────────────────────── */
-
-#define MODEMSG( client_, channel_name, c, op ) client_._nickname + ": Has changed mode " + op + c
+#define RPL_PARTMSG( client_, channel_name, part_msg_ )                                            \
+	":" + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + " PART " + \
+		channel_name + SPCL + part_msg_ + CRLF

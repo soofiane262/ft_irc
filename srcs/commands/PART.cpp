@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PART.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 14:24:56 by acmaghou          #+#    #+#             */
-/*   Updated: 2023/03/30 15:09:23 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/31 13:15:20 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,10 @@ static void partChannel( irc::client& client_, std::string& channel_name_ ) {
 		else {
 			for ( irc::channel::member_iterator it2 = channel->_members.begin();
 				  it2 != channel->_members.end(); ++it2 )
-				( *it2 ).first->_msg_out += PARTMSG( client_, channel->_name );
+				( *it2 ).first->_msg_out +=
+					client_._message._params[ 1 ].empty() ?
+						RPL_PART( client_, channel->_name ) :
+						RPL_PARTMSG( client_, channel->_name, client_._message._params[ 1 ] );
 			channel->_members.erase( it );
 			if ( channel->_members.empty() ) irc::server::__serv->removeChannel( *channel );
 		}

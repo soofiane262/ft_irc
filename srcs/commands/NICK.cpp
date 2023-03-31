@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 16:46:54 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/28 16:08:10 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 12:53:22 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 void irc::commands::NICK( irc::client& client_ ) {
 	std::time_t time_elapsed =
 		std::difftime( std::time( NULL ), client_._nick_change + ( client_._nick_change == -1 ) );
-	if ( client_._message._params.empty() || client_._message._params.front().empty() )
+	if ( client_._mode & UMODE_RESTRICTED ) ERR_RESTRICTED( client_ );
+	else if ( client_._message._params.empty() || client_._message._params.front().empty() )
 		client_._msg_out += ERR_NONICKNAMEGIVEN( client_ );
 	else if ( !irc::utils::nickIsValid( client_._message._params.front() ) )
 		client_._msg_out += ERR_ERRONEUSNICKNAME( client_ );

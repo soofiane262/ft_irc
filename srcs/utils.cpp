@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/17 14:55:06 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/30 15:06:59 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/31 13:03:23 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ unsigned char irc::utils::intToMode( const int& mode_ ) {
 	if ( mode_ & UMODE_INVISIBLE ) ret |= UMODE_INVISIBLE;
 	if ( mode_ & UMODE_RESTRICTED ) ret |= UMODE_RESTRICTED;
 	if ( mode_ & UMODE_OPERATOR ) ret |= UMODE_OPERATOR;
-	if ( mode_ & UMODE_RECEIPT ) ret |= UMODE_RECEIPT;
+	if ( !ret ) ret |= UMODE_WALLOPS;
 	return ret;
 }
 

@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:27:13 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/29 17:36:53 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 14:16:05 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,10 @@ irc::commands::commands( void ) {
 	this->_commands[ "TOPIC" ]	 = &commands::TOPIC;
 	this->_commands[ "LIST" ]	 = &commands::LIST;
 	this->_commands[ "NAMES" ]	 = &commands::NAMES;
+	this->_commands[ "KICK" ]	 = &commands::KICK;
+	this->_commands[ "WHO" ]	 = &commands::WHO;
+	this->_commands[ "OPER" ]	 = &commands::OPER;
+	this->_commands[ "INVITE" ]	 = &commands::INVITE;
 }
 
 /* dtor ─────────────────────────────────────────────────────────────────────────────── */
@@ -34,6 +38,7 @@ irc::commands::~commands( void ) {}
 
 /* operator[] ───────────────────────────────────────────────────────────────────────── */
 void irc::commands::operator[]( irc::client& client_ ) {
+	client_._message.clear();
 	client_._message.parseMsg( client_._msg_in.erase( client_._msg_in.size() - 2 ) );
 	if ( client_._message._command.empty() ) client_._msg_out += ERR_NOCOMMANDGIVEN( client_ );
 	else {
