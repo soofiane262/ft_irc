@@ -6,7 +6,7 @@
 /*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/30 16:28:19 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/31 11:27:28 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ namespace irc {
 	  public:
 		typedef std::map< irc::client*, unsigned char >			  member_type;
 		typedef std::map< irc::client*, unsigned char >::iterator member_iterator;
+		
 		int														  _fd;
 		std::time_t												  _nick_change;
 		unsigned char											  _mode;
@@ -137,6 +138,7 @@ namespace irc {
 		void		  LIST( irc::client& );
 		void		  NAMES( irc::client& );
 		void		  KICK( irc::client& );
+		void		  WHO( irc::client& );
 
 	  public:
 		void operator[]( irc::client& );
