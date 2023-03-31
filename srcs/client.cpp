@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/26 13:32:25 by mel-hous          #+#    #+#             */
-/*   Updated: 2023/03/31 13:44:26 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 17:06:12 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,28 @@ std::string irc::client::getModes( void ) {
 	if ( _mode & UMODE_RESTRICTED ) modes += "r";
 	if ( _mode & UMODE_OPERATOR ) modes += "o";
 	return modes;
+}
+
+std::string irc::client::getIdleTime( void ) {
+	std::stringstream ss;
+	ss << std::difftime( time( NULL ), this->_idle );
+	return ss.str();
+}
+
+std::string irc::client::getSignOnTime( void ) {
+	std::stringstream ss;
+	ss << this->_sign;
+	return ss.str();
+}
+
+std::string irc::client::getChannels( void ) {
+	std::string channels;
+	for ( std::set< std::string >::iterator it = this->_channels_joined.begin();
+		  it != this->_channels_joined.end(); it++ ) {
+		channels += *it;
+		channels += " ";
+	}
+	return channels;
 }
 
 void irc::client::inviteChannel( std::string& channel_name_ ) {

@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 16:46:54 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 12:53:22 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 17:55:23 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ void irc::commands::NICK( irc::client& client_ ) {
 		ss << ( NICK_DELAY - time_elapsed );
 		client_._msg_out += ERR_UNAVAILRESOURCE( client_, ss.str() );
 	} else {
+		irc::server::__serv->broadcastJoinedChannels(
+			client_, RPL_NICKNAME( client_, client_._message._params.front() ) );
 		client_._nickname	 = client_._message._params.front();
 		client_._nick_change = std::time( NULL );
 		return;

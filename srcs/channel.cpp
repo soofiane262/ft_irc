@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 17:02:42 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 14:08:43 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 17:53:58 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,19 @@ bool irc::channel::addMember( irc::client* client_, std::string& key_ ) {
 	if ( this->_members.size() == 1 ) it.first->second = UMODE_CHANOP | UMODE_CHANOWNER;
 	client.joinChannel( this->_name );
 	return it.second;
+}
+
+void irc::channel::broadcast( std::string msg_ ) {
+	irc::channel::member_iterator member_it;
+	for ( member_it = this->_members.begin(); member_it != this->_members.end(); ++member_it )
+		( *member_it ).first->_msg_out += msg_;
+}
+
+void irc::channel::broadcast( irc::client& client_, std::string msg_ ) {
+	irc::channel::member_iterator member_it;
+	for ( member_it = this->_members.begin(); member_it != this->_members.end(); ++member_it )
+		if ( client_._nickname.compare( member_it->first->_nickname ) )
+			member_it->first->_msg_out += msg_;
 }
 
 std::string irc::channel::getMembers( void ) {

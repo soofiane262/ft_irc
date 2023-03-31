@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 16:23:02 by acmaghou         ###   ########.fr       */
+/*   Updated: 2023/03/31 17:53:09 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ namespace irc {
 		typedef std::set< std::string >::iterator				  channel_iterator;
 
 		int			  _fd;
-		std::time_t	  _nick_change;
+		std::time_t	  _sign, _idle, _nick_change;
 		unsigned char _mode;
 		bool		  _quit;
 		std::string	  _hostaddr, _hostname, _hostport, _nickname, _username, _realname, _msg_in,
@@ -80,8 +80,10 @@ namespace irc {
 		irc::message _message;
 		channel_type _channels_joined;
 		channel_type _channels_invited;
-		bool		 has_mode( int );
+		std::string	 getIdleTime( void );
+		std::string	 getSignOnTime( void );
 		std::string	 getModes( void );
+		std::string	 getChannels( void );
 		void		 inviteChannel( std::string& );
 		void		 joinChannel( std::string& );
 		bool		 isInvited( std::string& );
@@ -114,6 +116,8 @@ namespace irc {
 		member_type	   _members;
 		channel( const std::string name_ = std::string() ) : _name( name_ ) {}
 		~channel( void ) {}
+		void			broadcast( std::string );
+		void			broadcast( irc::client&, std::string );
 		bool			addMember( irc::client*, std::string& );
 		std::string		getMembers( void );
 		std::string		getModes( void );
@@ -152,6 +156,7 @@ namespace irc {
 		void		  WHOIS( irc::client& );
 		void		  OPER( irc::client& );
 		void		  INVITE( irc::client& );
+		void		  AWAY( irc::client& );
 
 	  public:
 		void operator[]( irc::client& );
@@ -191,6 +196,7 @@ namespace irc {
 		void		  initServer( void );
 		void		  runServer( void );
 		void		  shutDownServer( void );
+		void		  broadcastJoinedChannels( irc::client&, std::string );
 		std::string	  getClientsSize( void );
 		std::string	  getOpersSize( void );
 		std::string	  getChannelsSize( void );
