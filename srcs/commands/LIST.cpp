@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   LIST.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/29 17:24:34 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 08:53:49 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/31 13:36:32 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,15 +28,15 @@ void irc::commands::LIST( irc::client& client_ ) {
 			client_._msg_out += ERR_TOOMANYMATCHES( client_ );
 		for ( irc::server::channel_iterator it = irc::server::__serv->getChannels().begin();
 			  it != irc::server::__serv->getChannels().end(); ++it ) {
-				if (!(it->second->_mode &  CMODE_SECRET) && !(it->second->_mode &  CMODE_PRIVATE))
-					listChannel( client_, it->second->_name );
-			  }
+			if ( !( it->second->_mode & CMODE_SECRET ) && !( it->second->_mode & CMODE_PRIVATE ) )
+				listChannel( client_, it->second->_name );
+		}
 	} else {
 		std::vector< std::string > channel_names =
 			irc::utils::split( client_._message._params[ 0 ], ',' );
 		for ( std::vector< std::string >::iterator it = channel_names.begin();
 			  it != channel_names.end(); ++it )
-				listChannel( client_, *it );
+			listChannel( client_, *it );
 	}
 	client_._msg_out += RPL_LISTEND( client_ );
 }

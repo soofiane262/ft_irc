@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 15:42:15 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/29 15:41:56 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 13:03:36 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ void irc::commands::USER( irc::client& client_ ) {
 		client_._msg_out += REGISTRATION_SUCCESS( client_ );
 		client_._msg_out += RPL_LUSERCLIENT( client_ );
 		client_._msg_out += RPL_LUSEROP( client_ );
-		client_._msg_out += RPL_LUSERUNKNOWN( client_ );
 		client_._msg_out += RPL_LUSERCHANNELS( client_ );
 		client_._msg_out += RPL_LUSERME( client_ );
 		client_._msg_out += RPL_MOTDSTART( client_ );
@@ -37,6 +36,7 @@ void irc::commands::USER( irc::client& client_ ) {
 		client_._msg_out += RPL_MOTD( client_, "\n" );
 		client_._msg_out += RPL_MOTD( client_, "We hope you feel at home here." );
 		client_._msg_out += RPL_ENDOFMOTD( client_ );
+		client_._msg_out += RPL_UMODEIS( client_ );
 		return;
 	}
 	if ( !client_._realname.compare( "*" ) ) client_._quit = true;

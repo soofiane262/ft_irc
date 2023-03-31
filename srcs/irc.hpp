@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 11:27:28 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/31 14:23:36 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,17 +68,25 @@ namespace irc {
 	  public:
 		typedef std::map< irc::client*, unsigned char >			  member_type;
 		typedef std::map< irc::client*, unsigned char >::iterator member_iterator;
-		
-		int														  _fd;
-		std::time_t												  _nick_change;
-		unsigned char											  _mode;
-		std::string												  last_channel;
-		bool													  _quit;
-		std::string _hostaddr, _hostname, _hostport, _nickname, _username, _realname, _msg_in,
-			_msg_out;
+		typedef std::set< std::string >							  channel_type;
+		typedef std::set< std::string >::iterator				  channel_iterator;
+
+		int			  _fd;
+		std::time_t	  _nick_change;
+		unsigned char _mode;
+		bool		  _quit;
+		std::string	  _hostaddr, _hostname, _hostport, _nickname, _username, _realname, _msg_in,
+			_msg_out, _away_msg;
 		irc::message _message;
+		channel_type _channels_joined;
+		channel_type _channels_invited;
 		bool		 has_mode( int );
-		bool		 hasmodeOP(irc::channel& channel);
+		std::string	 getModes( void );
+		void		 inviteChannel( std::string& );
+		void		 joinChannel( std::string& );
+		bool		 isInvited( std::string& );
+		bool		 isInChannel( std::string& );
+
 		client( int& fd )
 			: _fd( fd ), _nick_change( -1 ), _mode( 0 ), _quit( false ), _nickname( "*" ),
 			  _username( "*" ), _realname( "*" ) {}
@@ -106,15 +114,16 @@ namespace irc {
 		member_type	   _members;
 		channel( const std::string name_ = std::string() ) : _name( name_ ) {}
 		~channel( void ) {}
-		bool		addMember( irc::client* );
-		std::string getMembers( void );
-		std::string getModes( void );
-		void		setModes( const std::string& );
-		void		setModes( member_iterator, const std::string& );
+		bool			addMember( irc::client*, std::string& );
+		std::string		getMembers( void );
+		std::string		getModes( void );
+		void			setModes( const std::string& );
+		void			setModes( member_iterator, const std::string& );
 		bool			isMember( irc::client* );
 		member_iterator getMember( std::string& );
+		member_iterator getMemberByUsername( std::string& );
 		member_iterator getMember( irc::client* );
-		
+
 	}; // channel
 	/* commands ────────────────────────────────────────────────────────────────────────── */
 	class commands {
@@ -124,6 +133,7 @@ namespace irc {
 		typedef std::map< std::string, void ( irc::commands::* )( irc::client& ) >::iterator
 					  commands_iterator;
 		commands_type _commands;
+		void		  kick_member( irc::client&, std::string&, irc::channel*, std::string& );
 		void		  PASS( irc::client& );
 		void		  NICK( irc::client& );
 		void		  USER( irc::client& );
@@ -139,6 +149,8 @@ namespace irc {
 		void		  NAMES( irc::client& );
 		void		  KICK( irc::client& );
 		void		  WHO( irc::client& );
+		void		  OPER( irc::client& );
+		void		  INVITE( irc::client& );
 
 	  public:
 		void operator[]( irc::client& );
@@ -172,13 +184,14 @@ namespace irc {
 
 	  public:
 		static server*	   __serv;
-		static std::string __password, __hostaddr, __creationdate;
+		static std::string __password, __operpass, __hostaddr, __creationdate;
 		server( const int& ac, char** av );
 		~server( void );
 		void		  initServer( void );
 		void		  runServer( void );
 		void		  shutDownServer( void );
 		std::string	  getClientsSize( void );
+		std::string	  getOpersSize( void );
 		std::string	  getChannelsSize( void );
 		bool		  findClientByNick( const std::string& nick_ );
 		irc::channel* addChannel( std::string& );

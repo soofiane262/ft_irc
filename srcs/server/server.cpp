@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 18:22:31 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/29 16:26:05 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 14:28:04 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 /* static ──────────────────────────────────────────────────────────────────────────── */
 
 irc::server* irc::server::__serv		 = NULL;
+std::string	 irc::server::__operpass	 = "operpass";
 std::string	 irc::server::__password	 = "";
 std::string	 irc::server::__hostaddr	 = "";
 std::string	 irc::server::__creationdate = "";
@@ -50,6 +51,17 @@ irc::server::~server( void ) {
 std::string irc::server::getClientsSize( void ) {
 	std::stringstream ss;
 	ss << this->_clients.size();
+	return ss.str();
+} // getClientsSize
+
+std::string irc::server::getOpersSize( void ) {
+	std::stringstream ss;
+	int				  nb = 0;
+	for ( irc::server::client_iterator it = this->_clients.begin(); it != this->_clients.end();
+		  it++ ) {
+		if ( it->second._mode & UMODE_OPERATOR ) nb++;
+	}
+	ss << nb;
 	return ss.str();
 } // getClientsSize
 

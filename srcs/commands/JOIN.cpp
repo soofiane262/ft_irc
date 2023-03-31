@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   JOIN.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 15:44:53 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 08:53:59 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/03/31 13:30:56 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void joinChannel( irc::client& client_, std::string& channel_name_,
 		else if ( channel->_mode & CMODE_KEY && channel->_key != channel_key_ )
 			client_._msg_out += ERR_BADCHANNELKEY( client_, channel->_name );
 		else {
-			if ( channel->addMember( &client_ ) ) {
+			if ( channel->addMember( &client_, channel_key_ ) ) {
 				for ( irc::channel::member_iterator it = channel->_members.begin();
 					  it != channel->_members.end(); ++it )
 					( *it ).first->_msg_out += RPL_JOIN( client_, channel->_name );

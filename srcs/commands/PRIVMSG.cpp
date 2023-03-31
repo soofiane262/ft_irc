@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 11:25:32 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/29 15:45:54 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 14:49:25 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void irc::commands::PRIVMSG( irc::client& client_ ) {
 		client_._msg_out += ERR_NORECIPIENT( client_ );
 	else if ( client_._message._params.size() < 2 || client_._message._params[ 2 ].empty() )
 		client_._msg_out += ERR_NOTEXTTOSEND( client_ );
-	else if ( client_._message._params.front()[ 0 ] != '#' ) {
+	else if ( client_._message._params.front()[ 0 ] == '#' ) {
 		irc::channel* channel =
 			irc::server::__serv->findChannel( client_._message._params.front() );
 		if ( channel == NULL )
