@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   definitions.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 14:56:39 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 16:22:36 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,18 @@ enum channel_modes {
 		" INVITE " + target_nick_ + " :" + channel_name + CRLF
 #define RPL_AWAY( client_, target_nick_, away_msg_ ) \
 	NUMERIC_REPLY_NOCL( "301", client_._nickname ) + target_nick_ + SPCL + away_msg_ + CRLF
+
+#define RPL_WHOISUSER( client_, target_) \
+	NUMERIC_REPLY_NOCL( "311", client_._nickname ) + target_->_nickname + SPCL + target_->_username + \
+		SPCL + irc::server::__hostaddr + SPCL + "*" + SPCL + ":" + target_->_realname + CRLF
+#define	RPL_WHOISOPERATOR( client_, target_ ) \
+	NUMERIC_REPLY_NOCL( "313", client_._nickname ) + target_->_nickname + " :is an IRC operator" + CRLF
+#define RPL_WHOISIDLE( client_, target_ ) \
+	NUMERIC_REPLY_NOCL( "317", client_._nickname ) + target_->_nickname + " is idle"
+
+#define	RPL_ENDOFWHOIS( client_, target_ ) \
+	NUMERIC_REPLY_NOCL( "318", client_._nickname ) + target_->_nickname + " :End of WHOIS list" + CRLF
+	
 
 /* Errors ───────────────────────────────────────────────────────────────────────────── */
 

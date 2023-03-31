@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
+/*   By: acmaghou <acmaghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 14:23:36 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 16:23:02 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,7 @@ namespace irc {
 		void		  NAMES( irc::client& );
 		void		  KICK( irc::client& );
 		void		  WHO( irc::client& );
+		void		  WHOIS( irc::client& );
 		void		  OPER( irc::client& );
 		void		  INVITE( irc::client& );
 
