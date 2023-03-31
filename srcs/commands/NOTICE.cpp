@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 13:43:28 by acmaghou          #+#    #+#             */
-/*   Updated: 2023/03/31 14:49:48 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 21:14:23 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ void irc::commands::NOTICE( irc::client& client_ ) {
 	if ( client_._message._params.size() >= 2 && !client_._message._params[ 2 ].empty() ) {
 		if ( !client_._message._params.front().empty() &&
 			 client_._message._params.front()[ 0 ] == '#' ) {
-			irc::channel* channel =
-				irc::server::__serv->findChannel( client_._message._params.front() );
+			std::string	  channel_name = irc::utils::toLower( client_._message._params.front() );
+			irc::channel* channel	   = irc::server::__serv->findChannel( channel_name );
 			if ( channel ) {
 				irc::channel::member_iterator member = channel->getMember( &client_ );
 				if ( ( channel->_mode & CMODE_NOEXTERNAL && member == channel->_members.end() ) ||

@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/26 13:32:25 by mel-hous          #+#    #+#             */
-/*   Updated: 2023/03/31 17:06:12 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 21:43:59 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,10 @@ void irc::client::inviteChannel( std::string& channel_name_ ) {
 void irc::client::joinChannel( std::string& channel_name_ ) {
 	this->_channels_joined.insert( channel_name_ );
 	this->_channels_invited.erase( channel_name_ );
+}
+
+void irc::client::partChannel( std::string& channel_name_ ) {
+	this->_channels_joined.erase( channel_name_ );
 }
 
 bool irc::client::isInvited( std::string& channel_name_ ) {

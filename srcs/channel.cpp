@@ -6,33 +6,33 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 17:02:42 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 17:53:58 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 22:12:37 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "irc.hpp"
 
-bool irc::channel::addMember( irc::client* client_, std::string& key_ ) {
+int irc::channel::addMember( irc::client* client_, std::string& key_ ) {
 	irc::client& client = *client_;
 	if ( this->_mode & CMODE_LIMIT &&
 		 static_cast< unsigned short >( this->_members.size() ) >= this->_limit ) {
 		client_->_msg_out += ERR_CHANNELISFULL( client, this->_name );
-		return false;
+		return -1;
 	}
 	if ( this->_mode & CMODE_KEY && this->_key != key_ ) {
 		client_->_msg_out += ERR_BADCHANNELKEY( client, this->_name );
-		return false;
+		return -1;
 	}
 	if ( this->_mode & ( CMODE_INVITE | CMODE_PRIVATE | CMODE_SECRET ) &&
 		 !client_->isInvited( this->_name ) ) {
 		client_->_msg_out += ERR_INVITEONLYCHAN( client, this->_name );
-		return false;
+		return -1;
 	}
 	std::pair< irc::channel::member_iterator, bool > it =
 		this->_members.insert( std::make_pair( client_, '\0' ) );
 	if ( this->_members.size() == 1 ) it.first->second = UMODE_CHANOP | UMODE_CHANOWNER;
 	client.joinChannel( this->_name );
-	return it.second;
+	return it.second != 0;
 }
 
 void irc::channel::broadcast( std::string msg_ ) {
@@ -52,7 +52,8 @@ std::string irc::channel::getMembers( void ) {
 	std::string					  members;
 	irc::channel::member_iterator member_it;
 	for ( member_it = this->_members.begin(); member_it != this->_members.end(); ++member_it )
-		members.append( ( *member_it ).first->_nickname + ' ' );
+		members +=
+			( member_it->second & UMODE_CHANOP ? "@" : "" ) + ( *member_it ).first->_nickname + ' ';
 	return members;
 }
 

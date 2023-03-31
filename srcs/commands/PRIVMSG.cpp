@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 11:25:32 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 18:28:06 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 21:14:23 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,9 @@ void irc::commands::PRIVMSG( irc::client& client_ ) {
 	else if ( client_._message._params.size() < 2 || client_._message._params[ 2 ].empty() )
 		client_._msg_out += ERR_NOTEXTTOSEND( client_ );
 	else if ( client_._message._params.front()[ 0 ] == '#' ) {
-		irc::channel* channel =
-			irc::server::__serv->findChannel( client_._message._params.front() );
-		if ( channel == NULL )
-			client_._msg_out += ERR_NOSUCHCHANNEL( client_, client_._message._params.front() );
+		std::string	  channel_name = irc::utils::toLower( client_._message._params.front() );
+		irc::channel* channel	   = irc::server::__serv->findChannel( channel_name );
+		if ( channel == NULL ) client_._msg_out += ERR_NOSUCHCHANNEL( client_, channel_name );
 		else {
 			irc::channel::member_iterator member = channel->getMember( &client_ );
 			if ( channel->_mode & CMODE_NOEXTERNAL && member == channel->_members.end() )

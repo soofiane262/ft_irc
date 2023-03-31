@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 17:53:09 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 22:12:49 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ namespace irc {
 		unsigned char			   intToMode( const int& mode_ );
 		bool					   pollfd_cmp( const pollfd&, const pollfd& );
 		std::vector< std::string > split( const std::string&, const char& );
+		std::string				   toLower( std::string& );
 	} // namespace utils
 	/* message ─────────────────────────────────────────────────────────────────────────── */
 	class message {
@@ -86,6 +87,7 @@ namespace irc {
 		std::string	 getChannels( void );
 		void		 inviteChannel( std::string& );
 		void		 joinChannel( std::string& );
+		void		 partChannel( std::string& );
 		bool		 isInvited( std::string& );
 		bool		 isInChannel( std::string& );
 
@@ -118,7 +120,7 @@ namespace irc {
 		~channel( void ) {}
 		void			broadcast( std::string );
 		void			broadcast( irc::client&, std::string );
-		bool			addMember( irc::client*, std::string& );
+		int				addMember( irc::client*, std::string& );
 		std::string		getMembers( void );
 		std::string		getModes( void );
 		void			setModes( const std::string& );

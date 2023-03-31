@@ -6,16 +6,14 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/24 15:22:19 by mel-hous          #+#    #+#             */
-/*   Updated: 2023/03/31 18:17:58 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 21:38:04 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../irc.hpp"
 
 static void assignMode( irc::client& client_, char c, bool add ) {
-	if ( c == 'a' && add ) client_._mode |= UMODE_AWAY;
-	else if ( c == 'a' )
-		client_._mode &= ~UMODE_AWAY;
+	if ( c == 'a' && !add ) client_._mode &= ~UMODE_AWAY;
 	else if ( c == 'w' && add )
 		client_._mode |= UMODE_WALLOPS;
 	else if ( c == 'w' )
@@ -111,9 +109,10 @@ void irc::commands::MODE( irc::client& client_ ) {
 	if ( client_._message._params.empty() || client_._message._params.front().empty() ) {
 		client_._msg_out += ERR_NEEDMOREPARAMS( client_ );
 	} else if ( client_._message._params.front()[ 0 ] == '#' ) {
-		channel* channel = irc::server::__serv->findChannel( client_._message._params[ 0 ] );
+		std::string	  channel_name = irc::utils::toLower( client_._message._params[ 0 ] );
+		irc::channel* channel	   = irc::server::__serv->findChannel( channel_name );
 		if ( channel == NULL ) {
-			client_._msg_out += ERR_NOSUCHCHANNEL( client_, client_._message._params[ 0 ] );
+			client_._msg_out += ERR_NOSUCHCHANNEL( client_, channel_name );
 		} else if ( client_._message._params.size() == 1 ) {
 			client_._msg_out += RPL_CHANNELMODEIS( client_, channel->_name, channel->getModes() );
 		} else {
@@ -144,11 +143,7 @@ void irc::commands::MODE( irc::client& client_ ) {
 						channel_modes[ 0 ] += *it;
 				};
 				channel_modes[ 0 ] += SPACE + channel_modes[ 1 ];
-				for ( irc::channel::member_iterator it = channel->_members.begin();
-					  it != channel->_members.end(); ++it ) {
-					it->first->_msg_out +=
-						RPL_CHANMODE( it->first, channel->_name, channel_modes[ 0 ] );
-				}
+				channel->broadcast( RPL_CHANMODE( client_, channel->_name, channel_modes[ 0 ] ) );
 			}
 		}
 	} else {

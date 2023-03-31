@@ -1,3 +1,5 @@
 ircserv
 .vscode
 test
+obj
+test*

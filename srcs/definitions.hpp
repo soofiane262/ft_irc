@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 18:27:11 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 22:09:15 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,9 +104,9 @@ enum channel_modes {
 	NUMERIC_REPLY_NOCL( "331", client_._nickname ) + channel_name + " :No topic is set" + CRLF
 #define RPL_TOPIC( client_, channel_name, topic_ ) \
 	NUMERIC_REPLY_NOCL( "332", client_._nickname ) + channel_name + SPCL + topic_ + CRLF
-#define RPL_TOPIC_CHANGE( client_ptr_, channel_name, topic_ )             \
-	COLON + client_ptr_->_nickname + "!" + client_ptr_->_username + "@" + \
-		irc::server::__hostaddr + " TOPIC " + channel_name + SPCL + topic_ + CRLF
+#define RPL_TOPIC_CHANGE( client_, channel_name, topic_ )                                 \
+	COLON + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + \
+		" TOPIC " + channel_name + SPCL + topic_ + CRLF
 #define RPL_NAMREPLY( client_, channel_name, users_ )                                             \
 	NUMERIC_REPLY_NOCL( "353", client_._nickname ) + "=" + SPACE + channel_name + SPCL + users_ + \
 		CRLF
@@ -120,16 +120,18 @@ enum channel_modes {
 #define RPL_UMODE( client_ )                                                                     \
 	COLON + client_._nickname + SPACE + "MODE" + client_._nickname + SPCL + client_.getModes() + \
 		CRLF
-#define RPL_CHANMODE( client_ptr_, channel_name_, channel_modes_ )        \
-	COLON + client_ptr_->_nickname + "!" + client_ptr_->_username + "@" + \
-		irc::server::__hostaddr + " MODE " + channel_name_ + SPACE + channel_modes_ + CRLF
+#define RPL_CHANMODE( client_, channel_name_, channel_modes_ )                            \
+	COLON + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + \
+		" MODE " + channel_name_ + SPACE + channel_modes_ + CRLF
 #define RPL_UMODEIS( client_ ) \
 	NUMERIC_REPLY_NOCL( "221", client_._nickname ) + client_.getModes() + CRLF
 #define RPL_YOUREOPER( client_ ) \
 	NUMERIC_REPLY_NOCL( "381", client_._nickname ) + "You are now an IRC operator" + CRLF
-#define RPL_INVITING( client_, channel_name, target_nick_ )                               \
+#define RPL_INVITATION( client_, channel_name, target_nick_ )                             \
 	COLON + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + \
 		" INVITE " + target_nick_ + " :" + channel_name + CRLF
+#define RPL_INVITING( client_, channel_name, target_nick_ ) \
+	NUMERIC_REPLY_NOCL( "341", client_._nickname ) + target_nick_ + SPACE + channel_name + CRLF
 #define RPL_AWAY( client_, target_nick_, away_msg_ ) \
 	NUMERIC_REPLY_NOCL( "301", client_._nickname ) + target_nick_ + SPCL + away_msg_ + CRLF
 
