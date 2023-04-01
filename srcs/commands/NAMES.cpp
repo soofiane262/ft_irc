@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/29 17:35:57 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 13:17:34 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 21:14:23 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ void irc::commands::NAMES( irc::client& client_ ) {
 	} else {
 		std::vector< std::string > channel_names =
 			irc::utils::split( client_._message._params[ 0 ], ',' );
+		std::transform( channel_names.begin(), channel_names.end(), channel_names.begin(),
+						irc::utils::toLower );
 		for ( std::vector< std::string >::iterator it = channel_names.begin();
 			  it != channel_names.end(); ++it )
 			namesChannel( client_, *it );

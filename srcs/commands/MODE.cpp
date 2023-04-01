@@ -6,16 +6,14 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/24 15:22:19 by mel-hous          #+#    #+#             */
-/*   Updated: 2023/03/31 15:02:31 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 21:38:04 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../irc.hpp"
 
-static void assignMode( irc::client& client_, char c, bool& add ) {
-	if ( c == 'a' && add ) client_._mode |= UMODE_AWAY;
-	else if ( c == 'a' )
-		client_._mode &= ~UMODE_AWAY;
+static void assignMode( irc::client& client_, char c, bool add ) {
+	if ( c == 'a' && !add ) client_._mode &= ~UMODE_AWAY;
 	else if ( c == 'w' && add )
 		client_._mode |= UMODE_WALLOPS;
 	else if ( c == 'w' )
@@ -32,7 +30,7 @@ static void assignMode( irc::client& client_, char c, bool& add ) {
 		client_._mode &= ~UMODE_OPERATOR;
 }
 
-static bool assignMode( irc::client& client_, char c, bool& add, irc::channel& channel,
+static bool assignMode( irc::client& client_, char c, bool add, irc::channel& channel,
 						irc::channel::member_iterator& member_it2 ) {
 	if ( client_._message._params.size() < 3 ) {
 		client_._msg_out = ERR_NEEDMOREPARAMS( client_ );
@@ -52,7 +50,7 @@ static bool assignMode( irc::client& client_, char c, bool& add, irc::channel& c
 	return true;
 }
 
-static bool assignMode( irc::client& client_, char mode_, bool& add_, irc::channel& channel_,
+static bool assignMode( irc::client& client_, char mode_, bool add_, irc::channel& channel_,
 						std::string& channel_modes_ ) {
 	if ( mode_ == 'i' && add_ ) channel_._mode |= CMODE_INVITE;
 	else if ( mode_ == 'i' )
@@ -111,9 +109,10 @@ void irc::commands::MODE( irc::client& client_ ) {
 	if ( client_._message._params.empty() || client_._message._params.front().empty() ) {
 		client_._msg_out += ERR_NEEDMOREPARAMS( client_ );
 	} else if ( client_._message._params.front()[ 0 ] == '#' ) {
-		channel* channel = irc::server::__serv->findChannel( client_._message._params[ 0 ] );
+		std::string	  channel_name = irc::utils::toLower( client_._message._params[ 0 ] );
+		irc::channel* channel	   = irc::server::__serv->findChannel( channel_name );
 		if ( channel == NULL ) {
-			client_._msg_out += ERR_NOSUCHCHANNEL( client_, client_._message._params[ 0 ] );
+			client_._msg_out += ERR_NOSUCHCHANNEL( client_, channel_name );
 		} else if ( client_._message._params.size() == 1 ) {
 			client_._msg_out += RPL_CHANNELMODEIS( client_, channel->_name, channel->getModes() );
 		} else {
@@ -127,49 +126,45 @@ void irc::commands::MODE( irc::client& client_ ) {
 			} else if ( !( member_it->second & UMODE_CHANOP ) ) {
 				client_._msg_out += ERR_CHANOPRIVSNEEDED( client_, channel->_name );
 			} else {
-				bool		add = true;
+				char		add = 0;
 				std::string channel_modes[ 2 ];
 				for ( std::string::const_iterator it = client_._message._params[ 1 ].begin();
 					  it != client_._message._params[ 1 ].end(); ++it ) {
-					if ( *it == '+' ) {
-						add = true;
+					if ( *it == '+' && add != 1 ) {
+						add = 1;
 						channel_modes[ 0 ] += '+';
-					} else if ( *it == '-' ) {
-						add = false;
+					} else if ( *it == '-' && add != -1 ) {
+						add = -1;
 						channel_modes[ 0 ] += '-';
 					} else if ( std::strchr( UMODES_CHAN, *it ) != NULL &&
-								assignMode( client_, *it, add, *channel, member_it2 ) )
+								assignMode( client_, *it, add == 1, *channel, member_it2 ) )
 						channel_modes[ 0 ] += *it;
-					else if ( assignMode( client_, *it, add, *channel, channel_modes[ 1 ] ) )
+					else if ( assignMode( client_, *it, add == 1, *channel, channel_modes[ 1 ] ) )
 						channel_modes[ 0 ] += *it;
 				};
 				channel_modes[ 0 ] += SPACE + channel_modes[ 1 ];
-				for ( irc::channel::member_iterator it = channel->_members.begin();
-					  it != channel->_members.end(); ++it ) {
-					it->first->_msg_out +=
-						RPL_CHANMODE( it->first, channel->_name, channel_modes[ 0 ] );
-				}
+				channel->broadcast( RPL_CHANMODE( client_, channel->_name, channel_modes[ 0 ] ) );
 			}
 		}
 	} else {
 		if ( client_._message._params.size() == 1 &&
 			 !client_._message._params.front().compare( client_._nickname ) ) {
 			client_._msg_out += RPL_UMODEIS( client_ );
-		} else if ( client_._message._params.size() == 1 ) {
+		} else if ( client_._message._params.front().compare( client_._nickname ) ) {
 			client_._msg_out += ERR_USERSDONTMATCH( client_ );
 		} else {
-			bool		add = true;
+			char		add = 0;
 			std::string user_modes;
 			for ( std::string::const_iterator it = client_._message._params[ 1 ].begin();
 				  it != client_._message._params[ 1 ].end(); ++it ) {
-				if ( *it == '+' ) {
-					add = true;
+				if ( *it == '+' && add != 1 ) {
+					add = 1;
 					user_modes += '+';
-				} else if ( *it == '-' ) {
-					add = false;
+				} else if ( *it == '-' && add != -1 ) {
+					add = -1;
 					user_modes += '-';
 				} else if ( std::strchr( UMODES_AVAIL, *it ) != NULL ) {
-					assignMode( client_, *it, add );
+					assignMode( client_, *it, add == 1 );
 				} else {
 					client_._msg_out += ERR_UNKNOWNMODE( client_, *it );
 				}

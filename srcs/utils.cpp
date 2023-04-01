@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/17 14:55:06 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 13:03:23 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/03/31 21:14:30 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,4 +124,9 @@ std::vector< std::string > irc::utils::split( const std::string& str_, const cha
 		if ( it != str_.end() ) ++it;
 	}
 	return ret;
+}
+
+std::string irc::utils::toLower( std::string& str_ ) {
+	std::transform( str_.begin(), str_.end(), str_.begin(), ::tolower );
+	return str_;
 }

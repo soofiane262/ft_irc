@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 14:56:39 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/01 16:59:54 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 #define ERR_REPLY_BASE( num, client_ ) \
 	NUMERIC_REPLY( num, client_._nickname ) + client_._message._command + SPCL
 #define NICK_DELAY	 30
-#define UMODES_AVAIL "awiroR"
+#define UMODES_AVAIL "awiro"
 enum user_modes {
 	UMODE_AWAY		 = 1,
 	UMODE_WALLOPS	 = 2,
@@ -104,9 +104,9 @@ enum channel_modes {
 	NUMERIC_REPLY_NOCL( "331", client_._nickname ) + channel_name + " :No topic is set" + CRLF
 #define RPL_TOPIC( client_, channel_name, topic_ ) \
 	NUMERIC_REPLY_NOCL( "332", client_._nickname ) + channel_name + SPCL + topic_ + CRLF
-#define RPL_TOPIC_CHANGE( client_ptr_, channel_name, topic_ )             \
-	COLON + client_ptr_->_nickname + "!" + client_ptr_->_username + "@" + \
-		irc::server::__hostaddr + " TOPIC " + channel_name + SPCL + topic_ + CRLF
+#define RPL_TOPIC_CHANGE( client_, channel_name, topic_ )                                 \
+	COLON + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + \
+		" TOPIC " + channel_name + SPCL + topic_ + CRLF
 #define RPL_NAMREPLY( client_, channel_name, users_ )                                             \
 	NUMERIC_REPLY_NOCL( "353", client_._nickname ) + "=" + SPACE + channel_name + SPCL + users_ + \
 		CRLF
@@ -120,18 +120,59 @@ enum channel_modes {
 #define RPL_UMODE( client_ )                                                                     \
 	COLON + client_._nickname + SPACE + "MODE" + client_._nickname + SPCL + client_.getModes() + \
 		CRLF
-#define RPL_CHANMODE( client_ptr_, channel_name_, channel_modes_ )        \
-	COLON + client_ptr_->_nickname + "!" + client_ptr_->_username + "@" + \
-		irc::server::__hostaddr + " MODE " + channel_name_ + channel_modes_ + CRLF
+#define RPL_CHANMODE( client_, channel_name_, channel_modes_ )                            \
+	COLON + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + \
+		" MODE " + channel_name_ + SPACE + channel_modes_ + CRLF
 #define RPL_UMODEIS( client_ ) \
 	NUMERIC_REPLY_NOCL( "221", client_._nickname ) + client_.getModes() + CRLF
 #define RPL_YOUREOPER( client_ ) \
 	NUMERIC_REPLY_NOCL( "381", client_._nickname ) + "You are now an IRC operator" + CRLF
-#define RPL_INVITING( client_, channel_name, target_nick_ )                               \
+#define RPL_INVITATION( client_, channel_name, target_nick_ )                             \
 	COLON + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + \
 		" INVITE " + target_nick_ + " :" + channel_name + CRLF
+#define RPL_INVITING( client_, channel_name, target_nick_ ) \
+	NUMERIC_REPLY_NOCL( "341", client_._nickname ) + target_nick_ + SPACE + channel_name + CRLF
 #define RPL_AWAY( client_, target_nick_, away_msg_ ) \
 	NUMERIC_REPLY_NOCL( "301", client_._nickname ) + target_nick_ + SPCL + away_msg_ + CRLF
+
+#define RPL_WHOISUSER( client_, target_ )                                           \
+	NUMERIC_REPLY_NOCL( "311", client_._nickname ) + target_->_nickname + SPACE +   \
+		target_->_username + SPACE + irc::server::__hostaddr + SPACE + "*" + SPCL + \
+		target_->_realname + CRLF
+#define RPL_WHOISSERVER( client_, target_ )                                       \
+	NUMERIC_REPLY_NOCL( "312", client_._nickname ) + target_->_nickname + SPACE + \
+		irc::server::__hostaddr + SPCL + "ircserv" + CRLF
+#define RPL_WHOISOPERATOR( client_, target_ )                                                      \
+	NUMERIC_REPLY_NOCL( "313", client_._nickname ) + target_->_nickname + " :is an IRC operator" + \
+		CRLF
+#define RPL_WHOISIDLE( client_, target_ )                                         \
+	NUMERIC_REPLY_NOCL( "317", client_._nickname ) + target_->_nickname + SPACE + \
+		client_.getIdleTime() + SPACE + client_.getSignOnTime() + SPCL +          \
+		"seconds idle, signon time" + CRLF
+#define RPL_ENDOFWHOIS( client_, target_ )                                                        \
+	NUMERIC_REPLY_NOCL( "318", client_._nickname ) + target_->_nickname + " :End of WHOIS list" + \
+		CRLF
+#define RPL_WHOISCHANNELS( client_, target_ )                                    \
+	NUMERIC_REPLY_NOCL( "319", client_._nickname ) + target_->_nickname + SPCL + \
+		target_->getChannels() + CRLF
+#define RPL_UNAWAY( client_ ) \
+	NUMERIC_REPLY_NOCL( "305", client_._nickname ) + "You are no longer marked as being away" + CRLF
+#define RPL_NOWAWAY( client_ ) \
+	NUMERIC_REPLY_NOCL( "306", client_._nickname ) + "You have been marked as being away" + CRLF
+#define RPL_NICKNAME( client_, new_nick_ )                                                \
+	COLON + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + \
+		" NICK " + new_nick_ + CRLF
+#define RPL_WHOREPLY( client_, channel_name, other )                                          \
+	NUMERIC_REPLY_NOCL( "352", client_._nickname ) + channel_name + SPACE + other._username + \
+		SPACE + other._hostname + SPACE + irc::server::__hostaddr + SPACE + other._nickname + \
+		SPACE + 'H' + COLON + '0' + SPACE + other._realname + CRLF
+#define RPL_WHOREPLY_PTR( client_, channel_name, other_ptr )                                       \
+	NUMERIC_REPLY_NOCL( "352", client_._nickname ) + channel_name + SPACE + other_ptr->_username + \
+		SPACE + other_ptr->_hostname + SPACE + irc::server::__hostaddr + SPACE +                   \
+		other_ptr->_nickname + SPACE + 'H' + COLON + '0' + SPACE + other_ptr->_realname + CRLF
+#define RPL_ENDOFWHO( client_ ) \
+	NUMERIC_REPLY_NOCL( "315", client_._nickname ) + COLON + "End of WHO list" + CRLF
+#define RPL_BOT( client_, reply_ ) NUMERIC_REPLY_NOCL( "335", client_._nickname ) + reply_ + CRLF
 
 /* Errors ───────────────────────────────────────────────────────────────────────────── */
 
@@ -142,8 +183,16 @@ enum channel_modes {
 #define ERR_CLOSINGLINK( client_ )                                                  \
 	ERR_REPLY_BASE( "404", client_ ) + "Closing Link: " + client_._nickname + "[" + \
 		client_._username + "@" + irc::server::__hostaddr + "]" + CRLF
-#define ERR_CANNOTSENDTOCHAN( client_, channel_name ) \
-	ERR_REPLY_BASE( "404", client_ ) + channel_name + " :Cannot send to channel" + CRLF
+#define ERR_CANNOTSENDTOCHAN( client_, channel_name )                                          \
+	ERR_REPLY_BASE( "404", client_ ) + channel_name +                                          \
+		" :Cannot send messages to channel whilst the +m (moderated) mode without +v (voice) " \
+		"mode" +                                                                               \
+		CRLF
+#define ERR_CHANNOEXT( client_, channel_name )                                              \
+	ERR_REPLY_BASE( "404", client_ ) + channel_name +                                       \
+		" :Cannot send external messages to this channel whilst the +n (noextmsg) mode is " \
+		"set" +                                                                             \
+		CRLF
 #define ERR_TOOMANYCHANNELS( client_, channel_name ) \
 	ERR_REPLY_BASE( "405", client_ ) + channel_name + " :You have joined too many channels" + CRLF
 #define ERR_NOORIGIN( client_ )		   ERR_REPLY_BASE( "409", client_ ) + "No origin specified" + CRLF

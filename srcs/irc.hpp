@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 14:23:36 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/01 16:25:44 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include <cstdlib>		// system
 #include <cstring>		// strchr
 #include <ctime>		// time_t, struct tm, time, localtime
+#include <curl/curl.h>	// curl
 #include <exception>	// exception
 #include <fcntl.h>		// fcntl
 #include <fstream>		// ifstream
@@ -47,6 +48,7 @@ namespace irc {
 		unsigned char			   intToMode( const int& mode_ );
 		bool					   pollfd_cmp( const pollfd&, const pollfd& );
 		std::vector< std::string > split( const std::string&, const char& );
+		std::string				   toLower( std::string& );
 	} // namespace utils
 	/* message ─────────────────────────────────────────────────────────────────────────── */
 	class message {
@@ -72,7 +74,7 @@ namespace irc {
 		typedef std::set< std::string >::iterator				  channel_iterator;
 
 		int			  _fd;
-		std::time_t	  _nick_change;
+		std::time_t	  _sign, _idle, _nick_change;
 		unsigned char _mode;
 		bool		  _quit;
 		std::string	  _hostaddr, _hostname, _hostport, _nickname, _username, _realname, _msg_in,
@@ -80,10 +82,13 @@ namespace irc {
 		irc::message _message;
 		channel_type _channels_joined;
 		channel_type _channels_invited;
-		bool		 has_mode( int );
+		std::string	 getIdleTime( void );
+		std::string	 getSignOnTime( void );
 		std::string	 getModes( void );
+		std::string	 getChannels( void );
 		void		 inviteChannel( std::string& );
 		void		 joinChannel( std::string& );
+		void		 partChannel( std::string& );
 		bool		 isInvited( std::string& );
 		bool		 isInChannel( std::string& );
 
@@ -114,7 +119,9 @@ namespace irc {
 		member_type	   _members;
 		channel( const std::string name_ = std::string() ) : _name( name_ ) {}
 		~channel( void ) {}
-		bool			addMember( irc::client*, std::string& );
+		void			broadcast( std::string );
+		void			broadcast( irc::client&, std::string );
+		int				addMember( irc::client*, std::string& );
 		std::string		getMembers( void );
 		std::string		getModes( void );
 		void			setModes( const std::string& );
@@ -149,8 +156,11 @@ namespace irc {
 		void		  NAMES( irc::client& );
 		void		  KICK( irc::client& );
 		void		  WHO( irc::client& );
+		void		  WHOIS( irc::client& );
 		void		  OPER( irc::client& );
 		void		  INVITE( irc::client& );
+		void		  AWAY( irc::client& );
+		void		  BOT( irc::client& );
 
 	  public:
 		void operator[]( irc::client& );
@@ -190,6 +200,7 @@ namespace irc {
 		void		  initServer( void );
 		void		  runServer( void );
 		void		  shutDownServer( void );
+		void		  broadcastJoinedChannels( irc::client&, std::string );
 		std::string	  getClientsSize( void );
 		std::string	  getOpersSize( void );
 		std::string	  getChannelsSize( void );
@@ -199,5 +210,6 @@ namespace irc {
 		irc::client*  findClient( const std::string& );
 		void		  removeChannel( channel& );
 		channel_type& getChannels( void );
+		client_type&  getClients( void );
 	}; // server
 } // namespace irc
