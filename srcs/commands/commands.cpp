@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:27:13 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 17:08:44 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/01 16:22:00 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ irc::commands::commands( void ) {
 	this->_commands[ "INVITE" ]	 = &commands::INVITE;
 	this->_commands[ "WHOIS" ]	 = &commands::WHOIS;
 	this->_commands[ "AWAY" ]	 = &commands::AWAY;
+	this->_commands[ "BOT" ]	 = &commands::BOT;
 }
 
 /* dtor ─────────────────────────────────────────────────────────────────────────────── */

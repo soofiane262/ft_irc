@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 22:09:15 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/01 16:59:54 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,6 +162,17 @@ enum channel_modes {
 #define RPL_NICKNAME( client_, new_nick_ )                                                \
 	COLON + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + \
 		" NICK " + new_nick_ + CRLF
+#define RPL_WHOREPLY( client_, channel_name, other )                                          \
+	NUMERIC_REPLY_NOCL( "352", client_._nickname ) + channel_name + SPACE + other._username + \
+		SPACE + other._hostname + SPACE + irc::server::__hostaddr + SPACE + other._nickname + \
+		SPACE + 'H' + COLON + '0' + SPACE + other._realname + CRLF
+#define RPL_WHOREPLY_PTR( client_, channel_name, other_ptr )                                       \
+	NUMERIC_REPLY_NOCL( "352", client_._nickname ) + channel_name + SPACE + other_ptr->_username + \
+		SPACE + other_ptr->_hostname + SPACE + irc::server::__hostaddr + SPACE +                   \
+		other_ptr->_nickname + SPACE + 'H' + COLON + '0' + SPACE + other_ptr->_realname + CRLF
+#define RPL_ENDOFWHO( client_ ) \
+	NUMERIC_REPLY_NOCL( "315", client_._nickname ) + COLON + "End of WHO list" + CRLF
+#define RPL_BOT( client_, reply_ ) NUMERIC_REPLY_NOCL( "335", client_._nickname ) + reply_ + CRLF
 
 /* Errors ───────────────────────────────────────────────────────────────────────────── */
 

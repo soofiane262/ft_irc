@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 22:12:49 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/01 16:25:44 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include <cstdlib>		// system
 #include <cstring>		// strchr
 #include <ctime>		// time_t, struct tm, time, localtime
+#include <curl/curl.h>	// curl
 #include <exception>	// exception
 #include <fcntl.h>		// fcntl
 #include <fstream>		// ifstream
@@ -159,6 +160,7 @@ namespace irc {
 		void		  OPER( irc::client& );
 		void		  INVITE( irc::client& );
 		void		  AWAY( irc::client& );
+		void		  BOT( irc::client& );
 
 	  public:
 		void operator[]( irc::client& );
@@ -208,5 +210,6 @@ namespace irc {
 		irc::client*  findClient( const std::string& );
 		void		  removeChannel( channel& );
 		channel_type& getChannels( void );
+		client_type&  getClients( void );
 	}; // server
 } // namespace irc
