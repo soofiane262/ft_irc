@@ -6,7 +6,7 @@
 /*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/01 08:50:51 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/04/01 10:25:36 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,18 +125,16 @@ enum channel_modes {
 		irc::server::__hostaddr + " MODE " + channel_name_ + SPACE + channel_modes_ + CRLF
 #define RPL_UMODEIS( client_ ) \
 	NUMERIC_REPLY_NOCL( "221", client_._nickname ) + client_.getModes() + CRLF
-
-	
-#define RPL_WHOREPLY( client_ , other) \
-	NUMERIC_REPLY_NOCL( "352", client_._nickname ) + other._username + SPACE\
-	 other._hostname + SPACE+  other._nickname+ SPACE + other._realname + CRLF\
-
-
-
-
-
-
-	
+#define RPL_WHOREPLY( client_, channel_name , other) \
+	NUMERIC_REPLY_NOCL( "352", client_._nickname ) + channel_name + SPACE + other._username + SPACE\
+	+ other._hostname + SPACE +irc::server::__hostaddr + SPACE +  other._nickname+ SPACE\
+	 + 'H' + COLON + '0' + SPACE +  other._realname + CRLF
+#define RPL_WHOREPLY_PTR( client_, channel_name , other_ptr) \
+	NUMERIC_REPLY_NOCL( "352", client_._nickname ) + channel_name + SPACE + other_ptr->_username + SPACE\
+	+ other_ptr->_hostname + SPACE +irc::server::__hostaddr + SPACE +  other_ptr->_nickname+ SPACE\
+	 + 'H' + COLON + '0' + SPACE +  other_ptr->_realname + CRLF
+#define RPL_ENDOFWHO( client_ )\
+        NUMERIC_REPLY_NOCL( "315", client_._nickname )  + COLON +  "End of WHO list" + CRLF
 #define RPL_YOUREOPER( client_ ) \
 	NUMERIC_REPLY_NOCL( "381", client_._nickname ) + "You are now an IRC operator" + CRLF
 #define RPL_INVITING( client_, channel_name, target_nick_ )                               \

@@ -6,7 +6,7 @@
 /*   By: mel-hous <mel-hous@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/31 09:09:36 by mel-hous          #+#    #+#             */
-/*   Updated: 2023/04/01 08:54:39 by mel-hous         ###   ########.fr       */
+/*   Updated: 2023/04/01 10:25:49 by mel-hous         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,22 @@ bool isMatch( irc::client::channel_type firstchannels, irc::client::channel_type
     return(true);
 }
 
+void memberChannels(irc::client& client_, irc::client& member)
+{
+    if(member._channels_joined.size() == 0)
+    {
+        client_._msg_out += RPL_WHOREPLY(client_, "", member);
+        return;
+    }
+    for(irc::client::channel_iterator it = member._channels_joined.begin(); it != member._channels_joined.end(); it++)
+    {
+         client_._msg_out += RPL_WHOREPLY(client_, *it, member);
+    }
+}
+
 void irc::commands::WHO( irc::client& client_ ){
     irc::server::client_iterator cl_it;
-    if (client_._message._params.size() >= 1 && client_._message._params.front() != "0"){
+    if (client_._message._params.size() >= 1){
         if(client_._message._params.front()[0] == '#')
         {
             irc::channel *channel = irc::server::__serv->findChannel(client_._message._params.front());
@@ -40,42 +53,46 @@ void irc::commands::WHO( irc::client& client_ ){
             for(irc::channel::member_iterator it = channel->_members.begin(); it != channel->_members.end(); it++)
             {
                 if(oper)
-                {
-                    
-                }
+                    client_._msg_out += RPL_WHOREPLY_PTR(client_, channel->_name, it->first);
                 else
                 {
-                    if(!(it->first->_mode & UMODE_INVISIBLE))
-                    {
-                        
-                    }
+                    if(!(it->first->_mode & UMODE_INVISIBLE) )
+                        client_._msg_out += RPL_WHOREPLY_PTR(client_, channel->_name, it->first);
                 }
             }
-            
+            client_._msg_out += RPL_ENDOFWHO(client_);
         }
-        else{
-            
+        else {
+            irc::server::client_type clients = irc::server::__serv->getClients();
+            if (client_._message._params.front() == "0"){
+                bool oper;
+                if (client_._mode & UMODE_OPERATOR)
+                    oper = true;
+                for(cl_it = clients.begin(); cl_it != clients.end(); cl_it++)
+                {
+                    if(oper)
+                    {
+                        if (isMatch(client_._channels_joined,cl_it->second._channels_joined))
+                           memberChannels(client_,cl_it->second);   
+                    }
+                    else
+                    {
+                        if (isMatch(client_._channels_joined,cl_it->second._channels_joined) && !(cl_it->second._mode & UMODE_INVISIBLE))
+                            memberChannels(client_,cl_it->second);
+                    }
+                }
+                client_._msg_out += RPL_ENDOFWHO(client_);
+            }
+            else{
+                for(cl_it = clients.begin(); cl_it != clients.end(); cl_it++){
+                    if (cl_it->second._nickname == client_._message._params.front())
+                        memberChannels(client_,cl_it->second);
+                }
+                client_._msg_out += RPL_ENDOFWHO(client_);
+            }
         }
     }
-    else{
-        irc::server::client_type clients = irc::server::__serv->getClients();
-        bool oper;
-        if (client_._mode & UMODE_OPERATOR)
-            oper = true;
-        for(cl_it = clients.begin(); cl_it != clients.end(); cl_it++)
-        {
-            if(oper)
-            {
-                if (isMatch(client_._channels_joined,cl_it->second._channels_joined))
-                   std::cout<< ':' << irc::server::__hostaddr << " 352 " << client_._nickname << ' ' << cl_it->second._username << ' '<< cl_it->second._hostname << ' '<< cl_it->second._nickname<< ' ' << cl_it->second._realname << "\r\n"<<std::endl;
-            }
-            else
-            {
-                if (isMatch(client_._channels_joined,cl_it->second._channels_joined) && !(cl_it->second._mode & UMODE_INVISIBLE))
-                        std::cout<< ':' << irc::server::__hostaddr << " 352 " << client_._nickname << ' ' << cl_it->second._username << ' '<< cl_it->second._hostname << ' '<< cl_it->second._nickname<< ' ' << cl_it->second._realname << "\r\n"<<std::endl;
-
-            }
-        }
-    }
+    else
+        client_._msg_out += ERR_NEEDMOREPARAMS(client_);
     
 }
