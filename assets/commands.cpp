@@ -6,40 +6,35 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:27:13 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/01 16:22:00 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/01 21:13:03 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../irc.hpp"
 
-/* ctor ─────────────────────────────────────────────────────────────────────────────── */
 irc::commands::commands( void ) {
-	this->_commands[ "PASS" ]	 = &commands::PASS;
-	this->_commands[ "NICK" ]	 = &commands::NICK;
-	this->_commands[ "USER" ]	 = &commands::USER;
-	this->_commands[ "PONG" ]	 = &commands::PONG;
-	this->_commands[ "JOIN" ]	 = &commands::JOIN;
-	this->_commands[ "QUIT" ]	 = &commands::QUIT;
-	this->_commands[ "PRIVMSG" ] = &commands::PRIVMSG;
-	this->_commands[ "PART" ]	 = &commands::PART;
-	this->_commands[ "NOTICE" ]	 = &commands::NOTICE;
-	this->_commands[ "MODE" ]	 = &commands::MODE;
-	this->_commands[ "TOPIC" ]	 = &commands::TOPIC;
-	this->_commands[ "LIST" ]	 = &commands::LIST;
-	this->_commands[ "NAMES" ]	 = &commands::NAMES;
-	this->_commands[ "KICK" ]	 = &commands::KICK;
-	this->_commands[ "WHO" ]	 = &commands::WHO;
-	this->_commands[ "OPER" ]	 = &commands::OPER;
-	this->_commands[ "INVITE" ]	 = &commands::INVITE;
-	this->_commands[ "WHOIS" ]	 = &commands::WHOIS;
 	this->_commands[ "AWAY" ]	 = &commands::AWAY;
 	this->_commands[ "BOT" ]	 = &commands::BOT;
-}
+	this->_commands[ "INVITE" ]	 = &commands::INVITE;
+	this->_commands[ "JOIN" ]	 = &commands::JOIN;
+	this->_commands[ "KICK" ]	 = &commands::KICK;
+	this->_commands[ "LIST" ]	 = &commands::LIST;
+	this->_commands[ "MODE" ]	 = &commands::MODE;
+	this->_commands[ "NAMES" ]	 = &commands::NAMES;
+	this->_commands[ "NICK" ]	 = &commands::NICK;
+	this->_commands[ "NOTICE" ]	 = &commands::NOTICE;
+	this->_commands[ "OPER" ]	 = &commands::OPER;
+	this->_commands[ "PART" ]	 = &commands::PART;
+	this->_commands[ "PASS" ]	 = &commands::PASS;
+	this->_commands[ "PONG" ]	 = &commands::PONG;
+	this->_commands[ "PRIVMSG" ] = &commands::PRIVMSG;
+	this->_commands[ "QUIT" ]	 = &commands::QUIT;
+	this->_commands[ "TOPIC" ]	 = &commands::TOPIC;
+	this->_commands[ "USER" ]	 = &commands::USER;
+	this->_commands[ "WHO" ]	 = &commands::WHO;
+	this->_commands[ "WHOIS" ]	 = &commands::WHOIS;
+} // ctor
 
-/* dtor ─────────────────────────────────────────────────────────────────────────────── */
-irc::commands::~commands( void ) {}
-
-/* operator[] ───────────────────────────────────────────────────────────────────────── */
 void irc::commands::operator[]( irc::client& client_ ) {
 	client_._message.clear();
 	client_._message.parseMsg( client_._msg_in.erase( client_._msg_in.size() - 2 ) );
@@ -51,4 +46,4 @@ void irc::commands::operator[]( irc::client& client_ ) {
 			( this->*func_it->second )( client_ );
 	}
 	client_._message.clear();
-}
+} // operator[]
