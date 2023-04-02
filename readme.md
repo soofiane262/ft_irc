@@ -21,7 +21,7 @@
 
 ### _Summary_
 
-FT_IRC is an IRC server project that allows real-time messaging through text-based communication protocol on the Internet. It offers users the ability to exchange direct messages and join group channels. IRC clients connect to IRC servers to join channels, and IRC servers are connected together to form a network. Our server is compliant with [RFC 2812](https://www.rfc-editor.org/rfc/rfc2812). The Internet is ruled by solid standards protocols that allow connected computers to interact with each other. It’s always a good thing to know.
+`FT_IRC` is an IRC server project that enables real-time messaging through text-based communication protocol on the Internet. The server is compliant with [RFC 2812](https://www.rfc-editor.org/rfc/rfc2812) and allows users to exchange direct messages and join group channels.
 
 ### _Introduction_
 
@@ -29,83 +29,59 @@ Internet Relay Chat (IRC) is a protocol that enables users to communicate with e
 
 ### _General Rules_
 
-Our program is designed to not crash in any circumstance, including running out of memory or quitting unexpectedly. We have included a Makefile that compiles the source files and includes rules for `$(NAME)`, `all`, `clean`, `fclean`, and `re`.
-
-Our code is written in C++ 98 and complies with that standard. We have not used any external libraries or Boost libraries.
+The program is designed not to crash in any circumstance, including running out of memory or quitting unexpectedly. A Makefile is included that compiles the source files and includes rules for `$(NAME)`, `all`, `clean`, `fclean`, and `re`. The code is written in C++ 98 and complies with that standard. There are no external libraries or Boost libraries used.
 
 ### _Features_
 
-Our IRC server project comes with the following features:
+`FT_IRC` server project comes with the following features:
 
--   Handles multiple clients simultaneously without ever hanging
+-   Multiple clients can be handled simultaneously without ever hanging
 -   Non-blocking I/O operations with only one poll() used to handle all operations (read, write, listen, etc.)
 -   Supports authentication, setting a nickname, a username, joining a channel, and sending and receiving private messages
 -   Messages sent from one client to a channel are forwarded to every other client that joined the channel
 -   Supports operators and regular users
 -   Implements commands that are specific to operators
+-   Supports LimeChat as a reference client for evaluation purposes
 -   File transfer using DCC in LimeChat
 -   A bot using the [`42 API`](https://api.intra.42.fr/apidoc) to retrieve logtime of the current month, current location or coalition of any user
 
-### _Mandatory Part_
-
-Our IRC server is written in C++ 98 and can handle multiple clients simultaneously. It never hangs, and all I/O operations are non-blocking. We do not fork, and only one poll() function is used to handle all operations, including read, write, and listen.
-
-Our server requires a password for connection, and clients must authenticate, set a nickname and username, join a channel, and send and receive private messages. All messages sent from one client to a channel are forwarded to every other client that joined the channel. The server has operators and regular users, and we have implemented commands specific to operators.
-
-We have tested our server with the LimeChat IRC client, which can connect to our server without encountering any errors. Communication between the client and server is done via TCP/IP v4.
-
-### _Bonus Part_
-
-In addition to the mandatory requirements, we have added the ability to handle file transfer using DCC in LimeChat. We have also added a bot that uses the [`42 API`](https://api.intra.42.fr/apidoc) to retrieve logtime of the current month, current location, or coalition of any user.
-
-### _Requirements_
-
-Our IRC server project meets the following requirements:
-
--   Does not crash in any circumstances (even when it runs out of memory) and does not quit unexpectedly
--   Compiled using the provided Makefile which contains the rules: $(NAME), all, clean, fclean, and re
--   Complies with the C++ 98 standard and compiled with the flag -std=c++98
--   Does not use any external libraries or Boost libraries
--   Uses TCP/IP v4 for communication between client and server
--   Supports LimeChat as a reference client for evaluation purposes
--   Does not fork and uses non-blocking I/O operations
--   Uses only one poll() to handle all I/O operations
-
 ### _Getting Started_
 
-To use our IRC server project, follow these steps:
+Follow these simple steps to get started with the IRC Server Project:
 
-1. Clone the repository to your local machine.
+1. Clone the repository to your local machine:
 
 ```sh
 https://github.com/soofiane262/ft_irc.git
 ```
 
-2. Navigate to the project directory.
+2. Navigate to the project directory:
 
 ```sh
 cd ft_irc
 ```
 
-3. Run make to compile the source files.
+3. Compile the source files by running the make command:
 
 ```sh
 make
 ```
 
-4. Run ./ircserv <port> <password> to start the IRC server, replacing <port> with the port number on which the server will be listening for incoming IRC connections and <password> with the connection password.
+4. Start the IRC server:
 
 ```sh
 ./ircserv <port> <password>
 ```
 
-5. Connect to the server using an IRC client, such as LimeChat or using netcat.
+Replace `<port>` with the port number on which the server will be listening for incoming IRC connections and `<password>` with the connection password.
+
+5. Connect to the server using an IRC client such as LimeChat or by using netcat with the following command:
 
 ```sh
 nc -c localhost <port>
 ```
 
-6. Authenticate with the server password, set a nickname and username.
+6. Authenticate with the server password and set your nickname and username:
 
 ```sh
 PASS <password>
@@ -113,170 +89,207 @@ NICK <nickname>
 USER <username> <mode> * :<realname>
 ```
 
-7. Join a channel, and start sending messages to other users.
+7. Join a channel and start sending messages to other users:
 
 ```sh
 JOIN <channel>
 PRIVMSG <channel> :Hello fellow peers :)
 ```
 
-**That's it!** You're now connected to your own IRC server and can start chatting with others.
+**Congratulations!** You're now connected to your own IRC server and can start chatting with others.
 
 ### _Usage_
 
-Once the server is up and running, clients can connect to it and start chatting with each other. Clients can join or create channels, send messages to other users or channels, and perform various IRC operations using the supported commands listed below.
+After starting the server, clients can connect to it and communicate with each other through various IRC operations. They can join or create channels, send messages to other users or channels, and perform various IRC operations using the supported commands listed below.
 
 ### _Commands_
 
-Our server supports the following commands:
+Our server supports several commands, conforming to the [BNF] representation specified in RFC2812. Here are the commands and their [BNF] representations:
 
-```sh
-AWAY = "AWAY" [ <text> ]
+```bnf
+Command: AWAY
+Parameters: [ <text> ]
 ```
 
-The AWAY command is used to set an away message for the user. If the <text> parameter is included, it specifies the away message. If the <text> parameter is omitted, it means that the user is no longer away.
+The AWAY command is used to set an away message for the user. If the `<text>` parameter is included, it specifies the away message. If the `<text>` parameter is omitted, it means that the user is no longer away.
 
-```sh
-BOT = "BOT" <botcmd> [ <botparams> ]
+```bnf
+Command: BOT
+Parameters: <botcmd> [ <botparams> ]
 ```
 
-The BOT command is used to send a command to a bot in the channel. The <botcmd> parameter specifies the command to be executed, and the <botparams> parameter provides any additional parameters that the command requires.
+The BOT command is used to send a command to a bot in the channel. The `<botcmd>` parameter specifies the command to be executed, and the `<botparams>` parameter provides any additional parameters that the command requires.
 
-```sh
-DIE = "DIE"
+```bnf
+Command: DIE
+Parameters: None
 ```
 
-The DIE command is used to shut down the server. This command is only available to operators.
+The DIE command is used to shut down the server. This command is only available to server operators.
 
-```sh
-INVITE = "INVITE" <nickname> <channel>
+```bnf
+Command: INVITE
+Parameters: <nickname> <channel>
 ```
 
-The INVITE command is used to invite a user to a specific channel. The <nickname> parameter specifies the user to be invited, and the <channel> parameter specifies the channel to which the user is to be invited.
+The INVITE command is used to invite a user to a specific channel. The `<nickname>` parameter specifies the user to be invited, and the `<channel>` parameter specifies the channel to which the user is to be invited.
 
-```sh
-JOIN = "JOIN" <channel> [ <key> ]
+```bnf
+Command: JOIN
+Parameters: <channel> [ <key> ]
 ```
 
-The JOIN command is used to join a specific channel. The <channel> parameter specifies the channel to be joined, and the <key> parameter provides the channel password, if required.
+The JOIN command is used to join a specific channel. The `<channel>` parameter specifies the channel to be joined, and the `<key>` parameter provides the channel password, if required.
 
-```sh
-KICK = "KICK" <channel> <user> [ <reason> ]
+```bnf
+Command: KICK
+Parameters: <channel> <user> [ <reason> ]
 ```
 
-The KICK command is used to kick a user from a specific channel. The <channel> parameter specifies the channel from which the user is to be kicked, and the <user> parameter specifies the user to be kicked. The <reason> parameter provides the reason for the kick.
+The KICK command is used to kick a user from a specific channel. The `<channel>` parameter specifies the channel from which the user is to be kicked, and the `<user>` parameter specifies the user to be kicked. The `<reason>` parameter provides the reason for the kick.
 
-```sh
-LIST = "LIST" [ <channels> [ <server> ] ]
+```bnf
+Command: LIST
+Parameters: [ <channels> [ <server> ] ]
 ```
 
-The LIST command is used to list all channels on the server. The <channels> parameter specifies the channels to be listed, and the <server> parameter specifies the server to be queried. If the <channels> and <server> parameters are omitted, the server will list all channels on the server.
+The LIST command is used to list all channels on the server. The `<channels>` parameter specifies the channels to be listed, and the `<server>` parameter specifies the server to be queried. If the `<channels>` and `<server>` parameters are omitted, the server will list all channels on the server.
 
-```sh
-MODE = "MODE" <channel> <modes> [ <modeparams> ]
+```bnf
+Command: MODE
+Parameters: <channel> <modes> [ <modeparams> ]
 ```
 
-The MODE command is used to set or query the mode of a specific channel. The <channel> parameter specifies the channel to be modified, the <modes> parameter specifies the mode(s) to be set, and the <modeparams> parameter provides any additional parameters required for the mode(s).
+The MODE command is used to set or query the mode of a specific channel. The `<channel>` parameter specifies the channel to be modified, the `<modes>` parameter specifies the mode(s) to be set, and the `<modeparams>` parameter provides any additional parameters required for the mode(s).
 
-```sh
-NAMES = "NAMES" [ <channels> [ <server> ] ]
+```bnf
+Command: NAMES
+Parameters: [ <channels> [ <server> ] ]
 ```
 
-The NAMES command is used to list all users in a specific channel or all channels on the server. The <channels> parameter specifies the channel(s) to be listed, and the <server> parameter specifies the server to be queried. If the <channels> and <server> parameters are omitted, the server will list all users in all channels on the server.
+The NAMES command is used to list all users in a specific channel or all channels on the server. The `<channels>` parameter specifies the channel(s) to be listed, and the `<server>` parameter specifies the server to be queried. If the `<channels>` and `<server>` parameters are omitted, the server will list all users in all channels on the server.
 
-```sh
-NICK = "NICK" <nickname>
+```bnf
+Command: NICK
+Parameters: <nickname>
 ```
 
-The NICK command is used to change a user's nickname. The <nickname> parameter specifies the new nickname.
+The NICK command is used to change a user's nickname. The `<nickname>` parameter specifies the new nickname.
 
-```sh
-NOTICE = "NOTICE" <nickname> <text>
+```bnf
+Command: NOTICE
+Parameters: <nickname> <text>
 ```
 
-The NOTICE command is used to send a notice message to a specific user. The <nickname> parameter specifies the user to whom the notice is to be sent, and the <text> parameter specifies the text of the notice.
+The NOTICE command is used to send a notice message to a specific user. The `<nickname>` parameter specifies the user to whom the notice is to be sent, and the `<text>` parameter specifies the text of the notice.
 
-```sh
-OPER = "OPER" <username> <password>
+```bnf
+Command: OPER
+Parameters: <username> <password>
 ```
 
 Oper command is used to authenticate a user as an IRC operator or "ircop" (one who manages an IRC network) with a password.
 
-```sh
-PART = "PART" <channel> [ <reason> ]
+```bnf
+Command: PART
+Parameters: <channel> [ <reason> ]
 ```
 
-The PART command is used to leave a specific channel. The <channel> parameter specifies the channel to be left, and the <reason> parameter provides the reason for leaving the channel.
+The PART command is used to leave a specific channel. The `<channel>` parameter specifies the channel to be left, and the `<reason>` parameter provides the reason for leaving the channel.
 
-```sh
-PASS = "PASS" <password>
+```bnf
+Command: PASS
+Parameters: <password>
 ```
 
-The PASS command is used to provide a password for the connection. The <password> parameter specifies the password to be used.
+The PASS command is used to provide a password for the connection. The `<password>` parameter specifies the password to be used.
 
-```sh
-PONG = "PONG" <server1> [ <server2> ]
+```bnf
+Command: PONG
+Parameters: <server>
 ```
 
-The PONG command is used to respond to a PING command. The <server1> parameter specifies the server that sent the PING command, and the <server2> parameter specifies the server that received the PING command.
+The PONG command is used to respond to a PING command. The `<server>` parameter specifies the server that sent the PING command.
+In our case, LimeChat automatically sends a PONG command after a specific amount of time.
 
-```sh
-PRIVMSG = "PRIVMSG" <receiver> <text>
+```bnf
+Command: PRIVMSG
+Parameters: <receiver> <text>
 ```
 
-The PRIVMSG command is used to send a private message to a specific user or channel. The <receiver> parameter specifies the user or channel to whom the message is to be sent, and the <text> parameter specifies the text of the message.
+The PRIVMSG command is used to send a private message to a specific user or channel. The `<receiver>` parameter specifies the user or channel to whom the message is to be sent, and the `<text>` parameter specifies the text of the message.
 
-```sh
-QUIT = "QUIT" [ <reason> ]
+```bnf
+Command: QUIT
+Parameters: [ <reason> ]
 ```
 
-The QUIT command is used to disconnect from the server. The <reason> parameter provides the reason for disconnecting from the server.
+The QUIT command is used to disconnect from the server. The `<reason>` parameter provides the reason for disconnecting from the server.
 
-```sh
-RESTART = "RESTART"
+```bnf
+Command: RESTART
+Parameters: None
 ```
 
-The RESTART command is used to restart the server. This command is only available to operators.
+The RESTART command is used to restart the server. This command is only available to server operators.
 
-```sh
-TOPIC = "TOPIC" <channel> [ <topic> ]
+```bnf
+Command: TOPIC
+Parameters: <channel> [ <topic> ]
 ```
 
 The TOPIC command is used to set or retrieve the topic of a channel.
 
-```sh
-USER = "USER" <username> <hostname> <servername> <realname>
+```bnf
+Command: USER
+Parameters: <username> <mode> <unused> <realname>
 ```
 
-The USER command is used to provide information about the user. The <username> parameter specifies the username of the user, the <hostname> parameter specifies the hostname of the user, the <servername> parameter specifies the servername of the user, and the <realname> parameter specifies the realname of the user.
+The USER command is used to provide information about the user. The `<username>` parameter specifies the username of the user, the `<mode>` parameter should be a numeric, and can be used to automatically set user modes when registering with the server. This parameter is a bitmask, with only 2 bits having any signification, and the `<realname>` parameter specifies the realname of the user.
 
-```sh
-WHO = "WHO" [ <name> [ <o> ] ]
+```bnf
+Command: WHO
+Parameters: [ <name> [ <o> ] ]
 ```
 
-The WHO command is used to list all users on the server. The <name> parameter specifies the name of the user to be listed, and the <o> parameter specifies whether to list only operators.
+The WHO command is used to list all users on the server. The `<name>` parameter specifies the name of the user to be listed, and the <o> parameter specifies whether to list only operators.
 
-```sh
-WHOIS = "WHOIS" <nickname> [ <server> ]
+```bnf
+Command: WHOIS
+Parameters: <nickname> [ <server> ]
 ```
 
-The WHOIS command is used to query information about a specific user. The <nickname> parameter specifies the nickname of the user to be queried, and the <server> parameter specifies the server to be queried.
+The WHOIS command is used to query information about a specific user. The `<nickname>` parameter specifies the nickname of the user to be queried, and the `<server>` parameter specifies the server to be queried.
 
 ### _Resources_
 
--   [The RFC 2810 document](https://www.rfc-editor.org/rfc/rfc2810) defines the Internet Relay Chat (IRC) protocol describing the architecture of the current IRC protocol and the role of its different components.
--   [The RFC 2812 document](https://www.rfc-editor.org/rfc/rfc2812) defines the Internet Relay Chat (IRC) protocol and provides a detailed description of the messages exchanged between IRC clients and servers. Reading this document is essential to understand how the protocol works.
--   [The RFC 2811 document](https://www.rfc-editor.org/rfc/rfc2811) defines the Internet Relay Chat (IRC) protocol and provides a detailed description of how channels, their characteristics and properties are managed by IRC servers
--   [The Beej's Guide to Network Programming](https://beej.us/guide/bgnet/) is a comprehensive guide to network programming in C that covers sockets, networking protocols, and more. Although it's not specific to IRC server development, it can provide useful information about networking concepts and techniques.
--   [The IRCd-Hybrid project](http://www.ircd-hybrid.org/) is an open-source IRC server written in C. You can study its source code to get a better understanding of how an IRC server works and how to implement one in C++98.
+-   The [RFC 2810 Document] defines the Internet Relay Chat (IRC) protocol describing the architecture of the current IRC protocol and the role of its different components.
+-   The [RFC 2812 Document] defines the Internet Relay Chat (IRC) protocol and provides a detailed description of the messages exchanged between IRC clients and servers. Reading this document is essential to understand how the protocol works.
+-   The [RFC 2811 Document] defines the Internet Relay Chat (IRC) protocol and provides a detailed description of how channels, their characteristics and properties are managed by IRC servers
+-   The [Beej's Guide to Network Programming] is a comprehensive guide to network programming in C that covers sockets, networking protocols, and more. Although it's not specific to IRC server development, it can provide useful information about networking concepts and techniques.
+-   The [IRCd-Hybrid project] is an open-source IRC server written in C. You can study its source code to get a better understanding of how an IRC server works and how to implement one in C++98.
 
 ### _Authors_
 
-| Name                           | Email                    |
-| ------------------------------ | ------------------------ |
-| Achraf Maghous                 | acmaghou@student.1337.ma |
-| Mohammed Badr Eddine El Housni | mel-hous@student.1337.ma |
-| Soufiane El Marsi              | sel-mars@student.1337.ma |
+The `FT_IRC` server project was created by a team of developers from [1337], a coding school located in Morocco, Africa, that is a member of the renowned [42 Network] of coding schools. The school is also powered by the [Mohammed VI Polytechnic University (UM6P)](https://www.um6p.ma), which provides world-class resources and expertise to its students.
+
+As a member of the `[42 Network]`, `[1337 Coding School]` follows the same innovative and immersive educational model, which is based on project-based learning and peer-to-peer collaboration. This means that students are free to learn at their own pace, and are encouraged to work on real-world projects that challenge and inspire them.
+
+The school's partnership with [UM6P] ensures that students have access to the latest technologies and tools, as well as world-class faculty members and experts in the field of computer science. This allows students to gain a comprehensive understanding of coding and computer science, while also developing the practical skills needed to succeed in the tech industry.
+
+Overall, [1337 Coding School] is a unique and innovative institution that provides an exceptional education in coding and computer science, while also preparing students for success in the rapidly-evolving tech industry.
+
+The project was completed as part of the common core's curriculum for the school's network branch.
+
+The following individuals contributed to the development of the project:
+
+| Name                             | Email                    |
+| -------------------------------- | ------------------------ |
+| [Achraf Maghous]                 | acmaghou@student.1337.ma |
+| [Mohammed Badr Eddine El Housni] | mel-hous@student.1337.ma |
+| [Soufiane El Marsi]              | sel-mars@student.1337.ma |
+
+Each team member worked collaboratively to ensure the project met all the requirements, and together they successfully created a fully functional IRC server that meets the mandatory and bonus parts of the project.
 
 ### _Contributing_
 
@@ -295,3 +308,18 @@ This project is licensed under the [MIT License](https://opensource.org/license/
 ### _Contact_
 
 If you have any questions or suggestions, please feel free to contact the contributors of this project. We are always happy to hear from you! -->
+
+[bnf]: https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form
+[rfc 2810 document]: https://www.rfc-editor.org/rfc/rfc2810
+[rfc 2812 document]: https://www.rfc-editor.org/rfc/rfc2812
+[rfc 2811 document]: https://www.rfc-editor.org/rfc/rfc2811
+[beej's guide to network programming]: https://beej.us/guide/bgnet
+[ircd-hybrid project]: http://www.ircd-hybrid.org
+[42 network]: https://www.42network.org
+[1337]: https://www.1337.ma/en
+[1337 coding school]: https://www.1337.ma/en
+[mohammed vi polytechnic university (um6p)]: https://www.um6p.ma
+[um6p]: https://www.um6p.ma
+[achraf maghous]: https://github.com/AchrafMaghous
+[mohammed badr eddine el housni]: https://github.com/badr-7
+[soufiane el marsi]: https://github.com/soofiane262
