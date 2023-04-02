@@ -6,11 +6,15 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/01 16:59:54 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/01 23:21:41 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/* General ──────────────────────────────────────────────────────────────────────────── */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/*                                        General                                       */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Constants ────────────────────────────────────────────────────────────────────────── */
 
 #define MAX_FD			   1024
 #define MAX_USERS		   "1024"
@@ -22,13 +26,21 @@
 #define SPCL			   " :"
 #define SPECIAL_CHARACTERS "[\\]^_'{|}"
 #define NULCRLFSPCL		   "\0\r\n :"
+#define NICK_DELAY		   30
+
+/* Numeric Replies ──────────────────────────────────────────────────────────────────── */
 #define NUMERIC_REPLY( num, nick ) \
 	COLON + irc::server::__hostaddr + SPACE + num + SPACE + nick + SPCL
 #define NUMERIC_REPLY_NOCL( num, nick ) \
 	COLON + irc::server::__hostaddr + SPACE + num + SPACE + nick + SPACE
+
+/* Error Replies ────────────────────────────────────────────────────────────────────── */
+
 #define ERR_REPLY_BASE( num, client_ ) \
 	NUMERIC_REPLY( num, client_._nickname ) + client_._message._command + SPCL
-#define NICK_DELAY	 30
+
+/* User Modes ───────────────────────────────────────────────────────────────────────── */
+
 #define UMODES_AVAIL "awiro"
 enum user_modes {
 	UMODE_AWAY		 = 1,
@@ -37,8 +49,14 @@ enum user_modes {
 	UMODE_RESTRICTED = 8,
 	UMODE_OPERATOR	 = 16
 };
+
+/* User Channel Modes ───────────────────────────────────────────────────────────────── */
+
 #define UMODES_CHAN "ov"
 enum user_channel_modes { UMODE_CHANOP = 1, UMODE_VOICE = 2, UMODE_CHANOWNER = 4 };
+
+/* Channel Modes ────────────────────────────────────────────────────────────────────── */
+
 #define CMODES_AVAIL "imnsptkl"
 enum channel_modes {
 	CMODE_INVITE	 = 1,
@@ -51,18 +69,27 @@ enum channel_modes {
 	CMODE_LIMIT		 = 128
 };
 
-/* Exceptions ───────────────────────────────────────────────────────────────────────── */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/*                                      Exceptions                                      */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Throw Exception Macros ───────────────────────────────────────────────────────────── */
 
 #define THROW_EXCEPT( str )	   throw std::runtime_error( str )
 #define ERRCODE_EXCEPT( code ) THROW_EXCEPT( std::strerror( code ) )
 #define ERRNO_EXCEPT		   ERRCODE_EXCEPT( errno )
-#define ARGS_EXCEPT			   THROW_EXCEPT( "Usage: ./ircserv <port> <password>" )
-#define PORT_EXCEPT			   THROW_EXCEPT( "<port> should be in range [1, 65535]" )
-#define PASS_EXCEPT			   THROW_EXCEPT( "<password> shall not be empty" )
 
-/* Client Responses ─────────────────────────────────────────────────────────────────── */
+/* Usage Exception Macros ───────────────────────────────────────────────────────────── */
 
-/* Replies ──────────────────────────────────────────────────────────────────────────── */
+#define ARGS_EXCEPT THROW_EXCEPT( "Usage: ./ircserv <port> <password>" )
+#define PORT_EXCEPT THROW_EXCEPT( "<port> should be in range [1, 65535]" )
+#define PASS_EXCEPT THROW_EXCEPT( "<password> shall not be empty" )
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/*                                        Replies                                       */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Define welcome messages for the client connection & registration success ─────────── */
 
 #define RPL_WELCOME( nick, user )                                                                 \
 	NUMERIC_REPLY( "001", nick ) + "Welcome to the Internet Relay Network " + nick + "!" + user + \
@@ -82,10 +109,16 @@ enum channel_modes {
 #define RPL_MOTDSTART( client_ )                                                                \
 	NUMERIC_REPLY( "375", client_._nickname ) + "-" + SPACE + irc::server::__hostaddr + SPACE + \
 		"Message of the day - " + CRLF
+
+/* Define message of the day messages ───────────────────────────────────────────────── */
+
 #define RPL_MOTD( client_, motd_ ) \
 	NUMERIC_REPLY( "372", client_._nickname ) + "-" + SPACE + motd_ + CRLF
 #define RPL_ENDOFMOTD( client_ ) \
 	NUMERIC_REPLY( "376", client_._nickname ) + "End of MOTD command" + CRLF
+
+/* Define LUSER messages ────────────────────────────────────────────────────────────── */
+
 #define RPL_LUSERCLIENT( client_ )                                                           \
 	NUMERIC_REPLY( "251", client_._nickname ) + "There are " +                               \
 		irc::server::__serv->getClientsSize() + " users and " +                              \
@@ -100,6 +133,12 @@ enum channel_modes {
 #define RPL_LUSERME( client_ )                              \
 	NUMERIC_REPLY( "255", client_._nickname ) + "I have " + \
 		irc::server::__serv->getClientsSize() + " clients and 0 servers" + CRLF
+
+/* Define channel messages ──────────────────────────────────────────────────────────── */
+
+#define RPL_CHANNELMODEIS( client_, channel_name, channel_modes ) \
+	NUMERIC_REPLY_NOCL( "324", client_._nickname ) + channel_name + SPACE + channel_modes + CRLF
+
 #define RPL_NOTOPIC( client_, channel_name ) \
 	NUMERIC_REPLY_NOCL( "331", client_._nickname ) + channel_name + " :No topic is set" + CRLF
 #define RPL_TOPIC( client_, channel_name, topic_ ) \
@@ -107,16 +146,16 @@ enum channel_modes {
 #define RPL_TOPIC_CHANGE( client_, channel_name, topic_ )                                 \
 	COLON + client_._nickname + "!" + client_._username + "@" + irc::server::__hostaddr + \
 		" TOPIC " + channel_name + SPCL + topic_ + CRLF
+
 #define RPL_NAMREPLY( client_, channel_name, users_ )                                             \
 	NUMERIC_REPLY_NOCL( "353", client_._nickname ) + "=" + SPACE + channel_name + SPCL + users_ + \
 		CRLF
 #define RPL_ENDOFNAMES( client_, channel_name ) \
 	NUMERIC_REPLY_NOCL( "366", client_._nickname ) + channel_name + " :End of NAMES list" + CRLF
+
 #define RPL_JOIN( newMember_, channel_name )                                                    \
 	COLON + newMember_._nickname + "!" + newMember_._username + "@" + irc::server::__hostaddr + \
 		" JOIN :" + channel_name + CRLF
-#define RPL_CHANNELMODEIS( client_, channel_name, channel_modes ) \
-	NUMERIC_REPLY_NOCL( "324", client_._nickname ) + channel_name + SPACE + channel_modes + CRLF
 #define RPL_UMODE( client_ )                                                                     \
 	COLON + client_._nickname + SPACE + "MODE" + client_._nickname + SPCL + client_.getModes() + \
 		CRLF
@@ -174,7 +213,9 @@ enum channel_modes {
 	NUMERIC_REPLY_NOCL( "315", client_._nickname ) + COLON + "End of WHO list" + CRLF
 #define RPL_BOT( client_, reply_ ) NUMERIC_REPLY_NOCL( "335", client_._nickname ) + reply_ + CRLF
 
-/* Errors ───────────────────────────────────────────────────────────────────────────── */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/*                                        Errors                                        */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 #define ERR_NOSUCHSERVER( client_, server_ ) \
 	ERR_REPLY_BASE( "402", client_ ) + server_ + SPCL + "No such server" + CRLF
