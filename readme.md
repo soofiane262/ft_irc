@@ -12,6 +12,7 @@
 -   [Bonus Part](#bonus-part)
 -   [Usage](#usage)
 -   [Commands](#commands)
+-   [Resources](#resources)
 -   [Authors](#authors)
 -   [Contributing](#contributing)
 
@@ -248,6 +249,14 @@ WHOIS = "WHOIS" <nickname> [ <server> ]
 ```
 
 The WHOIS command is used to query information about a specific user. The <nickname> parameter specifies the nickname of the user to be queried, and the <server> parameter specifies the server to be queried.
+
+### _Resources_
+
+-   [The RFC 2810 document](https://www.rfc-editor.org/rfc/rfc2810) defines the Internet Relay Chat (IRC) protocol describing the architecture of the current IRC protocol and the role of its different components.
+-   [The RFC 2812 document](https://www.rfc-editor.org/rfc/rfc2812) defines the Internet Relay Chat (IRC) protocol and provides a detailed description of the messages exchanged between IRC clients and servers. Reading this document is essential to understand how the protocol works.
+-   [The RFC 2811 document](https://www.rfc-editor.org/rfc/rfc2811) defines the Internet Relay Chat (IRC) protocol and provides a detailed description of how channels, their characteristics and properties are managed by IRC servers
+-   [The Beej's Guide to Network Programming](https://beej.us/guide/bgnet/) is a comprehensive guide to network programming in C that covers sockets, networking protocols, and more. Although it's not specific to IRC server development, it can provide useful information about networking concepts and techniques.
+-   [The IRCd-Hybrid project](http://www.ircd-hybrid.org/) is an open-source IRC server written in C. You can study its source code to get a better understanding of how an IRC server works and how to implement one in C++98.
 
 ### _Authors_
 
