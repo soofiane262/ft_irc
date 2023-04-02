@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/31 09:09:36 by mel-hous          #+#    #+#             */
-/*   Updated: 2023/04/02 13:34:32 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 22:32:42 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,15 @@ bool isMatch( irc::client::channel_type firstchannels, irc::client::channel_type
 }
 
 void memberChannels( irc::client& client_, irc::client& member ) {
+	std::string channel_name = "*";
 	if ( member._channels_joined.size() == 0 ) {
-		client_._msg_out += RPL_WHOREPLY( client_, "", member );
+		client_._msg_out += RPL_WHOREPLYNAME( client_, channel_name, member );
 		return;
 	}
 	for ( irc::client::channel_iterator it = member._channels_joined.begin();
 		  it != member._channels_joined.end(); it++ ) {
-		client_._msg_out += RPL_WHOREPLY( client_, *it, member );
+		channel_name = *it;
+		client_._msg_out += RPL_WHOREPLYNAME( client_, channel_name, member );
 	}
 }
 
@@ -46,11 +48,10 @@ void irc::commands::WHO( irc::client& client_ ) {
 				oper = true;
 			for ( irc::channel::member_iterator it = channel->_members.begin();
 				  it != channel->_members.end(); it++ ) {
-				if ( oper )
-					client_._msg_out += RPL_WHOREPLY_PTR( client_, channel->_name, it->first );
+				if ( oper ) client_._msg_out += RPL_WHOREPLY_PTR( client_, channel, it->first );
 				else {
 					if ( !( it->first->_mode & UMODE_INVISIBLE ) )
-						client_._msg_out += RPL_WHOREPLY_PTR( client_, channel->_name, it->first );
+						client_._msg_out += RPL_WHOREPLY_PTR( client_, channel, it->first );
 				}
 			}
 			client_._msg_out += RPL_ENDOFWHO( client_ );

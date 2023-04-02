@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 18:22:31 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/02 16:28:27 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 23:50:44 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,3 +159,17 @@ void irc::server::shutdownServer( void ) {
 			  << "\033[22m\033[24m\n";
 	std::system( "leaks ircserv" );
 } // signal_handler
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/*                                     Broadcasting                                     */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+void irc::server::broadcastWallops( irc::client& client_ ) {
+	irc::server::client_iterator client_it;
+	for ( client_it = this->_clients.begin(); client_it != this->_clients.end(); ++client_it ) {
+		if ( client_._nickname != client_it->second._nickname &&
+			 client_it->second._mode & UMODE_WALLOPS )
+			client_it->second._msg_out += NOTICE_MSG( client_, client_it->second._nickname,
+													  client_._message._params.front() );
+	}
+} // broadcast_wallops

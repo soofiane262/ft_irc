@@ -39,8 +39,8 @@ The program is designed not to crash in any circumstance, including running out 
 -   Messages sent from one client to a channel are forwarded to every other client that joined the channel
 -   Supports operators and regular users
 -   Implements commands that are specific to operators
--   Supports LimeChat as a reference client for evaluation purposes
--   File transfer using DCC in LimeChat
+-   Supports [LimeChat] as a reference client for evaluation purposes
+-   File transfer using DCC in [LimeChat]
 -   A bot using the [`42 API`](https://api.intra.42.fr/apidoc) to retrieve logtime of the current month, current location or coalition of any user
 
 ### _Getting Started_
@@ -73,7 +73,7 @@ make
 
 Replace `<port>` with the port number on which the server will be listening for incoming IRC connections and `<password>` with the connection password.
 
-5. Connect to the server using an IRC client such as LimeChat or by using netcat with the following command:
+5. Connect to the server using an IRC client such as [LimeChat] or by using netcat with the following command:
 
 ```sh
 nc -c localhost <port>
@@ -208,7 +208,7 @@ Parameters: <server>
 ```
 
 The PONG command is used to respond to a PING command. The `<server>` parameter specifies the server that sent the PING command.
-In our case, LimeChat automatically sends a PONG command after a specific amount of time.
+In our case, [LimeChat] automatically sends a PONG command after a specific amount of time.
 
 ```bnf
 Command: PRIVMSG
@@ -303,6 +303,7 @@ Contributions to this project are welcome and encouraged. If you would like to c
 
 This project is released under the permissive MIT License, which allows anyone to use, copy, modify, and distribute the software without any warranty. For more information about the license terms, please refer to the [LICENSE.md] file included in the project.
 
+[limechat]: https://limechat.net/mac/
 [bnf]: https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form
 [rfc 2810 document]: https://www.rfc-editor.org/rfc/rfc2810
 [rfc 2812 document]: https://www.rfc-editor.org/rfc/rfc2812

@@ -6,7 +6,7 @@
 #    By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/08 14:44:10 by sel-mars          #+#    #+#              #
-#    Updated: 2023/04/02 13:06:46 by sel-mars         ###   ########.fr        #
+#    Updated: 2023/04/02 23:45:33 by sel-mars         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ ASSETS_DIR		:= assets
 # List of command and asset files to compile
 COMMANDS		:= $(addprefix $(COMMANDS_DIR)/,$(addsuffix .cpp, \
 	AWAY BOT DIE INVITE JOIN KICK LIST MODE NAMES NICK NOTICE \
-	OPER PART PASS PONG PRIVMSG QUIT RESTART TOPIC USER WHO WHOIS))
+	OPER PART PASS PONG PRIVMSG QUIT RESTART TOPIC USER WALLOPS WHO WHOIS))
 ASSETS			:= $(addprefix $(ASSETS_DIR)/, $(addsuffix .cpp, \
 	channel client commands message server utils))
 SRCS			:= irc.cpp $(COMMANDS) $(ASSETS)

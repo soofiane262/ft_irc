@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 17:02:42 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/02 16:49:32 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 23:29:50 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,9 @@ bool irc::channel::isMember( irc::client* member ) {
 
 int irc::channel::addMember( irc::client* client_, std::string& key_ ) {
 	irc::client& client = *client_;
-	if ( this->_members.empty() ) goto add;
+	if ( client.isInChannel( this->_name ) ) return 0;
+	else if ( this->_members.empty() )
+		goto add;
 	if ( this->_mode & CMODE_LIMIT &&
 		 static_cast< unsigned short >( this->_members.size() ) >= this->_limit ) {
 		client_->_msg_out += ERR_CHANNELISFULL( client, this->_name );
@@ -61,7 +63,9 @@ std::string irc::channel::getMembers( void ) {
 	irc::channel::member_iterator member_it;
 	for ( member_it = this->_members.begin(); member_it != this->_members.end(); ++member_it )
 		members +=
-			( member_it->second & UMODE_CHANOP ? "@" : "" ) + ( *member_it ).first->_nickname + ' ';
+			( member_it->second & UMODE_CHANOP ? "@" :
+												 ( member_it->second & UMODE_VOICE ? "+" : "" ) ) +
+			( *member_it ).first->_nickname + ' ';
 	return members;
 } // getMembers
 

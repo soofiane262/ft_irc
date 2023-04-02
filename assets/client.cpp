@@ -6,15 +6,27 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/26 13:32:25 by mel-hous          #+#    #+#             */
-/*   Updated: 2023/04/02 17:06:11 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 22:52:45 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../irc.hpp"
 
-#include <netinet/in.h>
-#include <sys/_types/_socklen_t.h>
-#include <sys/socket.h>
+std::string irc::client::who( std::string& channel_name_ ) {
+	irc::channel* channel = irc::server::__serv->findChannel( channel_name_ );
+	std::string	  ret	  = "H";
+	if ( channel != NULL ) ret = this->who( *channel );
+	return ret;
+}
+
+std::string irc::client::who( irc::channel& channel_ ) {
+	std::string ret = "H";
+	if ( this->_mode & UMODE_OPERATOR ) ret += " *";
+	if ( channel_.getMember( this->_nickname )->second & UMODE_CHANOP ) ret += " @";
+	else if ( channel_.getMember( this->_nickname )->second & UMODE_VOICE )
+		ret += " +";
+	return ret;
+}
 
 std::string irc::client::getModes( void ) {
 	std::string modes = "+";
@@ -104,7 +116,8 @@ void irc::server::disconClient( client_iterator& client_it_, poll_iterator& poll
 	}
 	close( client_it_->second._fd );
 	std::cout << "\033[2m"
-			  << "User `" << client_it_->second._nickname << "` disconnected"
+			  << "User `" << client_it_->second._nickname << "` - `" << client_it_->second._hostaddr
+			  << "` disconnected"
 			  << "\033[22m\n";
 	this->_sockets.erase( poll_it_ );
 	this->_clients.erase( client_it_ );
