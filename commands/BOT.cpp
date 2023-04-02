@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/01 16:19:26 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/01 18:01:41 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 18:18:38 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,17 +32,13 @@ static std::string ft_curl( const std::string& cmd_trail ) {
 	if ( api_token == nullptr )
 		throw std::runtime_error( "API42_TOKEN environment variable not set" );
 
+	std::string cmd = "rm -f .log && touch .log && curl -sH \"Authorization: Bearer " +
+					  std::string( api_token ) + "\" " + cmd_trail + " > .log";
+
+	int				  status = std::system( cmd.c_str() );
 	std::stringstream ss;
-	FILE*			  pipe = popen(
-		( "curl -sH \"Authorization: Bearer " + std::string( api_token ) + "\" " + cmd_trail )
-			.c_str(),
-		"r" );
-	if ( pipe == nullptr ) throw std::runtime_error( "Failed to execute curl command" );
-
-	char buffer[ 1024 ];
-	while ( fgets( buffer, sizeof( buffer ), pipe ) != nullptr ) ss << buffer;
-
-	int status = pclose( pipe );
+	ss << std::ifstream( ".log" ).rdbuf();
+	std::system( "rm -f .log" );
 	if ( status != 0 ) throw std::runtime_error( "curl command exited with non-zero status" );
 
 	return ss.str();
