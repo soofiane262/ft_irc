@@ -15,9 +15,7 @@
 -   [Resources](#resources)
 -   [Authors](#authors)
 -   [Contributing](#contributing)
-
-<!-- -	[License](#license) -->
-<!-- -	[Contact](#contact) -->
+-   [License](#license)
 
 ### _Summary_
 
@@ -301,13 +299,9 @@ Contributions to this project are welcome and encouraged. If you would like to c
 4. Push the branch to your fork: git push origin my-feature-branch
 5. Create a new Pull Request and describe your changes.
 
-<!-- ### _License_
+### _License_
 
-This project is licensed under the [MIT License](https://opensource.org/license/mit/). See the `LICENSE` file for more information.
-
-### _Contact_
-
-If you have any questions or suggestions, please feel free to contact the contributors of this project. We are always happy to hear from you! -->
+This project is released under the permissive MIT License, which allows anyone to use, copy, modify, and distribute the software without any warranty. For more information about the license terms, please refer to the [LICENSE.md] file included in the project.
 
 [bnf]: https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form
 [rfc 2810 document]: https://www.rfc-editor.org/rfc/rfc2810
@@ -323,3 +317,4 @@ If you have any questions or suggestions, please feel free to contact the contri
 [achraf maghous]: https://github.com/AchrafMaghous
 [mohammed badr eddine el housni]: https://github.com/badr-7
 [soufiane el marsi]: https://github.com/soofiane262
+[license.md]: https://github.com/soofiane262/ft_irc/blob/master/LICENSE.md
