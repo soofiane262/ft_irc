@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 11:25:32 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 21:14:23 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 17:02:27 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ void irc::commands::PRIVMSG( irc::client& client_ ) {
 			client_._msg_out += ERR_NOSUCHNICK( client_, client_._message._params.front() );
 		else if ( user->_nickname.compare( client_._nickname ) ) {
 			user->_msg_out += MSG( client_, user->_nickname, client_._message._params.back() );
+			client_._clients_connnected.insert( user->_nickname );
+			user->_clients_connnected.insert( client_._nickname );
 			if ( user->_mode & UMODE_AWAY )
 				client_._msg_out += RPL_AWAY( client_, user->_nickname, user->_away_msg );
 		}

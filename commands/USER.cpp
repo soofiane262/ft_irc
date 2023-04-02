@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 15:42:15 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/02 13:25:18 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 17:37:07 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ void irc::commands::USER( irc::client& client_ ) {
 		client_._msg_out += RPL_LUSERME( client_ );
 		client_._msg_out += RPL_MOTDSTART( client_ );
 		client_._msg_out += RPL_MOTD( client_, "" );
+		client_._msg_out += ASCII_ART( client_ );
 		client_._msg_out +=
 			RPL_MOTD( client_, "Greetings and welcome to our Internet Relay Chat server !" );
 		client_._msg_out += RPL_MOTD( client_, "We hope you feel at home here." );

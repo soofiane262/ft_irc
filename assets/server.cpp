@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 18:22:31 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/02 14:08:42 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 16:28:27 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,7 @@ irc::server::~server( void ) {
 	this->_buff = NULL;
 } // dtor
 
-void irc::server::staticSigHandler( int ) {
-	irc::server::__serv->shutdownServer();
-	exit( 0 );
-} // signal_handler
+void irc::server::staticSigHandler( int ) { irc::server::__shutdown = true; } // signal_handler
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 /*                                   Server statistics                                  */
@@ -81,7 +78,7 @@ std::string irc::server::getChannelsSize( void ) {
 void irc::server::initServer( void ) {
 	addrinfo hints, *servinfo = NULL, *ptr = NULL;
 	bzero( &hints, sizeof( hints ) );
-	hints.ai_family	  = AF_UNSPEC;
+	hints.ai_family	  = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags	  = AI_PASSIVE;
 	std::stringstream ss;
@@ -145,16 +142,16 @@ shutdown:
 } // run_server
 
 void irc::server::shutdownServer( void ) {
-	clearChannels();
 	client_iterator client_it;
 	for ( client_it = this->_clients.begin(); client_it != this->_clients.end(); ++client_it ) {
 		try {
-			client_it->second._msg_out = ERR_CLOSINGLINK( client_it->second );
+			client_it->second._msg_out = RPL_CLOSINGLINK( client_it->second );
 			sendMsg( client_it->second );
 		} catch ( ... ) {}
 		close( client_it->second._fd );
 	}
 	if ( close( this->_sockets.begin()->fd ) ) ERRNO_EXCEPT;
+	this->_channels.clear();
 	this->_clients.clear();
 	this->_sockets.clear();
 	std::cout << "\n\n\033[2m\033[4m"
