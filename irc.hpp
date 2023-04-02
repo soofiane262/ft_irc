@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/01 21:12:20 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 16:39:37 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,18 +66,21 @@ namespace irc {
 	  public:
 		typedef std::map< irc::client*, unsigned char >			  member_type;
 		typedef std::map< irc::client*, unsigned char >::iterator member_iterator;
-		typedef std::set< std::string >							  channel_type;
-		typedef std::set< std::string >::iterator				  channel_iterator;
+		typedef std::set< std::string >							  stringset_type;
+		typedef std::set< std::string >::iterator				  stringset_iterator;
+		typedef stringset_type									  channel_type;
+		typedef stringset_iterator								  channel_iterator;
 
 		int			  _fd;
 		std::time_t	  _sign, _idle, _nick_change;
 		unsigned char _mode;
 		bool		  _quit;
-		std::string	  _hostaddr, _hostname, _hostport, _nickname, _username, _realname, _msg_in,
-			_msg_out, _away_msg;
-		irc::message _message;
-		channel_type _channels_joined;
-		channel_type _channels_invited;
+		std::string	  _hostaddr, _hostport, _nickname, _username, _realname, _msg_in, _msg_out,
+			_away_msg;
+		irc::message   _message;
+		channel_type   _channels_joined;
+		channel_type   _channels_invited;
+		stringset_type _clients_connnected;
 
 		client( int& fd )
 			: _fd( fd ), _nick_change( -1 ), _mode( 0 ), _quit( false ), _nickname( "*" ),
@@ -85,7 +88,7 @@ namespace irc {
 		~client( void ) {}
 
 		std::string getModes( void );
-		std::string getChannels( void );
+		std::string getChannels( char );
 		std::string getSignOnTime( void );
 		std::string getIdleTime( void );
 		bool		isInvited( std::string& );
@@ -132,6 +135,7 @@ namespace irc {
 		void		  kick_member( irc::client&, std::string&, irc::channel*, std::string& );
 		void		  AWAY( irc::client& );
 		void		  BOT( irc::client& );
+		void		  DIE( irc::client& );
 		void		  INVITE( irc::client& );
 		void		  JOIN( irc::client& );
 		void		  KICK( irc::client& );
@@ -146,6 +150,7 @@ namespace irc {
 		void		  PONG( irc::client& );
 		void		  PRIVMSG( irc::client& );
 		void		  QUIT( irc::client& );
+		void		  RESTART( irc::client& );
 		void		  TOPIC( irc::client& );
 		void		  USER( irc::client& );
 		void		  WHO( irc::client& );
@@ -159,12 +164,12 @@ namespace irc {
 
 	class server {
 	  public:
-		typedef std::vector< pollfd >							 poll_type;
-		typedef std::vector< pollfd >::iterator					 poll_iterator;
-		typedef std::map< std::string, irc::channel* >			 channel_type;
-		typedef std::map< std::string, irc::channel* >::iterator channel_iterator;
-		typedef std::map< int, irc::client >					 client_type;
-		typedef std::map< int, irc::client >::iterator			 client_iterator;
+		typedef std::vector< pollfd >							poll_type;
+		typedef std::vector< pollfd >::iterator					poll_iterator;
+		typedef std::map< std::string, irc::channel >			channel_type;
+		typedef std::map< std::string, irc::channel >::iterator channel_iterator;
+		typedef std::map< int, irc::client >					client_type;
+		typedef std::map< int, irc::client >::iterator			client_iterator;
 
 	  private:
 		char*		   _buff;
@@ -183,13 +188,15 @@ namespace irc {
 
 	  public:
 		static server*	   __serv;
+		static bool		   __shutdown, __restart;
 		static std::string __password, __operpass, __hostaddr, __creationdate;
 		server( const int& ac, char** av );
 		~server( void );
+		void execCommand( irc::client& );
 		/* Server initialisation, run and shutdown ────────────────────────────────────────── */
 		void initServer( void );
 		void runServer( void );
-		void shutDownServer( void );
+		void shutdownServer( void );
 		/* Server statistics ──────────────────────────────────────────────────────────────── */
 		std::string getClientsSize( void );
 		std::string getOpersSize( void );

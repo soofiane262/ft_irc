@@ -143,6 +143,12 @@ BOT = "BOT" <botcmd> [ <botparams> ]
 The BOT command is used to send a command to a bot in the channel. The <botcmd> parameter specifies the command to be executed, and the <botparams> parameter provides any additional parameters that the command requires.
 
 ```sh
+DIE = "DIE"
+```
+
+The DIE command is used to shut down the server. This command is only available to operators.
+
+```sh
 INVITE = "INVITE" <nickname> <channel>
 ```
 
@@ -225,6 +231,12 @@ QUIT = "QUIT" [ <reason> ]
 ```
 
 The QUIT command is used to disconnect from the server. The <reason> parameter provides the reason for disconnecting from the server.
+
+```sh
+RESTART = "RESTART"
+```
+
+The RESTART command is used to restart the server. This command is only available to operators.
 
 ```sh
 TOPIC = "TOPIC" <channel> [ <topic> ]

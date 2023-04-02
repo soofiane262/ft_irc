@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 15:44:53 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 22:13:04 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 13:08:34 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ static void joinChannel( irc::client& client_, std::string& channel_name_,
 			client_._msg_out += ERR_BADCHANNELKEY( client_, channel->_name );
 		else {
 			int added = channel->addMember( &client_, channel_key_ );
-			std::cout << "added: " << added << std::endl;
 			if ( added == 1 ) {
 				channel->broadcast( RPL_JOIN( client_, channel->_name ) );
 				if ( !channel->_topic.empty() )

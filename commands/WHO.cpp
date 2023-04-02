@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/31 09:09:36 by mel-hous          #+#    #+#             */
-/*   Updated: 2023/04/01 13:21:48 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 13:34:32 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,17 +57,15 @@ void irc::commands::WHO( irc::client& client_ ) {
 		} else {
 			irc::server::client_type clients = irc::server::__serv->getClients();
 			if ( client_._message._params.front() == "0" ) {
-				bool oper;
+				bool oper = false, matchingChannels = false;
 				if ( client_._mode & UMODE_OPERATOR ) oper = true;
 				for ( cl_it = clients.begin(); cl_it != clients.end(); cl_it++ ) {
-					if ( oper ) {
-						if ( isMatch( client_._channels_joined, cl_it->second._channels_joined ) )
-							memberChannels( client_, cl_it->second );
-					} else {
-						if ( isMatch( client_._channels_joined, cl_it->second._channels_joined ) &&
-							 !( cl_it->second._mode & UMODE_INVISIBLE ) )
-							memberChannels( client_, cl_it->second );
-					}
+					matchingChannels =
+						isMatch( client_._channels_joined, cl_it->second._channels_joined );
+					if ( cl_it->second._nickname == client_._nickname ||
+						 ( oper && matchingChannels ) ||
+						 ( matchingChannels && !( cl_it->second._mode & UMODE_INVISIBLE ) ) )
+						memberChannels( client_, cl_it->second );
 				}
 				client_._msg_out += RPL_ENDOFWHO( client_ );
 			} else {

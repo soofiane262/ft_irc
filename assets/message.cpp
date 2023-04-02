@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:26:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/01 21:11:12 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 16:39:53 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,5 +57,5 @@ void irc::server::recvMsg( irc::client& client_ ) {
 	client_._msg_in.append( _buff, bytes_rcvd );
 	if ( client_._msg_in.size() >= 2 &&
 		 !client_._msg_in.compare( client_._msg_in.size() - 2, 2, CRLF ) )
-		this->_commands[ client_ ];
+		this->execCommand( client_ );
 } // receive_message

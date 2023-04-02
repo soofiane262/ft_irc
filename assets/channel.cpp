@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 17:02:42 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/01 21:11:55 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 16:49:32 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ bool irc::channel::isMember( irc::client* member ) {
 
 int irc::channel::addMember( irc::client* client_, std::string& key_ ) {
 	irc::client& client = *client_;
+	if ( this->_members.empty() ) goto add;
 	if ( this->_mode & CMODE_LIMIT &&
 		 static_cast< unsigned short >( this->_members.size() ) >= this->_limit ) {
 		client_->_msg_out += ERR_CHANNELISFULL( client, this->_name );
@@ -47,6 +48,7 @@ int irc::channel::addMember( irc::client* client_, std::string& key_ ) {
 		client_->_msg_out += ERR_INVITEONLYCHAN( client, this->_name );
 		return -1;
 	}
+add:
 	std::pair< irc::channel::member_iterator, bool > it =
 		this->_members.insert( std::make_pair( client_, '\0' ) );
 	if ( this->_members.size() == 1 ) it.first->second = UMODE_CHANOP | UMODE_CHANOWNER;
@@ -99,18 +101,18 @@ irc::channel::member_iterator irc::channel::getMemberByUsername( std::string& me
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 irc::channel* irc::server::addChannel( std::string& channel_name_ ) {
-	irc::channel* channel = new irc::channel( channel_name_ );
-	this->_channels.insert( std::make_pair( channel_name_, channel ) );
-	channel->_mode = CMODE_NOEXTERNAL | CMODE_TOPIC;
-	return channel;
+	std::pair< irc::server::channel_iterator, bool > ch_pr =
+		this->_channels.insert( std::make_pair( channel_name_, irc::channel( channel_name_ ) ) );
+	ch_pr.first->second._mode = CMODE_NOEXTERNAL | CMODE_SECRET;
+	return &ch_pr.first->second;
 } // addChannel
 
 irc::channel* irc::server::findChannel( std::string& channel_name_ ) {
 	irc::server::channel_iterator ch_it;
 	for ( ch_it = this->_channels.begin();
-		  ch_it != this->_channels.end() && ch_it->second->_name.compare( channel_name_ ); ch_it++ )
+		  ch_it != this->_channels.end() && ch_it->second._name.compare( channel_name_ ); ch_it++ )
 		continue;
-	return ch_it != this->_channels.end() ? ch_it->second : NULL;
+	return ch_it != this->_channels.end() ? &ch_it->second : NULL;
 } // findChannel
 
 irc::server::channel_type& irc::server::getChannels( void ) {
@@ -121,6 +123,8 @@ void irc::server::removeChannel( channel& channel_ ) {
 	this->_channels.erase( channel_._name );
 } // removeChannel
 
+void irc::server::execCommand( irc::client& client_ ) { this->_commands[ client_ ]; }
+
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 /*                                     Broadcasting                                     */
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -129,6 +133,6 @@ void irc::server::broadcastJoinedChannels( irc::client& client_, std::string msg
 	irc::server::channel_iterator ch_it;
 	for ( ch_it = this->_channels.begin(); ch_it != this->_channels.end(); ch_it++ ) {
 		if ( client_._channels_joined.find( ch_it->first ) != client_._channels_joined.end() )
-			ch_it->second->broadcast( client_, msg_ );
+			ch_it->second.broadcast( client_, msg_ );
 	}
 } // broadcastJoinedChannels

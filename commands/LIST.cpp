@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/29 17:24:34 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 21:14:23 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 15:25:58 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ void irc::commands::LIST( irc::client& client_ ) {
 			client_._msg_out += ERR_TOOMANYMATCHES( client_ );
 		for ( irc::server::channel_iterator it = irc::server::__serv->getChannels().begin();
 			  it != irc::server::__serv->getChannels().end(); ++it ) {
-			if ( !( it->second->_mode & CMODE_SECRET ) && !( it->second->_mode & CMODE_PRIVATE ) )
-				listChannel( client_, it->second->_name );
+			if ( !( it->second._mode & CMODE_SECRET ) && !( it->second._mode & CMODE_PRIVATE ) )
+				listChannel( client_, it->second._name );
 		}
 	} else {
 		std::vector< std::string > channel_names =
