@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/01 23:21:41 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 12:57:12 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,6 +212,12 @@ enum channel_modes {
 #define RPL_ENDOFWHO( client_ ) \
 	NUMERIC_REPLY_NOCL( "315", client_._nickname ) + COLON + "End of WHO list" + CRLF
 #define RPL_BOT( client_, reply_ ) NUMERIC_REPLY_NOCL( "335", client_._nickname ) + reply_ + CRLF
+#define RPL_RESTART( client_ ) \
+	NUMERIC_REPLY_NOCL( "382", client_._nickname ) + "ircserv" + SPCL + "Restarting server" + CRLF
+#define RPL_DIE( client_ ) \
+	NUMERIC_REPLY_NOCL( "383", client_._nickname ) + "ircserv" + SPCL + "Server terminating" + CRLF
+#define ERR_NOPRIVILEGES( client_ ) \
+	ERR_REPLY_BASE( "481", client_ ) + "Permission Denied- You're not an IRC operator" + CRLF
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 /*                                        Errors                                        */

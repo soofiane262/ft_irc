@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/24 15:22:19 by mel-hous          #+#    #+#             */
-/*   Updated: 2023/03/31 21:38:04 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 13:20:02 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,14 +128,20 @@ void irc::commands::MODE( irc::client& client_ ) {
 			} else {
 				char		add = 0;
 				std::string channel_modes[ 2 ];
+				if ( std::strchr( "+-", client_._message._params[ 1 ].front() ) == NULL )
+					channel_modes[ 0 ] += '+';
 				for ( std::string::const_iterator it = client_._message._params[ 1 ].begin();
 					  it != client_._message._params[ 1 ].end(); ++it ) {
-					if ( *it == '+' && add != 1 ) {
-						add = 1;
-						channel_modes[ 0 ] += '+';
-					} else if ( *it == '-' && add != -1 ) {
-						add = -1;
-						channel_modes[ 0 ] += '-';
+					if ( *it == '+' ) {
+						if ( add != 1 ) {
+							add = 1;
+							channel_modes[ 0 ] += '+';
+						}
+					} else if ( *it == '-' ) {
+						if ( add != -1 ) {
+							add = -1;
+							channel_modes[ 0 ] += '-';
+						}
 					} else if ( std::strchr( UMODES_CHAN, *it ) != NULL &&
 								assignMode( client_, *it, add == 1, *channel, member_it2 ) )
 						channel_modes[ 0 ] += *it;
@@ -155,14 +161,20 @@ void irc::commands::MODE( irc::client& client_ ) {
 		} else {
 			char		add = 0;
 			std::string user_modes;
+			if ( std::strchr( "+-", client_._message._params[ 1 ].front() ) == NULL )
+				user_modes += '+';
 			for ( std::string::const_iterator it = client_._message._params[ 1 ].begin();
 				  it != client_._message._params[ 1 ].end(); ++it ) {
-				if ( *it == '+' && add != 1 ) {
-					add = 1;
-					user_modes += '+';
-				} else if ( *it == '-' && add != -1 ) {
-					add = -1;
-					user_modes += '-';
+				if ( *it == '+' ) {
+					if ( add != 1 ) {
+						add = 1;
+						user_modes += '+';
+					}
+				} else if ( *it == '-' ) {
+					if ( add != -1 ) {
+						add = -1;
+						user_modes += '-';
+					}
 				} else if ( std::strchr( UMODES_AVAIL, *it ) != NULL ) {
 					assignMode( client_, *it, add == 1 );
 				} else {

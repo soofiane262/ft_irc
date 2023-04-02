@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/01 21:12:20 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 13:54:44 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,7 @@ namespace irc {
 		void		  kick_member( irc::client&, std::string&, irc::channel*, std::string& );
 		void		  AWAY( irc::client& );
 		void		  BOT( irc::client& );
+		void		  DIE( irc::client& );
 		void		  INVITE( irc::client& );
 		void		  JOIN( irc::client& );
 		void		  KICK( irc::client& );
@@ -146,6 +147,7 @@ namespace irc {
 		void		  PONG( irc::client& );
 		void		  PRIVMSG( irc::client& );
 		void		  QUIT( irc::client& );
+		void		  RESTART( irc::client& );
 		void		  TOPIC( irc::client& );
 		void		  USER( irc::client& );
 		void		  WHO( irc::client& );
@@ -180,16 +182,18 @@ namespace irc {
 		void		recvMsg( irc::client& );
 		void		sendMsg( irc::client& );
 		void		connectRegistr( irc::client& );
+		void		clearChannels( void );
 
 	  public:
 		static server*	   __serv;
+		static bool		   __shutdown, __restart;
 		static std::string __password, __operpass, __hostaddr, __creationdate;
 		server( const int& ac, char** av );
 		~server( void );
 		/* Server initialisation, run and shutdown ────────────────────────────────────────── */
 		void initServer( void );
 		void runServer( void );
-		void shutDownServer( void );
+		void shutdownServer( void );
 		/* Server statistics ──────────────────────────────────────────────────────────────── */
 		std::string getClientsSize( void );
 		std::string getOpersSize( void );

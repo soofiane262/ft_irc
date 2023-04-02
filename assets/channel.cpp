@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 17:02:42 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/01 21:11:55 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 13:54:16 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,8 +118,18 @@ irc::server::channel_type& irc::server::getChannels( void ) {
 } // getChannels
 
 void irc::server::removeChannel( channel& channel_ ) {
+	irc::channel* channel = &channel_;
 	this->_channels.erase( channel_._name );
+	delete channel;
+	channel = NULL;
 } // removeChannel
+
+void irc::server::clearChannels( void ) {
+	irc::server::channel_iterator ch_it;
+	for ( ch_it = this->_channels.begin(); ch_it != this->_channels.end(); ch_it++ )
+		removeChannel( *ch_it->second );
+	this->_channels.clear();
+} // clearChannels
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 /*                                     Broadcasting                                     */

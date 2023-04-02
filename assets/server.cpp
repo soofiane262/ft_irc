@@ -6,13 +6,15 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 18:22:31 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/01 21:11:23 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 14:08:42 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../irc.hpp"
 
 irc::server* irc::server::__serv		 = NULL;
+bool		 irc::server::__shutdown	 = false;
+bool		 irc::server::__restart		 = false;
 std::string	 irc::server::__operpass	 = "operpass";
 std::string	 irc::server::__password	 = "";
 std::string	 irc::server::__hostaddr	 = "";
@@ -41,7 +43,7 @@ irc::server::~server( void ) {
 } // dtor
 
 void irc::server::staticSigHandler( int ) {
-	irc::server::__serv->shutDownServer();
+	irc::server::__serv->shutdownServer();
 	exit( 0 );
 } // signal_handler
 
@@ -110,6 +112,7 @@ void irc::server::initServer( void ) {
 void irc::server::runServer( void ) {
 	client_iterator client_it;
 	poll_iterator	poll_it;
+run:
 	std::cout << "\033[2m\033[4m"
 			  << "IRC Server started successfully ~ " << this->__hostaddr << ':' << this->_port
 			  << "\033[22m\033[24m\n\n";
@@ -128,22 +131,34 @@ void irc::server::runServer( void ) {
 				if ( poll_it->revents & POLLIN ) recvMsg( client_it->second );
 				if ( poll_it->revents & POLLOUT && !client_it->second._msg_out.empty() )
 					sendMsg( client_it->second );
+				if ( this->__shutdown || this->__restart ) goto shutdown;
 			} catch ( std::exception& e ) { std::cerr << "\033[1;31m" << e.what() << "\033[0m\n"; }
 			if ( client_it->second._quit ) disconClient( client_it, poll_it );
 		}
 	}
+shutdown:
+	this->shutdownServer();
+	if ( this->__shutdown ) return;
+	this->initServer();
+	this->__restart = false;
+	goto run;
 } // run_server
 
-void irc::server::shutDownServer( void ) {
+void irc::server::shutdownServer( void ) {
+	clearChannels();
 	client_iterator client_it;
 	for ( client_it = this->_clients.begin(); client_it != this->_clients.end(); ++client_it ) {
 		try {
-			while ( !client_it->second._msg_out.empty() ) sendMsg( client_it->second );
+			client_it->second._msg_out = ERR_CLOSINGLINK( client_it->second );
+			sendMsg( client_it->second );
 		} catch ( ... ) {}
 		close( client_it->second._fd );
 	}
 	if ( close( this->_sockets.begin()->fd ) ) ERRNO_EXCEPT;
+	this->_clients.clear();
+	this->_sockets.clear();
 	std::cout << "\n\n\033[2m\033[4m"
 			  << "IRC Server shut down successfully"
 			  << "\033[22m\033[24m\n";
+	std::system( "leaks ircserv" );
 } // signal_handler

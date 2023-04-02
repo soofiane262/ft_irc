@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:27:13 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/01 21:13:03 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 12:54:46 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 irc::commands::commands( void ) {
 	this->_commands[ "AWAY" ]	 = &commands::AWAY;
 	this->_commands[ "BOT" ]	 = &commands::BOT;
+	this->_commands[ "DIE" ]	 = &commands::DIE;
 	this->_commands[ "INVITE" ]	 = &commands::INVITE;
 	this->_commands[ "JOIN" ]	 = &commands::JOIN;
 	this->_commands[ "KICK" ]	 = &commands::KICK;
@@ -29,6 +30,7 @@ irc::commands::commands( void ) {
 	this->_commands[ "PONG" ]	 = &commands::PONG;
 	this->_commands[ "PRIVMSG" ] = &commands::PRIVMSG;
 	this->_commands[ "QUIT" ]	 = &commands::QUIT;
+	this->_commands[ "RESTART" ] = &commands::RESTART;
 	this->_commands[ "TOPIC" ]	 = &commands::TOPIC;
 	this->_commands[ "USER" ]	 = &commands::USER;
 	this->_commands[ "WHO" ]	 = &commands::WHO;
