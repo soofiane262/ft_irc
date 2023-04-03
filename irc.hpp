@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/02 23:40:06 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/03 15:17:23 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ namespace irc {
 		void			broadcast( std::string );
 		void			broadcast( irc::client&, std::string );
 		bool			isMember( irc::client* );
-		int				addMember( irc::client*, std::string& );
+		bool			addMember( irc::client*, std::string& );
 		std::string		getMembers( void );
 		std::string		getModes( void );
 		void			setModes( const std::string& );

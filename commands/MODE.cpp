@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/24 15:22:19 by mel-hous          #+#    #+#             */
-/*   Updated: 2023/04/02 23:32:46 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/03 15:49:24 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,9 @@ void irc::commands::MODE( irc::client& client_ ) {
 		client_._msg_out += ERR_NEEDMOREPARAMS( client_ );
 	} else if ( client_._message._params.front()[ 0 ] == '#' ) {
 		std::string	  channel_name = irc::utils::toLower( client_._message._params[ 0 ] );
-		irc::channel* channel	   = irc::server::__serv->findChannel( channel_name );
+		irc::channel* channel	   = NULL;
+		if ( client_.isInChannel( channel_name ) )
+			channel = irc::server::__serv->findChannel( channel_name );
 		if ( channel == NULL ) {
 			client_._msg_out += ERR_NOSUCHCHANNEL( client_, channel_name );
 		} else if ( client_._message._params.size() == 1 ) {
@@ -128,28 +130,26 @@ void irc::commands::MODE( irc::client& client_ ) {
 			} else if ( !( member_it->second & UMODE_CHANOP ) ) {
 				client_._msg_out += ERR_CHANOPRIVSNEEDED( client_, channel->_name );
 			} else {
-				char		add = 0;
+				bool		add = true;
 				std::string channel_modes[ 2 ];
-				if ( std::strchr( "+-", client_._message._params[ 1 ].front() ) == NULL )
-					channel_modes[ 0 ] += '+';
+				if ( client_._message._params[ 1 ].front() != '-' ) channel_modes[ 0 ] += '+';
 				for ( std::string::const_iterator it = client_._message._params[ 1 ].begin();
 					  it != client_._message._params[ 1 ].end(); ++it ) {
 					if ( *it == '+' ) {
-						if ( add != 1 ) {
-							add = 1;
+						if ( !add ) {
+							add = true;
 							channel_modes[ 0 ] += '+';
 						}
 					} else if ( *it == '-' ) {
-						if ( add != -1 ) {
-							add = -1;
+						if ( add ) {
+							add = false;
 							channel_modes[ 0 ] += '-';
 						}
 					} else if ( std::strchr( UMODES_CHAN, *it ) != NULL &&
-								assignUserMode( client_, *it, add == 1, *channel,
-												channel_modes[ 1 ] ) )
+								assignUserMode( client_, *it, add, *channel, channel_modes[ 1 ] ) )
 						channel_modes[ 0 ] += *it;
 					else if ( std::strchr( UMODES_CHAN, *it ) == NULL &&
-							  assignMode( client_, *it, add == 1, *channel, channel_modes[ 1 ] ) )
+							  assignMode( client_, *it, add, *channel, channel_modes[ 1 ] ) )
 						channel_modes[ 0 ] += *it;
 				};
 				channel_modes[ 0 ] += SPACE + channel_modes[ 1 ];
@@ -163,24 +163,23 @@ void irc::commands::MODE( irc::client& client_ ) {
 		} else if ( client_._message._params.front().compare( client_._nickname ) ) {
 			client_._msg_out += ERR_USERSDONTMATCH( client_ );
 		} else {
-			char		add = 0;
+			bool		add = true;
 			std::string user_modes;
-			if ( std::strchr( "+-", client_._message._params[ 1 ].front() ) == NULL )
-				user_modes += '+';
+			if ( client_._message._params[ 1 ].front() != '-' ) user_modes += '+';
 			for ( std::string::const_iterator it = client_._message._params[ 1 ].begin();
 				  it != client_._message._params[ 1 ].end(); ++it ) {
 				if ( *it == '+' ) {
-					if ( add != 1 ) {
-						add = 1;
+					if ( add ) {
+						add = true;
 						user_modes += '+';
 					}
 				} else if ( *it == '-' ) {
-					if ( add != -1 ) {
-						add = -1;
+					if ( !add ) {
+						add = false;
 						user_modes += '-';
 					}
 				} else if ( std::strchr( UMODES_AVAIL, *it ) != NULL ) {
-					assignMode( client_, *it, add == 1 );
+					assignMode( client_, *it, add );
 				} else {
 					client_._msg_out += ERR_UNKNOWNMODE( client_, *it );
 				}

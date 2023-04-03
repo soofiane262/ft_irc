@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/26 13:32:25 by mel-hous          #+#    #+#             */
-/*   Updated: 2023/04/02 22:52:45 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/03 16:06:51 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,17 @@
 
 std::string irc::client::who( std::string& channel_name_ ) {
 	irc::channel* channel = irc::server::__serv->findChannel( channel_name_ );
-	std::string	  ret	  = "H";
+	std::string	  ret;
 	if ( channel != NULL ) ret = this->who( *channel );
+	else {
+		ret = this->_mode & UMODE_AWAY ? "G" : "H";
+		if ( this->_mode & UMODE_OPERATOR ) ret += " *";
+	}
 	return ret;
 }
 
 std::string irc::client::who( irc::channel& channel_ ) {
-	std::string ret = "H";
+	std::string ret = this->_mode & UMODE_AWAY ? "G" : "H";
 	if ( this->_mode & UMODE_OPERATOR ) ret += " *";
 	if ( channel_.getMember( this->_nickname )->second & UMODE_CHANOP ) ret += " @";
 	else if ( channel_.getMember( this->_nickname )->second & UMODE_VOICE )

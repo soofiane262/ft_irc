@@ -6,10 +6,7 @@
 -   [Introduction](#introduction)
 -   [General Rules](#general-rules)
 -   [Features](#features)
--   [Requirements](#requirements)
 -   [Getting Started](#getting-started)
--   [Mandatory Part](#mandatory-part)
--   [Bonus Part](#bonus-part)
 -   [Usage](#usage)
 -   [Commands](#commands)
 -   [Resources](#resources)
@@ -246,11 +243,18 @@ Parameters: <username> <mode> <unused> <realname>
 The USER command is used to provide information about the user. The `<username>` parameter specifies the username of the user, the `<mode>` parameter should be a numeric, and can be used to automatically set user modes when registering with the server. This parameter is a bitmask, with only 2 bits having any signification, and the `<realname>` parameter specifies the realname of the user.
 
 ```bnf
-Command: WHO
-Parameters: [ <name> [ <o> ] ]
+Command: WALLOPS
+Parameters: <Text to be sent>
 ```
 
-The WHO command is used to list all users on the server. The `<name>` parameter specifies the name of the user to be listed, and the <o> parameter specifies whether to list only operators.
+The WALLOPS command is used to send a message to all currently connected users who have set the 'w' user mode for themselves.
+
+```bnf
+Command: WHO
+Parameters: <name> / "0"
+```
+
+The WHO command is used to list all users on the server. The `<name>` parameter specifies the name of the user to be listed, and the "0" parameter is a wildcard that is used to list all users on the server and who don't have a common channel with the requesting client.
 
 ```bnf
 Command: WHOIS

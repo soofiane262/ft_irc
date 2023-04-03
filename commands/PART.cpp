@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/21 14:24:56 by acmaghou          #+#    #+#             */
-/*   Updated: 2023/04/02 16:58:05 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/03 15:06:38 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static void partChannel( irc::client& client_, std::string& channel_name_ ) {
 			client_._msg_out += ERR_NOTONCHANNEL( client_, channel->_name );
 		else {
 			channel->broadcast(
-				client_._message._params[ 1 ].empty() ?
+				client_._message._params.size() == 1 ?
 					RPL_PART( client_, channel->_name ) :
 					RPL_PARTMSG( client_, channel->_name, client_._message._params[ 1 ] ) );
 			channel->_members.erase( it );

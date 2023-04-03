@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 15:44:53 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/02 13:08:34 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/03 14:55:41 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ static void joinChannel( irc::client& client_, std::string& channel_name_,
 						 std::string& channel_key_ ) {
 	if ( !irc::utils::channelNameIsValid( channel_name_ ) )
 		client_._msg_out += ERR_NOSUCHCHANNEL( client_, channel_name_ );
+	else if ( client_.isInChannel( channel_name_ ) )
+		client_._msg_out += ERR_USERONCHANNEL( client_, channel_name_ );
 	else {
 		irc::channel* channel = irc::server::__serv->findChannel( channel_name_ );
 		if ( channel == NULL ) channel = irc::server::__serv->addChannel( channel_name_ );
@@ -27,15 +29,14 @@ static void joinChannel( irc::client& client_, std::string& channel_name_,
 		else if ( channel->_mode & CMODE_KEY && channel->_key != channel_key_ )
 			client_._msg_out += ERR_BADCHANNELKEY( client_, channel->_name );
 		else {
-			int added = channel->addMember( &client_, channel_key_ );
-			if ( added == 1 ) {
+			bool added = channel->addMember( &client_, channel_key_ );
+			if ( added ) {
 				channel->broadcast( RPL_JOIN( client_, channel->_name ) );
 				if ( !channel->_topic.empty() )
 					client_._msg_out += RPL_TOPIC( client_, channel->_name, channel->_topic );
 				client_._msg_out += RPL_NAMREPLY( client_, channel->_name, channel->getMembers() );
 				client_._msg_out += RPL_ENDOFNAMES( client_, channel->_name );
-			} else if ( added == 0 )
-				client_._msg_out += ERR_USERONCHANNEL( client_, channel->_name );
+			}
 		}
 	}
 }
