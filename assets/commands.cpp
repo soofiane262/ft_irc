@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:27:13 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/02 16:58:21 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/03 15:07:27 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ irc::commands::commands( void ) {
 	this->_commands[ "RESTART" ] = &commands::RESTART;
 	this->_commands[ "TOPIC" ]	 = &commands::TOPIC;
 	this->_commands[ "USER" ]	 = &commands::USER;
+	this->_commands[ "WALLOPS" ] = &commands::WALLOPS;
 	this->_commands[ "WHO" ]	 = &commands::WHO;
 	this->_commands[ "WHOIS" ]	 = &commands::WHOIS;
 } // ctor

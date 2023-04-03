@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 15:42:15 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/02 17:37:07 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/02 22:52:14 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void irc::commands::USER( irc::client& client_ ) {
 		client_._msg_out += RPL_ENDOFMOTD( client_ );
 		client_._msg_out += RPL_UMODEIS( client_ );
 		std::cout << "\033[2m"
-				  << "User `" << client_._nickname << "` connected"
+				  << "User `" << client_._nickname << "` - `" << client_._hostaddr << "` connected"
 				  << "\033[22m\n";
 		return;
 	}

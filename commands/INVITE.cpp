@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/31 13:37:17 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/03/31 22:09:41 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/03 15:41:05 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,12 @@ void irc::commands::INVITE( irc::client& client_ ) {
 			client_._msg_out += ERR_CHANOPRIVSNEEDED( client_, channel->_name );
 		else if ( target->isInChannel( channel->_name ) )
 			client_._msg_out += ERR_USERONCHANNEL( client_, channel->_name );
-		else if ( target->_mode & UMODE_AWAY )
-			target->_msg_out += RPL_AWAY( client_, target->_nickname, target->_away_msg );
 		else {
 			target->inviteChannel( channel->_name );
 			target->_msg_out += RPL_INVITATION( client_, channel->_name, target->_nickname );
 			client_._msg_out += RPL_INVITING( client_, channel->_name, target->_nickname );
+			if ( target->_mode & UMODE_AWAY )
+				client_._msg_out += RPL_AWAY( client_, target->_nickname, target->_away_msg );
 		}
 	}
 }

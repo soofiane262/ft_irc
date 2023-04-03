@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/10 15:28:37 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/02 17:37:35 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/03 15:54:20 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,27 +96,27 @@ enum channel_modes {
 
 /* Define welcome messages for the client connection & registration success ─────────── */
 
-#define RPL_WELCOME( nick, user )                                                                 \
-	NUMERIC_REPLY( "001", nick ) + "Welcome to the Internet Relay Network " + nick + "!" + user + \
-		"@" + client_._hostaddr + CRLF
-#define RPL_YOURHOST( nick )                                                   \
-	NUMERIC_REPLY( "002", nick ) + "Your host is " + irc::server::__hostaddr + \
+#define RPL_WELCOME( client_ )                                                             \
+	NUMERIC_REPLY( "001", client_._nickname ) + "Welcome to the Internet Relay Network " + \
+		RPL_BASE( client_, "" ) + CRLF
+#define RPL_YOURHOST( client_ )                                                       \
+	NUMERIC_REPLY( "002", client_._nickname ) + "Your host is " + client_._hostaddr + \
 		", running version 1.0 " + CRLF
-#define RPL_CREATED( nick )                                                                   \
-	NUMERIC_REPLY( "003", nick ) + "This server was created " + irc::server::__creationdate + \
-		" UTC+1 " + CRLF
-#define RPL_MYINFO( nick )                                                                    \
-	NUMERIC_REPLY( "004", nick ) + irc::server::__hostaddr + " v1.0" + SPACE + UMODES_AVAIL + \
-		SPACE + CMODES_AVAIL + CRLF
-#define REGISTRATION_SUCCESS( client_ )                                                       \
-	RPL_WELCOME( client_._nickname, client_._username ) + RPL_YOURHOST( client_._nickname ) + \
-		RPL_CREATED( client_._nickname ) + RPL_MYINFO( client_._nickname )
-#define RPL_MOTDSTART( client_ )                                                                \
-	NUMERIC_REPLY( "375", client_._nickname ) + "-" + SPACE + irc::server::__hostaddr + SPACE + \
-		"Message of the day - " + CRLF
+#define RPL_CREATED( client_ )                                               \
+	NUMERIC_REPLY( "003", client_._nickname ) + "This server was created " + \
+		irc::server::__creationdate + " UTC+1 " + CRLF
+#define RPL_MYINFO( client_ )                                                               \
+	NUMERIC_REPLY( "004", client_._nickname ) + irc::server::__hostaddr + " v1.0" + SPACE + \
+		UMODES_AVAIL + SPACE + CMODES_AVAIL + CRLF
+#define REGISTRATION_SUCCESS( client_ )                                         \
+	RPL_WELCOME( client_ ) + RPL_YOURHOST( client_ ) + RPL_CREATED( client_ ) + \
+		RPL_MYINFO( client_ )
 
 /* Define message of the day messages ───────────────────────────────────────────────── */
 
+#define RPL_MOTDSTART( client_ )                                                                \
+	NUMERIC_REPLY( "375", client_._nickname ) + "-" + SPACE + irc::server::__hostaddr + SPACE + \
+		"Message of the day - " + CRLF
 #define RPL_MOTD( client_, motd_ ) NUMERIC_REPLY( "372", client_._nickname ) + SPACE + motd_ + CRLF
 #define RPL_ENDOFMOTD( client_ ) \
 	NUMERIC_REPLY( "376", client_._nickname ) + "End of MOTD command" + CRLF
@@ -175,12 +175,10 @@ enum channel_modes {
 #define RPL_ENDOFNAMES( client_, channel_name ) \
 	NUMERIC_REPLY_NOCL( "366", client_._nickname ) + channel_name + " :End of NAMES list" + CRLF
 
-#define RPL_JOIN( newMember_, channel_name )                                              \
-	COLON + newMember_._nickname + "!" + newMember_._username + "@" + client_._hostaddr + \
-		" JOIN :" + channel_name + CRLF
-#define RPL_UMODE( client_ )                                                                     \
-	COLON + client_._nickname + SPACE + "MODE" + client_._nickname + SPCL + client_.getModes() + \
-		CRLF
+#define RPL_JOIN( newMember_, channel_name ) \
+	RPL_BASE( client_, "JOIN" ) + COLON + channel_name + CRLF
+#define RPL_UMODE( client_ ) \
+	RPL_BASE( client_, "MODE" ) + client_._nickname + SPCL + client_.getModes() + CRLF
 #define RPL_CHANMODE( client_, channel_name_, channel_modes_ ) \
 	RPL_BASE( client_, "MODE" ) + channel_name_ + SPACE + channel_modes_ + CRLF
 #define RPL_UMODEIS( client_ ) \
@@ -194,9 +192,9 @@ enum channel_modes {
 #define RPL_AWAY( client_, target_nick_, away_msg_ ) \
 	NUMERIC_REPLY_NOCL( "301", client_._nickname ) + target_nick_ + SPCL + away_msg_ + CRLF
 
-#define RPL_WHOISUSER( client_, target_ )                                           \
-	NUMERIC_REPLY_NOCL( "311", client_._nickname ) + target_->_nickname + SPACE +   \
-		target_->_username + SPACE + irc::server::__hostaddr + SPACE + "*" + SPCL + \
+#define RPL_WHOISUSER( client_, target_ )                                         \
+	NUMERIC_REPLY_NOCL( "311", client_._nickname ) + target_->_nickname + SPACE + \
+		target_->_username + SPACE + target_->_hostaddr + SPACE + "*" + SPCL +    \
 		target_->_realname + CRLF
 #define RPL_WHOISSERVER( client_, target_ )                                       \
 	NUMERIC_REPLY_NOCL( "312", client_._nickname ) + target_->_nickname + SPACE + \
@@ -206,7 +204,7 @@ enum channel_modes {
 		CRLF
 #define RPL_WHOISIDLE( client_, target_ )                                         \
 	NUMERIC_REPLY_NOCL( "317", client_._nickname ) + target_->_nickname + SPACE + \
-		client_.getIdleTime() + SPACE + client_.getSignOnTime() + SPCL +          \
+		target_->getIdleTime() + SPACE + target_->getSignOnTime() + SPCL +        \
 		"seconds idle, signon time" + CRLF
 #define RPL_ENDOFWHOIS( client_, target_ )                                                        \
 	NUMERIC_REPLY_NOCL( "318", client_._nickname ) + target_->_nickname + " :End of WHOIS list" + \
@@ -219,16 +217,22 @@ enum channel_modes {
 #define RPL_NOWAWAY( client_ ) \
 	NUMERIC_REPLY_NOCL( "306", client_._nickname ) + "You have been marked as being away" + CRLF
 #define RPL_NICKNAME( client_, new_nick_ ) RPL_BASE( client_, "NICK" ) + new_nick_ + CRLF
-#define RPL_WHOREPLY( client_, channel_name, other )                                          \
-	NUMERIC_REPLY_NOCL( "352", client_._nickname ) + channel_name + SPACE + other._username + \
-		SPACE + other._hostaddr + SPACE + irc::server::__hostaddr + SPACE + other._nickname + \
-		SPACE + 'H' + COLON + '0' + SPACE + other._realname + CRLF
-#define RPL_WHOREPLY_PTR( client_, channel_name, other_ptr )                                       \
-	NUMERIC_REPLY_NOCL( "352", client_._nickname ) + channel_name + SPACE + other_ptr->_username + \
-		SPACE + other_ptr->_hostaddr + SPACE + irc::server::__hostaddr + SPACE +                   \
-		other_ptr->_nickname + SPACE + 'H' + COLON + '0' + SPACE + other_ptr->_realname + CRLF
-#define RPL_ENDOFWHO( client_ ) \
-	NUMERIC_REPLY_NOCL( "315", client_._nickname ) + COLON + "End of WHO list" + CRLF
+#define RPL_WHOREPLY( client_, channel_ptr_, other_ )                                           \
+	NUMERIC_REPLY_NOCL( "352", client_._nickname ) + channel_ptr_->_name + SPACE +              \
+		other_._username + SPACE + other_._hostaddr + SPACE + irc::server::__hostaddr + SPACE + \
+		other_._nickname + SPACE + other_.who( *channel_ptr_ ) + SPCL + '0' + SPACE +           \
+		other_._realname + CRLF
+#define RPL_WHOREPLYNAME( client_, channel_name_, other_ )                                      \
+	NUMERIC_REPLY_NOCL( "352", client_._nickname ) + channel_name_ + SPACE + other_._username + \
+		SPACE + other_._hostaddr + SPACE + irc::server::__hostaddr + SPACE + other_._nickname + \
+		SPACE + other_.who( channel_name_ ) + SPCL + '0' + SPACE + other_._realname + CRLF
+#define RPL_WHOREPLY_PTR( client_, channel_ptr_, other_ptr_ )                                     \
+	NUMERIC_REPLY_NOCL( "352", client_._nickname ) + channel_ptr_->_name + SPACE +                \
+		other_ptr_->_username + SPACE + other_ptr_->_hostaddr + SPACE + irc::server::__hostaddr + \
+		SPACE + other_ptr_->_nickname + SPACE + other_ptr_->who( *channel_ptr_ ) + SPCL + '0' +   \
+		SPACE + other_ptr_->_realname + CRLF
+#define RPL_ENDOFWHO( client_, name_ ) \
+	NUMERIC_REPLY_NOCL( "315", client_._nickname ) + name_ + SPCL + "End of WHO list" + CRLF
 #define RPL_BOT( client_, reply_ ) NUMERIC_REPLY_NOCL( "335", client_._nickname ) + reply_ + CRLF
 #define RPL_RESTART( client_ ) \
 	NUMERIC_REPLY_NOCL( "382", client_._nickname ) + "ircserv" + SPCL + "Restarting server" + CRLF
@@ -321,18 +325,13 @@ enum channel_modes {
 
 /* PRIVMSG ──────────────────────────────────────────────────────────────────────────── */
 
-#define MSG( client_, target_, message_ )                                                       \
-	":" + client_._nickname + "!" + client_._username + "@" + client_._hostaddr + " PRIVMSG " + \
-		target_ + " :" + message_ + CRLF
-
+#define MSG( client_, target_, message_ ) \
+	RPL_BASE( client_, "PRIVMSG" ) + target_ + SPCL + message_ + CRLF
 #define NOTICE_MSG( client_, target_, message_ ) \
-	":" + client_._nickname + " NOTICE " + target_ + " :" + message_ + CRLF
+	RPL_BASE( client_, "NOTICE" ) + target_ + SPCL + message_ + CRLF
 
 /* PARTMSG ──────────────────────────────────────────────────────────────────────────── */
 
-#define RPL_PART( client_, channel_name )                                                    \
-	":" + client_._nickname + "!" + client_._username + "@" + client_._hostaddr + " PART " + \
-		channel_name + CRLF
-#define RPL_PARTMSG( client_, channel_name, part_msg_ )                                      \
-	":" + client_._nickname + "!" + client_._username + "@" + client_._hostaddr + " PART " + \
-		channel_name + SPCL + part_msg_ + CRLF
+#define RPL_PART( client_, channel_name ) RPL_BASE( client_, "PART" ) + channel_name + CRLF
+#define RPL_PARTMSG( client_, channel_name, part_msg_ ) \
+	RPL_BASE( client_, "PART" ) + channel_name + SPCL + part_msg_ + CRLF

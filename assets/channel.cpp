@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/20 17:02:42 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/02 16:49:32 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/03 15:17:15 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,29 +31,29 @@ bool irc::channel::isMember( irc::client* member ) {
 	return ( member_it != _members.end() );
 } // isMember
 
-int irc::channel::addMember( irc::client* client_, std::string& key_ ) {
+bool irc::channel::addMember( irc::client* client_, std::string& key_ ) {
 	irc::client& client = *client_;
 	if ( this->_members.empty() ) goto add;
 	if ( this->_mode & CMODE_LIMIT &&
 		 static_cast< unsigned short >( this->_members.size() ) >= this->_limit ) {
 		client_->_msg_out += ERR_CHANNELISFULL( client, this->_name );
-		return -1;
+		return false;
 	}
 	if ( this->_mode & CMODE_KEY && this->_key != key_ ) {
 		client_->_msg_out += ERR_BADCHANNELKEY( client, this->_name );
-		return -1;
+		return false;
 	}
 	if ( this->_mode & ( CMODE_INVITE | CMODE_PRIVATE | CMODE_SECRET ) &&
 		 !client_->isInvited( this->_name ) ) {
 		client_->_msg_out += ERR_INVITEONLYCHAN( client, this->_name );
-		return -1;
+		return false;
 	}
 add:
 	std::pair< irc::channel::member_iterator, bool > it =
 		this->_members.insert( std::make_pair( client_, '\0' ) );
 	if ( this->_members.size() == 1 ) it.first->second = UMODE_CHANOP | UMODE_CHANOWNER;
 	client.joinChannel( this->_name );
-	return it.second != 0;
+	return true;
 } // addMember
 
 std::string irc::channel::getMembers( void ) {
@@ -61,7 +61,9 @@ std::string irc::channel::getMembers( void ) {
 	irc::channel::member_iterator member_it;
 	for ( member_it = this->_members.begin(); member_it != this->_members.end(); ++member_it )
 		members +=
-			( member_it->second & UMODE_CHANOP ? "@" : "" ) + ( *member_it ).first->_nickname + ' ';
+			( member_it->second & UMODE_CHANOP ? "@" :
+												 ( member_it->second & UMODE_VOICE ? "+" : "" ) ) +
+			( *member_it ).first->_nickname + ' ';
 	return members;
 } // getMembers
 

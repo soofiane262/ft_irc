@@ -6,7 +6,7 @@
 /*   By: sel-mars <sel-mars@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 14:24:08 by sel-mars          #+#    #+#             */
-/*   Updated: 2023/04/02 16:39:37 by sel-mars         ###   ########.fr       */
+/*   Updated: 2023/04/03 15:17:23 by sel-mars         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ namespace irc {
 		void clear( void );
 	}; // message
 
+	class channel; // forward declaration
 	class client {
 	  public:
 		typedef std::map< irc::client*, unsigned char >			  member_type;
@@ -71,12 +72,11 @@ namespace irc {
 		typedef stringset_type									  channel_type;
 		typedef stringset_iterator								  channel_iterator;
 
-		int			  _fd;
-		std::time_t	  _sign, _idle, _nick_change;
-		unsigned char _mode;
-		bool		  _quit;
-		std::string	  _hostaddr, _hostport, _nickname, _username, _realname, _msg_in, _msg_out,
-			_away_msg;
+		int			   _fd;
+		std::time_t	   _sign, _idle, _nick_change;
+		unsigned char  _mode;
+		bool		   _quit;
+		std::string	   _hostaddr, _nickname, _username, _realname, _msg_in, _msg_out, _away_msg;
 		irc::message   _message;
 		channel_type   _channels_joined;
 		channel_type   _channels_invited;
@@ -87,6 +87,8 @@ namespace irc {
 			  _username( "*" ), _realname( "*" ) {}
 		~client( void ) {}
 
+		std::string who( std::string& );
+		std::string who( irc::channel& );
 		std::string getModes( void );
 		std::string getChannels( char );
 		std::string getSignOnTime( void );
@@ -115,7 +117,7 @@ namespace irc {
 		void			broadcast( std::string );
 		void			broadcast( irc::client&, std::string );
 		bool			isMember( irc::client* );
-		int				addMember( irc::client*, std::string& );
+		bool			addMember( irc::client*, std::string& );
 		std::string		getMembers( void );
 		std::string		getModes( void );
 		void			setModes( const std::string& );
@@ -153,6 +155,7 @@ namespace irc {
 		void		  RESTART( irc::client& );
 		void		  TOPIC( irc::client& );
 		void		  USER( irc::client& );
+		void		  WALLOPS( irc::client& );
 		void		  WHO( irc::client& );
 		void		  WHOIS( irc::client& );
 
@@ -210,6 +213,7 @@ namespace irc {
 		channel_type& getChannels( void );
 		void		  removeChannel( channel& );
 		/* Broadcasting ───────────────────────────────────────────────────────────────────── */
+		void broadcastWallops( irc::client& );
 		void broadcastJoinedChannels( irc::client&, std::string );
 	}; // server
 
