@@ -1,4 +1,12 @@
+<center>
+
 # **FT_IRC - Internet Relay Chat**
+
+[![sel-mars's 42 ft_irc Score](https://badge42.vercel.app/api/v2/cl49y2gyb004909l3hwkwo9dg/project/3014927)](https://github.com/JaeSeoKim/badge42)
+
+</center>
+
+---
 
 ## Table of Contents
 
@@ -275,7 +283,7 @@ The WHOIS command is used to query information about a specific user. The `<nick
 
 The `FT_IRC` server project was created by a team of developers from [1337], a coding school located in Morocco, Africa, that is a member of the renowned [42 Network] of coding schools. The school is also powered by the [Mohammed VI Polytechnic University (UM6P)](https://www.um6p.ma), which provides world-class resources and expertise to its students.
 
-As a member of the `[42 Network]`, `[1337 Coding School]` follows the same innovative and immersive educational model, which is based on project-based learning and peer-to-peer collaboration. This means that students are free to learn at their own pace, and are encouraged to work on real-world projects that challenge and inspire them.
+As a member of the [42 Network], [1337 Coding School] follows the same innovative and immersive educational model, which is based on project-based learning and peer-to-peer collaboration. This means that students are free to learn at their own pace, and are encouraged to work on real-world projects that challenge and inspire them.
 
 The school's partnership with [UM6P] ensures that students have access to the latest technologies and tools, as well as world-class faculty members and experts in the field of computer science. This allows students to gain a comprehensive understanding of coding and computer science, while also developing the practical skills needed to succeed in the tech industry.
 
